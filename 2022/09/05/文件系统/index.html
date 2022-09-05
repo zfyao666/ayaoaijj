@@ -225,27 +225,27 @@
         </header>
 
         <div class="post-content">
-            <h2 id="文件的分类："><a href="#文件的分类：" class="headerlink" title="# 文件的分类："></a># 文件的分类：</h2><ul>
+            <h2 id="文件的分类："><a href="#文件的分类：" class="headerlink" title="文件的分类："></a>文件的分类：</h2><ul>
 <li>普通文件：包含了用户的信息，一般为 ASCII 或二进制文件；</li>
 <li>目录文件：管理文件系统的系统文件；</li>
 <li>特殊文件（设备文件）：包括了字符设备文件、块设备文件等；</li>
 </ul>
-<h2 id="文件的逻辑结构："><a href="#文件的逻辑结构：" class="headerlink" title="# 文件的逻辑结构："></a># 文件的逻辑结构：</h2><ul>
+<h2 id="文件的逻辑结构："><a href="#文件的逻辑结构：" class="headerlink" title="文件的逻辑结构："></a>文件的逻辑结构：</h2><ul>
 <li>流式文件：无结构，对文件内的信息不再划分单位，它是依次的一串字符流构成的文件。</li>
 <li>记录式文件：有结构，文件由若干个记录组成，可以按照记录进行读、写、查找等操作。</li>
 </ul>
-<h2 id="存储介质与物理块"><a href="#存储介质与物理块" class="headerlink" title="# 存储介质与物理块"></a># 存储介质与物理块</h2><h3 id="典型的存储介质"><a href="#典型的存储介质" class="headerlink" title="| 典型的存储介质"></a>| 典型的存储介质</h3><p>磁盘（包括固态盘 SSD）、磁带、光盘、U盘….</p>
-<h3 id="物理块（块-block、簇-cluster）"><a href="#物理块（块-block、簇-cluster）" class="headerlink" title="| 物理块（块 block、簇 cluster）"></a>| 物理块（块 block、簇 cluster）</h3><ul>
+<h2 id="存储介质与物理块"><a href="#存储介质与物理块" class="headerlink" title="存储介质与物理块"></a>存储介质与物理块</h2><h3 id="典型的存储介质"><a href="#典型的存储介质" class="headerlink" title="典型的存储介质"></a>典型的存储介质</h3><p>磁盘（包括固态盘 SSD）、磁带、光盘、U盘….</p>
+<h3 id="物理块（块-block、簇-cluster）"><a href="#物理块（块-block、簇-cluster）" class="headerlink" title="物理块（块 block、簇 cluster）"></a>物理块（块 block、簇 cluster）</h3><ul>
 <li>信息存储、传输、分配的独立单位；</li>
 <li>存储设备划分为大小相等的物理块，统一编号；</li>
 </ul>
-<h2 id="磁盘访问"><a href="#磁盘访问" class="headerlink" title="# 磁盘访问"></a># 磁盘访问</h2><p>一次访问请求：读&#x2F;写，磁盘地址（设备号、柱面号、磁头号、扇区号），内存地址（源&#x2F;目）<br>由三个动作组成：</p>
+<h2 id="磁盘访问"><a href="#磁盘访问" class="headerlink" title="磁盘访问"></a>磁盘访问</h2><p>一次访问请求：读&#x2F;写，磁盘地址（设备号、柱面号、磁头号、扇区号），内存地址（源&#x2F;目）<br>由三个动作组成：</p>
 <ul>
 <li>寻道：磁头移动定位到指定磁道；</li>
 <li>旋转延迟：等待指定扇区从磁头下旋转经过；</li>
 <li>数据传输：数据在磁盘与内存之间的实际传输；</li>
 </ul>
-<h2 id="文件控制块：FCB"><a href="#文件控制块：FCB" class="headerlink" title="# 文件控制块：FCB"></a># 文件控制块：FCB</h2><blockquote>
+<h2 id="文件控制块：FCB"><a href="#文件控制块：FCB" class="headerlink" title="文件控制块：FCB"></a>文件控制块：FCB</h2><blockquote>
 <p>FCB：File Control Block</p>
 </blockquote>
 <p>为管理文件而设置的数据结构，保存管理文件所需的所有有关信息（文件属性或元数据）<br>常用属性：</p>
@@ -257,72 +257,72 @@
 <li>各种标志（只读、隐藏、系统、归档）；</li>
 <li>…..</li>
 </ul>
-<h2 id="文件目录"><a href="#文件目录" class="headerlink" title="# 文件目录"></a># 文件目录</h2><ul>
+<h2 id="文件目录"><a href="#文件目录" class="headerlink" title="文件目录"></a>文件目录</h2><ul>
 <li>文件目录：同一管理每个文件的元数据，以支持文件名到文件物理地址的转换；</li>
 <li>目录文件：将文件目录以文件的形式存放在磁盘上；</li>
 <li>目录项：构成文件目录的基本单元，可以是 FCB，目录是 FCB 的有序集合；</li>
 </ul>
-<p><img src="https://cdn.nlark.com/yuque/0/2022/png/2323967/1651920376115-9e33baec-f8fa-42f8-89d0-718ebba48430.png#clientId=u1ebb02a1-58cc-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=510&id=ud59be028&margin=%5Bobject%20Object%5D&name=image.png&originHeight=749&originWidth=664&originalType=binary&ratio=1&rotation=0&showTitle=true&size=44947&status=done&style=stroke&taskId=uc61ec95f-a81b-44b4-ad18-eacefa35fdb&title=%E7%9B%AE%E5%BD%95%E6%96%87%E4%BB%B6%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E8%81%94&width=452" alt="image.png" title="目录文件之间的关联"></p>
-<h2 id="文件的物理结构"><a href="#文件的物理结构" class="headerlink" title="# 文件的物理结构"></a># 文件的物理结构</h2><p>文件的物理结构指的是文件在存储介质上的存放方式。</p>
-<h3 id="连续结构"><a href="#连续结构" class="headerlink" title="| 连续结构"></a>| 连续结构</h3><p>文件信息存放在若干连续的物理块中。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/2323967/1651923934716-ae54811c-4e21-4ece-a3fc-d7ded3772bda.png#clientId=u1ebb02a1-58cc-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=379&id=ubcfdbae8&margin=%5Bobject%20Object%5D&name=image.png&originHeight=934&originWidth=1532&originalType=binary&ratio=1&rotation=0&showTitle=true&size=134443&status=done&style=stroke&taskId=ua4d380ed-b8d9-4044-9159-af8f6af3f4d&title=%E8%BF%9E%E7%BB%AD%E7%BB%93%E6%9E%84&width=621" alt="image.png" title="连续结构"></p>
+<p><img src="/../images/1651920376115-9e33baec-f8fa-42f8-89d0-718ebba48430.png" alt="image.png"></p>
+<h2 id="文件的物理结构"><a href="#文件的物理结构" class="headerlink" title="文件的物理结构"></a>文件的物理结构</h2><p>文件的物理结构指的是文件在存储介质上的存放方式。</p>
+<h3 id="连续结构"><a href="#连续结构" class="headerlink" title="连续结构"></a>连续结构</h3><p>文件信息存放在若干连续的物理块中。<br><img src="/../images/1651923934716-ae54811c-4e21-4ece-a3fc-d7ded3772bda.png" alt="image.png"></p>
 <ul>
 <li>优点：连续结构实现简单，支持顺序存取和随机存取，所需要的磁盘寻道次数和寻道时间也最少。</li>
 <li>缺点：文件不能动态增长，不利于文件的插入和删除，且会产生很多的外部碎片。</li>
 </ul>
-<h3 id="链接结构"><a href="#链接结构" class="headerlink" title="| 链接结构"></a>| 链接结构</h3><p>一个文件的信息存放在若干不连续的物理块中，各块之间通过指针连接，前一个物理块指向下一个物理块。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/2323967/1651924157509-df12ea27-4a9f-43cf-be34-eb48472d978b.png#clientId=u1ebb02a1-58cc-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=397&id=u36a18f31&margin=%5Bobject%20Object%5D&name=image.png&originHeight=838&originWidth=1024&originalType=binary&ratio=1&rotation=0&showTitle=true&size=98867&status=done&style=stroke&taskId=ua8962e09-4495-4cad-ba55-7914768a9b2&title=%E9%93%BE%E6%8E%A5%E7%BB%93%E6%9E%84&width=485" alt="image.png" title="链接结构"></p>
+<h3 id="链接结构"><a href="#链接结构" class="headerlink" title="链接结构"></a>链接结构</h3><p>一个文件的信息存放在若干不连续的物理块中，各块之间通过指针连接，前一个物理块指向下一个物理块。<br><img src="/../images/1651924157509-df12ea27-4a9f-43cf-be34-eb48472d978b.png" alt="image.png"></p>
 <ul>
 <li>优点：提高了磁盘空间利用率，不存在外部碎片问题，利于文件的动态扩充。</li>
 <li>缺点：存取速度慢，不适合随机存取，需要更多的寻道次数和寻道时间，链接指针可能出错并且占用一定的空间。</li>
 </ul>
-<h3 id="索引结构"><a href="#索引结构" class="headerlink" title="| 索引结构"></a>| 索引结构</h3><p>一个文件的信息存放在若干不连续物理块中，系统为每个文件建立一个专用数据结构-索引表，并将这些物理块的块号存放在该索引表中，其中的第 i 个条目指向了文件的第 i 块。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/2323967/1651925529289-935f22df-7f23-477d-87fa-04838f88692d.png#clientId=u1ebb02a1-58cc-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=234&id=uea5a47f7&margin=%5Bobject%20Object%5D&name=image.png&originHeight=436&originWidth=954&originalType=binary&ratio=1&rotation=0&showTitle=true&size=68548&status=done&style=stroke&taskId=u6911deeb-1f8a-4250-8bf9-a7b931d1554&title=%E7%B4%A2%E5%BC%95%E8%A1%A8&width=513" alt="image.png" title="索引表"></p>
+<h3 id="索引结构"><a href="#索引结构" class="headerlink" title="索引结构"></a>索引结构</h3><p>一个文件的信息存放在若干不连续物理块中，系统为每个文件建立一个专用数据结构-索引表，并将这些物理块的块号存放在该索引表中，其中的第 i 个条目指向了文件的第 i 块。<br><img src="/../images/1651925529289-935f22df-7f23-477d-87fa-04838f88692d.png" alt="image.png"></p>
 <ul>
 <li>优点：既能顺序存取，又能随机存取。满足了文件动态增长、插入删除的要求，能充分利用磁盘空间。</li>
 <li>缺点：需要较多的寻道次数和寻道时间。索引表本身也需要很多系统开销（内存、磁盘空间、存取时间）。</li>
 </ul>
-<h4 id="多级索引结构（综合模式）"><a href="#多级索引结构（综合模式）" class="headerlink" title="* 多级索引结构（综合模式）"></a>* 多级索引结构（综合模式）</h4><p>综合模式：直接索引 + 间接索引<br><img src="https://cdn.nlark.com/yuque/0/2022/png/2323967/1651926021446-2f8a5812-556f-4972-82ae-942cb0f748a9.png#clientId=u1ebb02a1-58cc-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=166&id=u813ee234&margin=%5Bobject%20Object%5D&name=image.png&originHeight=332&originWidth=1048&originalType=binary&ratio=1&rotation=0&showTitle=true&size=50520&status=done&style=stroke&taskId=ub865b9f0-3fc3-433c-bb23-45223661478&title=%E7%BB%BC%E5%90%88%E6%A8%A1%E5%BC%8F&width=524" alt="image.png" title="综合模式"><br>UNIX 文件系统采用的综合模式：</p>
+<h4 id="多级索引结构（综合模式）"><a href="#多级索引结构（综合模式）" class="headerlink" title="* 多级索引结构（综合模式）"></a>* 多级索引结构（综合模式）</h4><p>综合模式：直接索引 + 间接索引<br><img src="/../images/1651926021446-2f8a5812-556f-4972-82ae-942cb0f748a9.png" alt="image.png"><br>UNIX 文件系统采用的综合模式：</p>
 <ul>
 <li>每个文件的主索引表有 15 个索引项，每项 2 个字节。</li>
 <li>前 12 项直接存放文件的物理块号。</li>
 <li>如果文件大于 12 块，则利用第 13 项指向一个物理块作为一级索引表，假设扇区大小为 512 字节，物理块等于扇区块大小，那么一级索引表可以存放256个物理块号。</li>
 <li>对于更大的文件还可利用第 14 和第 15 项作为二级和三级索引表。</li>
 </ul>
-<p><img src="https://cdn.nlark.com/yuque/0/2022/png/2323967/1651927672056-963f02b0-0838-410f-9596-a0023df31e93.png#clientId=u1ebb02a1-58cc-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=404&id=ub23c6284&margin=%5Bobject%20Object%5D&name=image.png&originHeight=758&originWidth=1205&originalType=binary&ratio=1&rotation=0&showTitle=true&size=174518&status=done&style=stroke&taskId=u98909c2d-b8b1-4580-939e-5d049179b15&title=UNIX%20%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F&width=642.5" alt="image.png" title="UNIX 文件系统"></p>
-<h2 id="文件目录检索"><a href="#文件目录检索" class="headerlink" title="# 文件目录检索"></a># 文件目录检索</h2><ul>
+<p><img src="/../images/1651927672056-963f02b0-0838-410f-9596-a0023df31e93.png" alt="image.png"></p>
+<h2 id="文件目录检索"><a href="#文件目录检索" class="headerlink" title="文件目录检索"></a>文件目录检索</h2><ul>
 <li>目录检索：用户给出文件名，按照文件名查找目录项&#x2F;FCB。</li>
 <li>文件寻址：根据目录项&#x2F;FCB中文件物理地址等信息，计算出文件中任意记录或字符在存储介质上的地址。</li>
 </ul>
-<p><img src="https://cdn.nlark.com/yuque/0/2022/png/2323967/1651928823538-158fc0e8-5f2d-4e5a-a917-d8fa3e10bad0.png#clientId=u1ebb02a1-58cc-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=109&id=u37aba179&margin=%5Bobject%20Object%5D&name=image.png&originHeight=189&originWidth=585&originalType=binary&ratio=1&rotation=0&showTitle=true&size=18484&status=done&style=stroke&taskId=ud3075265-32e4-4be3-b9fd-3b48169170b&title=%E6%96%87%E4%BB%B6%E7%9B%AE%E5%BD%95%E6%A3%80%E7%B4%A2&width=338.5" alt="image.png" title="文件目录检索"></p>
-<h3 id="目录项分解"><a href="#目录项分解" class="headerlink" title="| 目录项分解"></a>| 目录项分解</h3><p>通过目录项分解可以加快文件目录检索的速度。目录项分解将 FCB 分解为两部分：</p>
+<p><img src="/../images/1651928823538-158fc0e8-5f2d-4e5a-a917-d8fa3e10bad0.png" alt="image.png"></p>
+<h3 id="目录项分解"><a href="#目录项分解" class="headerlink" title="目录项分解"></a>目录项分解</h3><p>通过目录项分解可以加快文件目录检索的速度。目录项分解将 FCB 分解为两部分：</p>
 <ul>
 <li>符号目录项：文件名，文件号；</li>
 <li>基本目录项：除文件名外的所有字段；</li>
 </ul>
 <p>目录文件改进后减少了访盘次数，提高了文件检索速度。</p>
-<h2 id="磁盘调度算法"><a href="#磁盘调度算法" class="headerlink" title="# 磁盘调度算法"></a># 磁盘调度算法</h2><p>当有多个访盘请求等待时，采用一定的策略，对这些请求的服务顺序调整安排，从而降低平均磁盘服务时间，达到公平、高效。</p>
+<h2 id="磁盘调度算法"><a href="#磁盘调度算法" class="headerlink" title="磁盘调度算法"></a>磁盘调度算法</h2><p>当有多个访盘请求等待时，采用一定的策略，对这些请求的服务顺序调整安排，从而降低平均磁盘服务时间，达到公平、高效。</p>
 <blockquote>
 <p>公平：一个 I&#x2F;O 请求在有限时间内满足<br>高效：减少设备机械运动带来的时间开销</p>
 </blockquote>
-<h3 id="FCFS：先来先服务"><a href="#FCFS：先来先服务" class="headerlink" title="| FCFS：先来先服务"></a>| FCFS：先来先服务</h3><p>按照访问请求到达的先后次序服务</p>
+<h3 id="FCFS：先来先服务"><a href="#FCFS：先来先服务" class="headerlink" title="FCFS：先来先服务"></a>FCFS：先来先服务</h3><p>按照访问请求到达的先后次序服务</p>
 <ul>
 <li>优点：简单、公平。</li>
 <li>缺点：效率不高，相邻两次请求可能会造成最内到最外的柱面寻道，使磁头反复移动，增加了服务时间，对机械也不利。</li>
 </ul>
-<p><img src="https://cdn.nlark.com/yuque/0/2022/png/2323967/1651930137904-401ac1cb-efdd-42a5-8295-f9cf65020def.png#clientId=u1ebb02a1-58cc-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=188&id=u7af004ca&margin=%5Bobject%20Object%5D&name=image.png&originHeight=330&originWidth=979&originalType=binary&ratio=1&rotation=0&showTitle=true&size=51599&status=done&style=stroke&taskId=u8257488b-bdbf-4854-a73d-f43f76c8834&title=FCFS&width=556.5" alt="image.png" title="FCFS"></p>
-<h3 id="SSTF：最短寻道时间优先"><a href="#SSTF：最短寻道时间优先" class="headerlink" title="| SSTF：最短寻道时间优先"></a>| SSTF：最短寻道时间优先</h3><blockquote>
+<p><img src="/../images/1651930137904-401ac1cb-efdd-42a5-8295-f9cf65020def.png" alt="image.png"></p>
+<h3 id="SSTF：最短寻道时间优先"><a href="#SSTF：最短寻道时间优先" class="headerlink" title="SSTF：最短寻道时间优先"></a>SSTF：最短寻道时间优先</h3><blockquote>
 <p>SSTF：Shortest Seek Time First</p>
 </blockquote>
-<p>优先选择距当前磁头最近的访问请求进行服务，主要考虑寻道优先。<br>虽然改善了磁盘平均服务时间，但是也会造成某些访问请求长期等待得不到服务，也就是饥饿现象。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/2323967/1651930943983-7b248057-e909-4678-a3fd-3965b36bc856.png#clientId=u1ebb02a1-58cc-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=252&id=u390ed876&margin=%5Bobject%20Object%5D&name=image.png&originHeight=542&originWidth=1376&originalType=binary&ratio=1&rotation=0&showTitle=true&size=81451&status=done&style=stroke&taskId=u0cfa013d-4e1e-44ba-a7e4-91c19b0abdc&title=SSTF&width=640" alt="image.png" title="SSTF"></p>
-<h3 id="SCAN：扫描算法"><a href="#SCAN：扫描算法" class="headerlink" title="| SCAN：扫描算法"></a>| SCAN：扫描算法</h3><p>扫描算法又称为电梯算法，当设备无访问请求时，磁头不动；当由访问请求时，磁头按一个方向移动，在移动的过程中对遇到访问请求进行服务，然后判断该方向上是否还有访问请求，如果有则继续扫描；否则改变移动方向，并为经过的访问请求服务，如此反复。<br>因为考虑了移动方向，因此所有的磁盘请求都会被满足，解决了 SSTF 的饥饿问题。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/2323967/1651931241227-0fe800db-cab1-42e1-afbc-72578512ed98.png#clientId=u1ebb02a1-58cc-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=242&id=u0f001c60&margin=%5Bobject%20Object%5D&name=image.png&originHeight=574&originWidth=1350&originalType=binary&ratio=1&rotation=0&showTitle=true&size=76396&status=done&style=stroke&taskId=u280dadb2-3dad-465c-8b78-dbefd9cc52f&title=SCAN&width=570" alt="image.png" title="SCAN"></p>
-<h3 id="CSCAN：单向扫描算法"><a href="#CSCAN：单向扫描算法" class="headerlink" title="| CSCAN：单向扫描算法"></a>| CSCAN：单向扫描算法</h3><p>SCAN 算法存在这样的问题：当磁头刚从里向外移动过某一磁道时，恰有一进程请求访问此磁道，这时该进程必须等待，待磁头从里向外，然后再从外向里扫描完所有要访问的磁道后，才处理该进程的请求，致使该进程的请求被严重地推迟。</p>
+<p>优先选择距当前磁头最近的访问请求进行服务，主要考虑寻道优先。<br>虽然改善了磁盘平均服务时间，但是也会造成某些访问请求长期等待得不到服务，也就是饥饿现象。<br><img src="/../images/1651930943983-7b248057-e909-4678-a3fd-3965b36bc856.png" alt="image.png"></p>
+<h3 id="SCAN：扫描算法"><a href="#SCAN：扫描算法" class="headerlink" title="SCAN：扫描算法"></a>SCAN：扫描算法</h3><p>扫描算法又称为电梯算法，当设备无访问请求时，磁头不动；当由访问请求时，磁头按一个方向移动，在移动的过程中对遇到访问请求进行服务，然后判断该方向上是否还有访问请求，如果有则继续扫描；否则改变移动方向，并为经过的访问请求服务，如此反复。<br>因为考虑了移动方向，因此所有的磁盘请求都会被满足，解决了 SSTF 的饥饿问题。<br><img src="/../images/1651931241227-0fe800db-cab1-42e1-afbc-72578512ed98.png" alt="image.png"></p>
+<h3 id="CSCAN：单向扫描算法"><a href="#CSCAN：单向扫描算法" class="headerlink" title="CSCAN：单向扫描算法"></a>CSCAN：单向扫描算法</h3><p>SCAN 算法存在这样的问题：当磁头刚从里向外移动过某一磁道时，恰有一进程请求访问此磁道，这时该进程必须等待，待磁头从里向外，然后再从外向里扫描完所有要访问的磁道后，才处理该进程的请求，致使该进程的请求被严重地推迟。</p>
 <p>为了减少这种延迟，CSCAN 算法规定磁头只做单向移动。例如，磁头只自里向外移动，当磁头移到最外的被访问磁道时，磁头立即返回到最里的欲访磁道，即将最小磁道号紧接着最大磁道号构成循环，进行扫描。</p>
-<h3 id="旋转调度算法"><a href="#旋转调度算法" class="headerlink" title="| 旋转调度算法"></a>| 旋转调度算法</h3><p>旋转调度算法根据延迟时间来决定执行次序的调度，请求访问分为一下三种情况：</p>
+<h3 id="旋转调度算法"><a href="#旋转调度算法" class="headerlink" title="旋转调度算法"></a>旋转调度算法</h3><p>旋转调度算法根据延迟时间来决定执行次序的调度，请求访问分为一下三种情况：</p>
 <ul>
 <li>若干等待访问者请求访问同一磁头上的不同扇区；</li>
 <li>若干等待访问者请求访问不同磁头上的不同编号的扇区；</li>
 <li>若干等待访问者请求访问不同磁头上具有相同的扇区；</li>
 </ul>
 <p>对于前两种情况：总是让首先到达读写磁头位置下的扇区先进行传送操作。<br>对于第三种情况：这些扇区同时到达读写磁头位置下，可任意选择一个读写磁头进行传送操作。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="# 参考"></a># 参考</h2><ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
 <li><a target="_blank" rel="noopener" href="https://www.coursera.org/learn/os-pku/home/week/5">北京大学操作系统原理（Operating Systems）</a></li>
 <li><a target="_blank" rel="noopener" href="https://csc-knu.github.io/sys-prog/books/Andrew%20S.%20Tanenbaum%20-%20Modern%20Operating%20Systems.pdf">Modern operating systems</a></li>
 </ol>
@@ -344,6 +344,8 @@
             </div>
         </section>
         <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/09/05/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B/">计算机网络模型</a>
             
             
             <a class="next" rel="next" href="/2022/09/05/%E6%AD%BB%E9%94%81/">死锁</a>

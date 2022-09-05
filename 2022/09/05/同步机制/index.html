@@ -289,7 +289,8 @@
 <li>在进入临界区之前实施 P(mutex)；</li>
 <li>在离开临界区之后实施 V(mutex)；</li>
 </ul>
-<p><img src="https://cdn.nlark.com/yuque/0/2022/png/2323967/1648889184362-689802f6-e8fd-429c-a4f9-11a0c78b6c53.png#clientId=u4c1059ba-7a84-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=218&id=u8f499af8&margin=%5Bobject%20Object%5D&name=image.png&originHeight=436&originWidth=1300&originalType=binary&ratio=1&rotation=0&showTitle=false&size=662452&status=done&style=none&taskId=u0e118c77-4280-4258-b192-05d2603c6ea&title=&width=650" alt="image.png"></p>
+<img src="/images/1648889184362-689802f6-e8fd-429c-a4f9-11a0c78b6c53.png" alt="image.png" style="zoom:67%;">
+
 <h2 id="生产者-消费者问题"><a href="#生产者-消费者问题" class="headerlink" title="生产者-消费者问题"></a>生产者-消费者问题</h2><p>生产者-消费者问题又被叫做有界缓冲区问题，问题描述：</p>
 <ul>
 <li>一个或多个生产者生产某种类型的数据放置在了缓冲区中。当缓冲区已满时，生产者不会继续向其中添加数据；</li>
@@ -329,7 +330,7 @@
 <li><strong>Hansen管程：</strong>规定唤醒操作为管程中最后一个可以执行的操作；</li>
 </ul>
 <h3 id="HOARE-管程"><a href="#HOARE-管程" class="headerlink" title="HOARE 管程"></a>HOARE 管程</h3><p>因为管程是互斥进入的，所以当一个进程试图进入一个被占用的管程时，需要在管程的入口等待队列等待。</p>
-<p>如果进程 P 唤醒了进程 Q，则 P 等待 Q 执行；如果进程 Q 执行中又唤醒了进程 R，则 Q 等待 R 执行；如此反复，在管程内可能出现多个等待进程。所以在管程内设置了紧急等待队列，该队列的优先级高于入口等待队列。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/2323967/1648968162658-7a7dba9f-0eb5-4118-875e-7323f2d2c072.png#clientId=u03303e20-ccbb-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=306&id=u6dfcd002&margin=%5Bobject%20Object%5D&name=image.png&originHeight=274&originWidth=401&originalType=binary&ratio=1&rotation=0&showTitle=true&size=84158&status=done&style=stroke&taskId=u05ef408d-7913-49cd-976d-faf8f978974&title=HOARE%E7%AE%A1%E7%A8%8B&width=447.5" alt="image.png" title="HOARE管程"></p>
+<p>如果进程 P 唤醒了进程 Q，则 P 等待 Q 执行；如果进程 Q 执行中又唤醒了进程 R，则 Q 等待 R 执行；如此反复，在管程内可能出现多个等待进程。所以在管程内设置了紧急等待队列，该队列的优先级高于入口等待队列。<br><img src="/../images/1648968162658-7a7dba9f-0eb5-4118-875e-7323f2d2c072.png" alt="image.png"></p>
 <h4 id="HOARE-管程中的条件变量"><a href="#HOARE-管程中的条件变量" class="headerlink" title="* HOARE 管程中的条件变量"></a>* HOARE 管程中的条件变量</h4><p>条件变量是在管程内部说明和使用的一种特殊类型的变量，对于条件变量可以执行 wait 和 signal 操作：</p>
 <ul>
 <li><strong>wait(c)：</strong>如果紧急等待队列为空，则唤醒队列中的第一个等待者；否则释放管程的互斥权，执行该操作的进程进入条件变量 c 链的末尾；</li>
@@ -344,14 +345,14 @@
 <p>进程通信是一种手段，而进程同步是一种目的。也可以说，为了能够达到进程同步的目的，需要让进程进行通行，传输一些进程同步所需要的信息。</p>
 <p>IPC 包含管道（包括无名管道和命名管道）、消息队列、信号量、共享存储、Socket、Stream等方式。其中 Socket 和 Stream 支持不同主机上的两个进程进行通信。 </p>
 <h4 id="管道"><a href="#管道" class="headerlink" title="管道"></a>管道</h4><p>通常指的是无名管道，是 UNIX 系统 IPC 最古老的形式。</p>
-<p>管道是通过调用 pipe 函数创建的，当一个管道建立时，它会创建两个文件描述符：fd[0] 为读而打开，fd[1] 为写而打开，要关闭管道只需要将这两个文件描述符关闭即可。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/2323967/1648971085104-2b2db58f-a260-4e57-8e53-9069c4d4e495.png#clientId=u03303e20-ccbb-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=222&id=udc9b00c0&margin=%5Bobject%20Object%5D&name=image.png&originHeight=281&originWidth=513&originalType=binary&ratio=1&rotation=0&showTitle=false&size=14489&status=done&style=stroke&taskId=u6421a3bf-31e4-439d-ab27-c929cb822a6&title=&width=405.5" alt="image.png"><br>单个进程中的管道几乎没有任何用处。所以，通常调用了 pipe 的进程接着调用 fork，这样就创建了父进程和子进程之间的 IPC 通道。若要数据流从父进程流向子进程，则关闭父进程的读端（fd[0]）与子进程的写端（fd[1]）；反之，则可以使数据流从子进程流向父进程。</p>
+<p>管道是通过调用 pipe 函数创建的，当一个管道建立时，它会创建两个文件描述符：fd[0] 为读而打开，fd[1] 为写而打开，要关闭管道只需要将这两个文件描述符关闭即可。<br><img src="/../images/1648971085104-2b2db58f-a260-4e57-8e53-9069c4d4e495.png" alt="image.png"><br>单个进程中的管道几乎没有任何用处。所以，通常调用了 pipe 的进程接着调用 fork，这样就创建了父进程和子进程之间的 IPC 通道。若要数据流从父进程流向子进程，则关闭父进程的读端（fd[0]）与子进程的写端（fd[1])；反之，则可以使数据流从子进程流向父进程。</p>
 <p>特点：</p>
 <ul>
 <li>它是半双工的（即数据只能在一个方向上流动），具有固定的读端和写端</li>
 <li>它只能用于具有亲缘关系的进程之间的通信（也是父子进程或者兄弟进程之间）</li>
 </ul>
 <h4 id="FIFO"><a href="#FIFO" class="headerlink" title="FIFO"></a>FIFO</h4><p>FIFO 也称为命名管道，它是一种文件类型，可以在无关的进程之间交换数据，与无名管道不同。</p>
-<p>FIFO 常用于客户-服务器应用程序中，FIFO 用作汇聚点，在客户进程和服务器进程之间传递数据。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/2323967/1648977479034-1db951e2-8385-4b50-b811-12b676d33d3a.png#clientId=u03303e20-ccbb-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=278&id=u83261e30&margin=%5Bobject%20Object%5D&name=image.png&originHeight=444&originWidth=639&originalType=binary&ratio=1&rotation=0&showTitle=false&size=24813&status=done&style=stroke&taskId=u9a83a20e-ea7b-440f-abca-7f91f97dfa1&title=&width=400.5" alt="image.png"></p>
+<p>FIFO 常用于客户-服务器应用程序中，FIFO 用作汇聚点，在客户进程和服务器进程之间传递数据。<br><img src="/../images/1648977479034-1db951e2-8385-4b50-b811-12b676d33d3a.png" alt="image.png"></p>
 <h4 id="消息队列"><a href="#消息队列" class="headerlink" title="消息队列"></a>消息队列</h4><p>消息队列，是消息的链接表，存放在内核中。一个消息队列由一个标识符（队列 ID）来标识。</p>
 <ul>
 <li>消息队列是面向记录的，其中的消息具有特定的格式以及特定的优先级。</li>
@@ -360,7 +361,7 @@
 </ul>
 <h4 id="信号量"><a href="#信号量" class="headerlink" title="信号量"></a>信号量</h4><p>信号量是一个计数器。信号量用于实现进程间的互斥与同步，而不是用于存储进程间通信数据。</p>
 <h4 id="共享内存"><a href="#共享内存" class="headerlink" title="共享内存"></a>共享内存</h4><p>共享内存指两个或多个进程共享一个给定的存储区，因为数据不需要在进程之间复制，所以这是最快的一种 IPC。由于多个进程可以同时操作，所以信号量与共享内存通常结合在一起使用，信号量用来同步对共享内存的访问。</p>
-<p>如下图所示，两个进程 1 和 2 都有各自的内存地址空间，在物理内存空间有一块共享内存，两个进程中都有一块内存空间映射到了同一块物理内存（即共享内存）。共享内存也包含了一个读者-写者问题：不能多个进程同时写入，但支持同时读取。假设进程1想往共享内存写数据，只需要往本地映射的内存空间写入数据，相当于是写入了共享内存。<br><img src="https://cdn.nlark.com/yuque/0/2022/png/2323967/1648977650439-44429571-d6cc-432f-9663-3a6c9f81ac8b.png#clientId=u03303e20-ccbb-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=261&id=u815853fd&margin=%5Bobject%20Object%5D&name=image.png&originHeight=522&originWidth=952&originalType=binary&ratio=1&rotation=0&showTitle=false&size=95780&status=done&style=none&taskId=ua926f561-4e33-48fc-b964-9d70b8cbb43&title=&width=476" alt="image.png"></p>
+<p>如下图所示，两个进程 1 和 2 都有各自的内存地址空间，在物理内存空间有一块共享内存，两个进程中都有一块内存空间映射到了同一块物理内存（即共享内存）。共享内存也包含了一个读者-写者问题：不能多个进程同时写入，但支持同时读取。假设进程1想往共享内存写数据，只需要往本地映射的内存空间写入数据，相当于是写入了共享内存。<br><img src="/images/1648977650439-44429571-d6cc-432f-9663-3a6c9f81ac8b.png" alt="image.png" style="zoom:67%;"></p>
 <h4 id="套接字"><a href="#套接字" class="headerlink" title="套接字"></a>套接字</h4><p>与其他的通信机制不同，它可以用于不同机器之间的进程通信。</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
 <li><a target="_blank" rel="noopener" href="https://www.coursera.org/learn/os-pku/home/week/5">北京大学操作系统原理（Operating Systems）</a></li>
