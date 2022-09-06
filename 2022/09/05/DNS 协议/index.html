@@ -13,7 +13,7 @@
 
 
 
-<title>Yao&#39;s Blog</title>
+<title>DNS 协议 | Yao&#39;s Blog</title>
 
 
 
@@ -200,7 +200,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title"></h1>
+            <h1 class="post-title">DNS 协议</h1>
             
                 <div class="post-meta">
                     
@@ -213,12 +213,19 @@
                         </span>
                     
                     
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a>
+                            
+                        </span>
+                    
                 </div>
             
         </header>
 
         <div class="post-content">
-            <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><p>DNS 是一个由分层的 DNS 服务器实现的分布式数据库，提供了主机名和 IP 地址之间的相互转换。<br>DNS 协议是应用层的协议，HTTP、FTP 等其他应用层协议可以使用 DNS 协议将用户提供的主机名解析称为 IP 地址。</p>
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>DNS 是一个由分层的 DNS 服务器实现的分布式数据库，提供了主机名和 IP 地址之间的相互转换。<br>DNS 协议是应用层的协议，HTTP、FTP 等其他应用层协议可以使用 DNS 协议将用户提供的主机名解析称为 IP 地址。</p>
 <p>DNS 的传输可以使用 UDP 或者 TCP，使用的端口号都为 53。大多数情况下 DNS 使用 UDP 进行传输，这样域名解析器和域名服务器就需要自己处理超时和重传从而保证可靠性。<br>在两种情况下会使用 TCP 进行传输：</p>
 <ul>
 <li>如果返回的响应超过的 512 字节（因为UDP 最大只支持 512 字节的数据）。</li>
@@ -254,7 +261,7 @@
 <blockquote>
 <p>DNS 缓存中包含了最近的域名列表和首次发出请求时 DNS 计算的地址。</p>
 </blockquote>
-<h3 id="浏览器中的-DNS-缓存"><a href="#浏览器中的-DNS-缓存" class="headerlink" title="浏览器中的 DNS 缓存"></a>浏览器中的 DNS 缓存</h3><p>浏览器默认将 DNS 记录缓存一段时间。因为越靠近浏览器进行 DNS 缓存，检查缓存并向 IP 地址发出请求的次数就越少。发出对 DNS 记录的请求时，查询浏览器缓存是本地查询的第一步。</p>
+<h4 id="浏览器中的-DNS-缓存"><a href="#浏览器中的-DNS-缓存" class="headerlink" title="浏览器中的 DNS 缓存"></a>浏览器中的 DNS 缓存</h4><p>浏览器默认将 DNS 记录缓存一段时间。因为越靠近浏览器进行 DNS 缓存，检查缓存并向 IP 地址发出请求的次数就越少。发出对 DNS 记录的请求时，查询浏览器缓存是本地查询的第一步。</p>
 <h3 id="操作系统内核缓存"><a href="#操作系统内核缓存" class="headerlink" title="操作系统内核缓存"></a>操作系统内核缓存</h3><p>除了浏览器中的 DNS 缓存，操作系统内核中也会对 DNS 进行缓存。查询操作系统内核缓存是 DNS 解析本地查询的最后一步。</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
 <li><a target="_blank" rel="noopener" href="http://www.cyc2018.xyz/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%20-%20%E5%BA%94%E7%94%A8%E5%B1%82.html#%E5%9F%9F%E5%90%8D%E7%B3%BB%E7%BB%9F">域名系统，CS-Note</a></li>
@@ -284,7 +291,7 @@
                 <a class="prev" rel="prev" href="/2022/09/05/DHCP%20%E5%8D%8F%E8%AE%AE/">DHCP 协议</a>
             
             
-            <a class="next" rel="next" href="/2022/09/05/Web%20%E8%AF%B7%E6%B1%82%E7%BD%91%E9%A1%B5%E7%9A%84%E8%BF%87%E7%A8%8B/">Web请求网页的过程</a>
+            <a class="next" rel="next" href="/2022/09/05/Web%20%E8%AF%B7%E6%B1%82%E7%BD%91%E9%A1%B5%E7%9A%84%E8%BF%87%E7%A8%8B/">Web 请求网页的过程</a>
             
         </section>
 

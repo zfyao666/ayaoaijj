@@ -13,7 +13,7 @@
 
 
 
-<title>Yao&#39;s Blog</title>
+<title>WebSocket 协议 | Yao&#39;s Blog</title>
 
 
 
@@ -200,7 +200,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title"></h1>
+            <h1 class="post-title">WebSocket 协议</h1>
             
                 <div class="post-meta">
                     
@@ -213,30 +213,37 @@
                         </span>
                     
                     
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/">计算机网络</a>
+                            
+                        </span>
+                    
                 </div>
             
         </header>
 
         <div class="post-content">
-            <h1 id="简介"><a href="#简介" class="headerlink" title="# 简介"></a># 简介</h1><p>WebSocket 是一种和 HTTP 不同的协议。两者都位于 OSI 模型的应用层，并且都依赖于传输层的 TCP 协议，WebSocket 复用了 HTTP 的握手通道。</p>
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>WebSocket 是一种和 HTTP 不同的协议。两者都位于 OSI 模型的应用层，并且都依赖于传输层的 TCP 协议，WebSocket 复用了 HTTP 的握手通道。</p>
 <blockquote>
 <p>虽然和 HTTP 不同，但是 RFC 6455 中规定：it is designed to work over HTTP ports 80 and 443 as well as to support HTTP proxies and intermediaries（WebSocket 通过 HTTP 端口 80 和 443 进行工作，并支持 HTTP 代理和中介），从而使 WebSocket 与 HTTP 协议兼容。</p>
 </blockquote>
 <p>WebSocket 协议的最大特点就是服务器可以主动向客户端发送信息，客户端也可以向服务器发送信息，实现了双向通信。</p>
-<h2 id="特点"><a href="#特点" class="headerlink" title="| 特点"></a>| 特点</h2><h3 id="1-连接状态"><a href="#1-连接状态" class="headerlink" title="* 1 连接状态"></a>* 1 连接状态</h3><p>WebSocket 创建连接之后就成为一种有状态的协议，之后的通信可以省略部分状态信息。而 HTTP 请求可能需要在每个请求都携带状态信息（如身份认证等）。</p>
-<h3 id="2-实时性"><a href="#2-实时性" class="headerlink" title="* 2 实时性"></a>* 2 实时性</h3><p>由于 WebSocket 协议是全双工的，所以服务器可以随时主动给客户端下发数据。相对于 HTTP 请求需要等待客户端发起请求服务端才能响应，延迟明显更少。</p>
-<h3 id="3-开销"><a href="#3-开销" class="headerlink" title="* 3 开销"></a>* 3 开销</h3><p>WebSocket 协议有着较少的控制开销。在连接创建后，服务器和客户端之间交换数据时，用于协议控制的数据包头部相对较小。在不包含扩展的情况下，对于服务器到客户端的内容，此头部大小只有 2 至 10 字节（和数据包长度有关）；对于客户端到服务器的内容，此头部还需要加上额外的 4 字节的掩码。相对于HTTP 请求每次都要携带完整的头部，此项开销显著减少了。</p>
-<h3 id="4-二进制支持"><a href="#4-二进制支持" class="headerlink" title="* 4 二进制支持"></a>* 4 二进制支持</h3><p>WebSocket 定义了二进制帧，相对 HTTP，可以更轻松地处理二进制内容。</p>
-<h3 id="5-扩展"><a href="#5-扩展" class="headerlink" title="* 5 扩展"></a>* 5 扩展</h3><p>WebSocket 定义了扩展，用户可以扩展协议、实现部分自定义的子协议。如部分浏览器支持压缩等。</p>
-<h3 id="6-压缩"><a href="#6-压缩" class="headerlink" title="* 6 压缩"></a>* 6 压缩</h3><p>相对于 HTTP 压缩，WebSocket 在适当的扩展支持下，可以沿用之前内容的上下文，在传递类似的数据时，可以显著地提高压缩率。</p>
-<h1 id="建立连接"><a href="#建立连接" class="headerlink" title="# 建立连接"></a># 建立连接</h1><p>WebSocket 请求通过 HTTP&#x2F;1.1 协议的 101 状态码进行握手，同样包含请求报文和响应报文。<br>不同浏览器的 WebSocket 最大连接数量不同：</p>
+<h3 id="特点"><a href="#特点" class="headerlink" title="特点"></a>特点</h3><h4 id="连接状态"><a href="#连接状态" class="headerlink" title="连接状态"></a>连接状态</h4><p>WebSocket 创建连接之后就成为一种有状态的协议，之后的通信可以省略部分状态信息。而 HTTP 请求可能需要在每个请求都携带状态信息（如身份认证等）。</p>
+<h4 id="实时性"><a href="#实时性" class="headerlink" title="实时性"></a>实时性</h4><p>由于 WebSocket 协议是全双工的，所以服务器可以随时主动给客户端下发数据。相对于 HTTP 请求需要等待客户端发起请求服务端才能响应，延迟明显更少。</p>
+<h4 id="开销"><a href="#开销" class="headerlink" title="开销"></a>开销</h4><p>WebSocket 协议有着较少的控制开销。在连接创建后，服务器和客户端之间交换数据时，用于协议控制的数据包头部相对较小。在不包含扩展的情况下，对于服务器到客户端的内容，此头部大小只有 2 至 10 字节（和数据包长度有关）；对于客户端到服务器的内容，此头部还需要加上额外的 4 字节的掩码。相对于HTTP 请求每次都要携带完整的头部，此项开销显著减少了。</p>
+<h4 id="二进制支持"><a href="#二进制支持" class="headerlink" title="二进制支持"></a>二进制支持</h4><p>WebSocket 定义了二进制帧，相对 HTTP，可以更轻松地处理二进制内容。</p>
+<h4 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h4><p>WebSocket 定义了扩展，用户可以扩展协议、实现部分自定义的子协议。如部分浏览器支持压缩等。</p>
+<h4 id="压缩"><a href="#压缩" class="headerlink" title="压缩"></a>压缩</h4><p>相对于 HTTP 压缩，WebSocket 在适当的扩展支持下，可以沿用之前内容的上下文，在传递类似的数据时，可以显著地提高压缩率。</p>
+<h2 id="建立连接"><a href="#建立连接" class="headerlink" title="建立连接"></a>建立连接</h2><p>WebSocket 请求通过 HTTP&#x2F;1.1 协议的 101 状态码进行握手，同样包含请求报文和响应报文。<br>不同浏览器的 WebSocket 最大连接数量不同：</p>
 <ul>
 <li><strong>IE：</strong>6</li>
 <li><strong>Chrome：</strong>256</li>
 <li><strong>Firefox：</strong>200</li>
 <li><strong>Safari：</strong>1273（Mac版本）</li>
 </ul>
-<h2 id="客户端：申请协议升级"><a href="#客户端：申请协议升级" class="headerlink" title="| 客户端：申请协议升级"></a>| 客户端：申请协议升级</h2><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/chat</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>server.example.com</span><br><span class="line"><span class="attribute">Upgrade</span><span class="punctuation">: </span>websocket</span><br><span class="line"><span class="attribute">Connection</span><span class="punctuation">: </span>Upgrade</span><br><span class="line"><span class="attribute">Sec-WebSocket-Key</span><span class="punctuation">: </span>dGhlIHNhbXBsZSBub25jZQ==</span><br><span class="line"><span class="attribute">Origin</span><span class="punctuation">: </span>http://example.com</span><br><span class="line"><span class="attribute">Sec-WebSocket-Extensions</span><span class="punctuation">: </span>deflate-frame</span><br><span class="line"><span class="attribute">Sec-WebSocket-Protocol</span><span class="punctuation">: </span>soap, wamp</span><br><span class="line"><span class="attribute">Sec-WebSocket-Version</span><span class="punctuation">: </span>13</span><br></pre></td></tr></table></figure>
+<h3 id="客户端：申请协议升级"><a href="#客户端：申请协议升级" class="headerlink" title="客户端：申请协议升级"></a>客户端：申请协议升级</h3><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GET</span> <span class="string">/chat</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>server.example.com</span><br><span class="line"><span class="attribute">Upgrade</span><span class="punctuation">: </span>websocket</span><br><span class="line"><span class="attribute">Connection</span><span class="punctuation">: </span>Upgrade</span><br><span class="line"><span class="attribute">Sec-WebSocket-Key</span><span class="punctuation">: </span>dGhlIHNhbXBsZSBub25jZQ==</span><br><span class="line"><span class="attribute">Origin</span><span class="punctuation">: </span>http://example.com</span><br><span class="line"><span class="attribute">Sec-WebSocket-Extensions</span><span class="punctuation">: </span>deflate-frame</span><br><span class="line"><span class="attribute">Sec-WebSocket-Protocol</span><span class="punctuation">: </span>soap, wamp</span><br><span class="line"><span class="attribute">Sec-WebSocket-Version</span><span class="punctuation">: </span>13</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><code>Connection</code>：该字段必须设置为<code>Upgrade</code>，表示客户端要升级协议。</li>
@@ -247,19 +254,19 @@
 <li><code>Sec-WebSocket-Protocol</code>：表示不仅要传输任何数据，还要传输 SOAP 或 WAMP（“The WebSocket Application Messaging Protocol”）协议中的数据。</li>
 <li><code>Sec-WebSocket-Extensions</code>：由浏览器自动发送，其中包含其支持的所有扩展的列表。</li>
 </ul>
-<h2 id="服务器：响应协议升级"><a href="#服务器：响应协议升级" class="headerlink" title="| 服务器：响应协议升级"></a>| 服务器：响应协议升级</h2><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">101</span> Switching Protocols</span><br><span class="line"><span class="attribute">Upgrade</span><span class="punctuation">: </span>websocket</span><br><span class="line"><span class="attribute">Connection</span><span class="punctuation">: </span>Upgrade</span><br><span class="line"><span class="attribute">Sec-WebSocket-Accept</span><span class="punctuation">: </span>s3pPLMBiTxaQ9kYGzzhZRbK+xOo=</span><br><span class="line"><span class="attribute">Sec-WebSocket-Extensions</span><span class="punctuation">: </span>deflate-frame</span><br><span class="line"><span class="attribute">Sec-WebSocket-Protocol</span><span class="punctuation">: </span>soap</span><br></pre></td></tr></table></figure>
+<h3 id="服务器：响应协议升级"><a href="#服务器：响应协议升级" class="headerlink" title="服务器：响应协议升级"></a>服务器：响应协议升级</h3><figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">101</span> Switching Protocols</span><br><span class="line"><span class="attribute">Upgrade</span><span class="punctuation">: </span>websocket</span><br><span class="line"><span class="attribute">Connection</span><span class="punctuation">: </span>Upgrade</span><br><span class="line"><span class="attribute">Sec-WebSocket-Accept</span><span class="punctuation">: </span>s3pPLMBiTxaQ9kYGzzhZRbK+xOo=</span><br><span class="line"><span class="attribute">Sec-WebSocket-Extensions</span><span class="punctuation">: </span>deflate-frame</span><br><span class="line"><span class="attribute">Sec-WebSocket-Protocol</span><span class="punctuation">: </span>soap</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><code>Sec-WebSocket-Accept</code>：服务器通过请求报文中的<code>Sec-WebSocket-Key</code>加密过后生成的值，浏览器通过这个值确保请求和响应对应，同样可以防止恶意连接或避免普通 HTTP 请求被误认为WebSocket协议。</li>
 <li><code>Sec-WebSocket-Protocol</code>：表示服务器仅支持所请求的子协议中的 SOAP。</li>
 <li><code>Sec-WebSocket-Extensions</code>：表示服务器支持客户端请求中的扩展。</li>
 </ul>
-<h3 id="Sec-WebSocket-Accept-的生成过程"><a href="#Sec-WebSocket-Accept-的生成过程" class="headerlink" title="* Sec-WebSocket-Accept 的生成过程"></a>* Sec-WebSocket-Accept 的生成过程</h3><ol>
+<h4 id="Sec-WebSocket-Accept-的生成过程"><a href="#Sec-WebSocket-Accept-的生成过程" class="headerlink" title="* Sec-WebSocket-Accept 的生成过程"></a>* Sec-WebSocket-Accept 的生成过程</h4><ol>
 <li>将请求报文中的<code>Sec-WebSocket-Key</code>加上一个特殊的字符串。</li>
 <li>计算 SHA-1 摘要，然后进行 Base64 编码，结果就为<code>Sec-WebSocket-Accept</code>头的值。<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">toBase64(sha1(Sec-WebSocket-Key + 258EAFA5-E914-47DA-95CA-C5AB0DC85B11))</span><br></pre></td></tr></table></figure>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> crypto = <span class="built_in">require</span>(<span class="string">&#x27;crypto&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> magic = <span class="string">&#x27;258EAFA5-E914-47DA-95CA-C5AB0DC85B11&#x27;</span>;</span><br><span class="line"><span class="keyword">const</span> secWebSocketKey = <span class="string">&#x27;w4v7O6xFTi36lq3RNcgctw==&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> secWebSocketAccept = crypto.<span class="title function_">createHash</span>(<span class="string">&#x27;sha1&#x27;</span>)</span><br><span class="line">	.<span class="title function_">update</span>(secWebSocketKey + magic)</span><br><span class="line">	.<span class="title function_">digest</span>(<span class="string">&#x27;base64&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(secWebSocketAccept);</span><br><span class="line"><span class="comment">// Oy4NRAQ13jhfONC7bP8dTKb4PTU=</span></span><br></pre></td></tr></table></figure></li>
 </ol>
-<h1 id="参考"><a href="#参考" class="headerlink" title="# 参考"></a># 参考</h1><ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
 <li><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/WebSocket#%E7%AE%80%E4%BB%8B">WebSocket-wikipedia</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2017/05/websocket.html">WebSocket 教程-阮一峰的网络日志 </a></li>
 <li><a target="_blank" rel="noopener" href="https://zh.javascript.info/websocket">websocket-javascript.info</a></li>
@@ -275,6 +282,12 @@
                 <span>Tag(s):</span>
                 <span class="tag">
                     
+                    
+                        <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"># 计算机网络</a>
+                    
+                        <a href="/tags/websocket/"># websocket</a>
+                    
+                        
                 </span>
             </div>
             <div>
@@ -285,10 +298,10 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2022/09/05/Cookie%20%E5%92%8C%20Session/"></a>
+                <a class="prev" rel="prev" href="/2022/09/05/Cookie%20%E5%92%8C%20Session/">Cookis 和 Session</a>
             
             
-            <a class="next" rel="next" href="/2022/09/05/HTTP_1.X%20%E5%92%8C%20HTTP_2.0/"></a>
+            <a class="next" rel="next" href="/2022/09/05/HTTP_1.X%20%E5%92%8C%20HTTP_2.0/">HTTP 1.X 和 HTTP 2.0</a>
             
         </section>
 

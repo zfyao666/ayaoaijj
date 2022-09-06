@@ -274,7 +274,7 @@
 </blockquote>
 <h3 id="CONNECT"><a href="#CONNECT" class="headerlink" title="CONNECT"></a>CONNECT</h3><p>HTTP&#x2F;1.1 协议中预留给能够将连接改为管道方式的代理服务器。<br>使用 SSL（Secure Sockets Layer，安全套接层）和 TLS（Transport Layer Security，传输层安全）协议把通信内容加密后经网络隧道传输。</p>
 <figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CONNECT</span> <span class="string">www.example.com:443</span> <span class="meta">HTTP/1.1</span></span><br></pre></td></tr></table></figure>
-<p><img src="https://cdn.nlark.com/yuque/0/2022/png/2323967/1650699892998-fbc71d37-d1a6-4417-a464-77a1c42d9b03.png#clientId=ua8b6f0f2-6703-4&crop=0&crop=0&crop=1&crop=1&from=paste&height=140&id=ue44a2a03&margin=%5Bobject%20Object%5D&name=image.png&originHeight=185&originWidth=654&originalType=binary&ratio=1&rotation=0&showTitle=false&size=59348&status=done&style=none&taskId=uccfdff52-837b-469b-85e3-ca3b6663ce7&title=&width=496" alt="image.png"></p>
+<p>![image.png](HTTP 协议&#x2F;1650699892998-fbc71d37-d1a6-4417-a464-77a1c42d9b03.png)</p>
 <h3 id="TRACE"><a href="#TRACE" class="headerlink" title="TRACE"></a>TRACE</h3><p>服务器将通信路径返回给客户端，主要用来回显服务器收到的请求并测试或者侦听。</p>
 <p>发送请求时，在 Max-Forwards 首部字段中填入数值，每经过一个服务器就会减 1，当数值为 0 时就停止传输。</p>
 <blockquote>
@@ -292,7 +292,21 @@
 </ul>
 </li>
 </ul>
-<h3 id="HTTP-状态码"><a href="#HTTP-状态码" class="headerlink" title="HTTP 状态码"></a>HTTP 状态码</h3><table>
+<h3 id="HTTP-状态码"><a href="#HTTP-状态码" class="headerlink" title="HTTP 状态码"></a>HTTP 状态码</h3><style>
+table th:nth-of-type(1){
+width: 100;
+}
+table th:nth-of-type(2){
+width: 300px
+;
+}
+table th:nth-of-type(3){
+width: 300px;
+}
+}
+</style>
+
+<table>
 <thead>
 <tr>
 <th><strong>状态码</strong></th>
@@ -381,7 +395,7 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2022/09/05/HTTP_1.X%20%E5%92%8C%20HTTP_2.0/"></a>
+                <a class="prev" rel="prev" href="/2022/09/05/HTTP_1.X%20%E5%92%8C%20HTTP_2.0/">HTTP 1.X 和 HTTP 2.0</a>
             
             
             <a class="next" rel="next" href="/2022/09/05/DHCP%20%E5%8D%8F%E8%AE%AE/">DHCP 协议</a>
