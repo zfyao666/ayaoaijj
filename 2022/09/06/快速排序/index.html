@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Bruce Yao">
+
+
+
+
+
+<title>快速排序 | Yao&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+            <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Yao&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About Me</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Yao&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About Me</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">快速排序</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Bruce Yao&nbsp;</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">September 6, 2022&nbsp;&nbsp;16:22:06&nbsp;</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><ol>
+<li><p>快速排序是另外一种分治的排序算法，它将一个数组分为两个子数组独立地排序。</p>
+</li>
+<li><p>快速排序和归并排序是互补的：</p>
+</li>
+</ol>
+<ul>
+<li>归并排序将数组分为两个子数组分别排序，并将有序的子数组归并以将整个数组排序。</li>
+<li>快速排序排序数组的方式是当两个子数组都有序时，整个数组同时自然有序。</li>
+</ul>
+<ol start="3">
+<li>区别在于：归并排序的递归调用在归并处理整个数组之前，快速排序的递归调用在处理整个数组之后。</li>
+</ol>
+<img src="/2022/09/06/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/1645809103487-eba06cc8-7cf1-4dd8-9415-efcc368e0fad.png" alt="image.png" style="zoom:67%;">
+
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="基本方法"><a href="#基本方法" class="headerlink" title="基本方法"></a>基本方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 基本方法</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Quick</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">sort</span><span class="params">(Comparable[] a)</span> &#123;</span><br><span class="line">        <span class="comment">// 随机打乱数组，降低切分不平衡情况的出现</span></span><br><span class="line">        shuffle(a);</span><br><span class="line">        quickSort(a, <span class="number">0</span>, a.length - <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">quickSort</span><span class="params">(Comparable[] a, <span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (end &lt;= start) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">        <span class="type">int</span> <span class="variable">mid</span> <span class="operator">=</span> partition(a, start, end);</span><br><span class="line">        quickSort(a, start, mid);</span><br><span class="line">        quickSort(a, mid + <span class="number">1</span>, end);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">shuffle</span><span class="params">(T[] nums)</span> &#123;</span><br><span class="line">        List&lt;Comparable&gt; list = Arrays.asList(nums);</span><br><span class="line">        Collections.shuffle(list);</span><br><span class="line">        list.toArray(nums);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>快速排序的关键在于切分方法<code>partition()</code>的实现。</p>
+<h3 id="切分方法"><a href="#切分方法" class="headerlink" title="切分方法"></a>切分方法</h3><p>我们通常会选取<code>a[start]</code>作为切分元素分割数组：我们从数组的左端开始向右扫描直到找到一个大于等于切分元素的元素，再从数组的右端开始向左扫描直到找到一个小于等于切分元素的元素。这两个元素并没有排定，因此交换它们的顺序。如此继续，我们就可以保证左指针 i 的的左侧元素都小于等于切分元素，右指针 j 的右侧元素都大于等于切分元素。当两个指针相遇时，我们只需要将<code>a[start]</code>和<code>a[j]</code>交换然后返回 j 就可以。</p>
+<p><img src="/2022/09/06/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/1645811308445-bffcaf56-8308-4b98-ab64-46b721f04668.gif" alt="c4859290-e27d-4f12-becf-e2a5c1f3a275.gif"></p>
+<p>通过切分方法，数组满足了三个条件：</p>
+<ul>
+<li>对于切分元素，它经过切分方法后已经排定，它的正确顺序在数组的 j 位置；</li>
+<li><code>a[start]....a[j - 1]</code>都小于等于切分元素；</li>
+<li><code>a[j + 1]....a[end]</code>都大于等于切分元素；<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 切分方法</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">partition</span><span class="params">(Comparable[] a, <span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> start, j = end + <span class="number">1</span>;</span><br><span class="line">    <span class="type">Comparable</span> <span class="variable">v</span> <span class="operator">=</span> a[start];</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        <span class="keyword">while</span> (less(a[++i], v)) <span class="keyword">if</span> (i == end) <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">while</span> (less(v, a[--j])) <span class="keyword">if</span> (j == start) <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">if</span> (i &gt;= j) <span class="keyword">break</span>;</span><br><span class="line">        exch(a, i, j);</span><br><span class="line">    &#125;</span><br><span class="line">    exch(a, start, j);</span><br><span class="line">    <span class="keyword">return</span> j;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h2 id="复杂度"><a href="#复杂度" class="headerlink" title="复杂度"></a>复杂度</h2><h3 id="时间"><a href="#时间" class="headerlink" title="时间"></a>时间</h3><p>时间复杂度：</p>
+<ul>
+<li>最好：$O(n\log n)$</li>
+<li>最坏：$O(n^2)$</li>
+<li>平均：$O(n\log n)$</li>
+</ul>
+<p>最好情况：数组每次都正好对半分。比较次数正好满足分治递归的 $C_N &#x3D; 2C_{N&#x2F;2} + N$。</p>
+<blockquote>
+<p>$C_{N&#x2F;2}$ 表示将两个子数组排序的成本，$N$表示切分元素和数组所有元素比较的成本。<br>$C_N \to n\log n$</p>
+</blockquote>
+<p>最坏情况：第一次从最小的元素开始切分，第二次从第二小的元素开始切分，如此递归。每次切分后两个子数组中总有一个是空，比较次数为 $(n - 1) + (n - 2) +…..+ 1 &#x3D; n(n - 1) &#x2F; 2 \to n^2$。</p>
+<blockquote>
+<p>在快速排序之前将数组随机排序可以避免切分不平衡，随机排序可以将切分不平衡的可能性降到最低。</p>
+</blockquote>
+<h3 id="空间"><a href="#空间" class="headerlink" title="空间"></a>空间</h3><p>主要考虑递归调用所占用的栈空间。</p>
+<ul>
+<li>最好：$O(\log n)$（对半分）</li>
+<li>最坏：$O(n)$</li>
+<li>不稳定</li>
+</ul>
+<h2 id="改进"><a href="#改进" class="headerlink" title="改进"></a>改进</h2><h3 id="哨兵"><a href="#哨兵" class="headerlink" title="哨兵"></a>哨兵</h3><p>由于切分元素本身就是一个哨兵，所以左侧边界的检查是多余的。可以在打乱数组之后将数组的最大值放在数组的末尾充当所有子数组的哨兵，这样子可以去掉右侧边界的检查。</p>
+<blockquote>
+<p>切分元素不会小于自己，所以可以作为一个哨兵。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 哨兵机制</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">sort</span><span class="params">(<span class="type">int</span>[] a)</span> &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">max</span> <span class="operator">=</span> a[<span class="number">0</span>];</span><br><span class="line">    <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> <span class="variable">N</span> <span class="operator">=</span> a.length;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 需要在代码中遍历所有数组元素找到最大值</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">1</span>; i &lt; N; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (max &lt; a[i]) &#123;</span><br><span class="line">            index = i;</span><br><span class="line">            max = a[i];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    exch(a, index, N - <span class="number">1</span>);</span><br><span class="line">    sort(a, <span class="number">0</span>, N - <span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">partition</span><span class="params">(<span class="type">int</span>[] a, <span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> start, j = end + <span class="number">1</span>;</span><br><span class="line">    <span class="type">int</span> <span class="variable">v</span> <span class="operator">=</span> a[start];</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        <span class="comment">// 去除右侧边界</span></span><br><span class="line">        <span class="keyword">while</span> (a[++i] &lt; v) ;</span><br><span class="line">        <span class="comment">// 去除左侧边界</span></span><br><span class="line">        <span class="keyword">while</span> (a[--j] &gt; v) ;</span><br><span class="line">        <span class="keyword">if</span> (i &gt;= j) <span class="keyword">break</span>;</span><br><span class="line">        exch(a, i, j);</span><br><span class="line">    &#125;</span><br><span class="line">    exch(a, start, j);</span><br><span class="line">    <span class="keyword">return</span> j;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="切换到插入排序"><a href="#切换到插入排序" class="headerlink" title="切换到插入排序"></a>切换到插入排序</h3><p>因为快速排序在小数组中也会递归调用自己。对于小数组，插入排序比快速排序的性能更好，因此在小数组中可以切换到插入排序。<br>只需要将<code>if(end &lt;= start) return;</code>改成<code>if(end &lt;= start + M) &#123; Insertion.sort(a, start, end); return;&#125;</code>。</p>
+<p>转换参数 M 的最佳值是和系统相关的，一般来说 5～15 之间的任意值在大多数情况下都可以满足。</p>
+<blockquote>
+<p>JDK 内置的 M 设置为 47</p>
+</blockquote>
+<h3 id="三取样切分"><a href="#三取样切分" class="headerlink" title="三取样切分"></a>三取样切分</h3><p>最好的情况下是每次都能取数组的中位数作为切分元素，但是计算数组中位数的代价很高。研究发现取三个元素并将大小居中的元素作为切分元素的效果最好。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 三取样切分</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">sort</span><span class="params">(<span class="type">int</span>[] a)</span> &#123;</span><br><span class="line">    sort(a, <span class="number">0</span>, a.length - <span class="number">1</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">sort</span><span class="params">(<span class="type">int</span>[] a, <span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">length</span> <span class="operator">=</span> end - start + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">if</span> (length &lt; <span class="number">1</span>) <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">if</span> (length == <span class="number">2</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (a[start] &gt;= a[end]) &#123;</span><br><span class="line">            exch(a, start, end);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">int</span> <span class="variable">mid</span> <span class="operator">=</span> (start + end) / <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">if</span> (a[mid] &lt; a[start]) exch(a, mid, start);</span><br><span class="line">    <span class="keyword">if</span> (a[end] &lt; a[start]) exch(a, end, start);</span><br><span class="line">    <span class="keyword">if</span> (a[end] &lt; a[mid]) exch(a, end, mid);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> (length == <span class="number">3</span>) <span class="keyword">return</span>;</span><br><span class="line">    </span><br><span class="line">    exch(a, mid, end - <span class="number">1</span>);</span><br><span class="line">    <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> start + <span class="number">1</span>, j = end - <span class="number">1</span>, v = a[end - <span class="number">1</span>];</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        <span class="keyword">while</span> (a[++i] &lt; v);</span><br><span class="line">        <span class="keyword">while</span> (a[--j] &gt; v);</span><br><span class="line">        <span class="keyword">if</span> (i &gt;= j) <span class="keyword">break</span>;</span><br><span class="line">        exch(a, i, j);</span><br><span class="line">    &#125;</span><br><span class="line">    exch(a, i, end - <span class="number">1</span>);</span><br><span class="line">    </span><br><span class="line">    sort(a, start, i);</span><br><span class="line">    sort(a, i + <span class="number">1</span>, end);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="三向切分"><a href="#三向切分" class="headerlink" title="三向切分"></a>三向切分</h3><p>在存在大量元素的情况下，快速排序的递归性会使元素全部重复的子数组经常出现，这里存在很大的改进空间，将当前实现的线性对数级的性能改进到线性级别。</p>
+<p>从左到右维护三个指针：</p>
+<ul>
+<li><strong>lt：</strong><code>a[start]...a[lt - 1]</code>都小于 v；</li>
+<li><strong>gt：</strong><code>a[gt + 1.....end]</code>都大于 v；</li>
+<li><strong>i：</strong><code>a[lt]...a[i - 1]</code>都等于 v，<code>a[i].....a[gt]</code>未确定。</li>
+</ul>
+<p>一开始<code>i == start</code>，之后对<code>a[i]</code>进行三向比较：</p>
+<ul>
+<li><code>a[i] &lt; v</code>：<code>a[lt]</code>和<code>a[i]</code>交换，<code>lt++</code>和<code>i++</code>；</li>
+<li><code>a[i] &gt; v</code>：<code>a[gt]</code>和<code>a[i]</code>交换，<code>gt--</code>；</li>
+<li><code>a[i] == v</code>：<code>i++</code>；</li>
+</ul>
+<p><img src="/2022/09/06/%E5%BF%AB%E9%80%9F%E6%8E%92%E5%BA%8F/1646016195575-9ba013d3-91ce-401e-8861-8caa5c9f16e4.png" alt="image.png"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 三向切分</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">sort</span><span class="params">(Comparable[] a, <span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (end &lt;= start) <span class="keyword">return</span>;</span><br><span class="line">    <span class="type">int</span> <span class="variable">lt</span> <span class="operator">=</span> start, i = start + <span class="number">1</span>, gt = end;</span><br><span class="line">    <span class="type">Comparable</span> <span class="variable">v</span> <span class="operator">=</span> a[start];</span><br><span class="line">    <span class="keyword">while</span> (i &lt;= end) &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">cmp</span> <span class="operator">=</span> a[i].compareTo(v);</span><br><span class="line">        <span class="keyword">if</span> (cmp &lt; <span class="number">0</span>) exch(a, lt++, i++);</span><br><span class="line">       	<span class="keyword">else</span> <span class="keyword">if</span> (cmp &gt; <span class="number">0</span>) exch(a, i, gt--);</span><br><span class="line">        <span class="keyword">else</span> i++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// a[start...lt-1] &lt; v = a[lt....i-1] &lt; a[gt+1....end] 成立</span></span><br><span class="line">    sort(a, start, lt - <span class="number">1</span>);</span><br><span class="line">    sort(a, gt + <span class="number">1</span>, end); </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这种快排的方式在重复元素不多的普通情况下比二分法使用了很多次交换。</p>
+<h3 id="快速三向切分"><a href="#快速三向切分" class="headerlink" title="快速三向切分"></a>快速三向切分</h3><p>将重复的元素放置于子数组的两端的方式来实现一个最优的三向切分排序算法：</p>
+<ul>
+<li>使用两个索引 p 和 q，使<code>a[start]...a[p-1]</code>和<code>a[q+1....a[end]</code>都和<code>a[start]</code>相等。</li>
+<li>使用两个索引 i 和 j，使<code>a[p]...a[i-1] &lt; a[start]</code>，<code>a[j+1...a[q] &gt; a[start]</code>。</li>
+<li>在内循环中，<code>a[i]</code>和 v 相等时将其与 <code>a[p]</code> 交换，在<code>a[j]</code>和 v 相等时和<code>a[q]</code>交换。<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 快速三向切分</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">sort</span><span class="params">(<span class="type">int</span>[] a, <span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (end &lt;= start) <span class="keyword">return</span>;</span><br><span class="line">    <span class="type">int</span> <span class="variable">v</span> <span class="operator">=</span> a[start];</span><br><span class="line">    <span class="type">int</span> <span class="variable">p</span> <span class="operator">=</span> start, q = end + <span class="number">1</span>;</span><br><span class="line">    <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> start, j = end + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        <span class="keyword">while</span> (i &lt; end &amp;&amp; a[++i] &lt; v);</span><br><span class="line">        <span class="keyword">while</span> (a[--j] &gt; v);</span><br><span class="line">        <span class="keyword">if</span> (i &gt;= j) <span class="keyword">break</span>;</span><br><span class="line">        exch(a, i, j);</span><br><span class="line">        <span class="keyword">if</span> (a[i] == v) &#123;</span><br><span class="line">            ++p;</span><br><span class="line">            exch(a, p, i);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (a[j] == v) &#123;</span><br><span class="line">            --q;</span><br><span class="line">            exch(a, q, j);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    exch(a, start, j);</span><br><span class="line">    </span><br><span class="line">    <span class="type">int</span> <span class="variable">lt</span> <span class="operator">=</span> j - <span class="number">1</span>, gt = j + <span class="number">1</span>;</span><br><span class="line">    <span class="type">int</span> <span class="variable">k</span> <span class="operator">=</span> start + <span class="number">1</span>, m = end;</span><br><span class="line">    <span class="keyword">while</span> (k &lt;= p) &#123;</span><br><span class="line">        exch(a, lt, k);</span><br><span class="line">        ++k;</span><br><span class="line">        --lt;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">while</span> (m &gt;= q) &#123;</span><br><span class="line">        exch(a, gt, m);</span><br><span class="line">        --m;</span><br><span class="line">        ++gt;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    sort(a, start, lt);</span><br><span class="line">    sort(a, gt.end);</span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
+这里实现的代码和第一段的代码是等价的，因为这里额外的交换用于和切分元素相等的元素，而第一段中的代码将额外的交换用于和切分元素不等的元素。</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/chengxiao/p/6262208.html">图解排序算法（五）之快速排序——三数取中法</a></li>
+<li><a target="_blank" rel="noopener" href="https://algs4.cs.princeton.edu/23quicksort/">算法第 4 版</a></li>
+</ol>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/09/06/%E5%A0%86%E6%8E%92%E5%BA%8F/">堆排序</a>
+            
+            
+            <a class="next" rel="next" href="/2022/09/06/%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F/">归并排序</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Bruce Yao | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
