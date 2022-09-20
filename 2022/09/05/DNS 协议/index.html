@@ -236,9 +236,9 @@
 <h3 id="顶级域-DNS-服务器"><a href="#顶级域-DNS-服务器" class="headerlink" title="顶级域 DNS 服务器"></a>顶级域 DNS 服务器</h3><blockquote>
 <p>顶级域，Top Level Domain，TLD</p>
 </blockquote>
-<p>域名例如 com、org、net等和所有国家级域名都有自己的 TLD 服务器。TLD 服务器返回权威 DNS 服务器的 IP 地址。</p>
+<p>域名例如 com、org、net 等和所有国家级域名都有自己的 TLD 服务器。TLD 服务器返回权威 DNS 服务器的 IP 地址。</p>
 <h3 id="权威-DNS-服务器"><a href="#权威-DNS-服务器" class="headerlink" title="权威 DNS 服务器"></a>权威 DNS 服务器</h3><p>权威 DNS 服务器是实际持有并负责 DNS 资源记录的服务器，同时也是 DNS 查找链底部的服务器。</p>
-<p>权威 DNS 服务器通常是在因特网上可公共访问的主机，如 Web 服务器和邮件服务器。这些主机的组织机构提供可供访问的将主机名映射为 IP 地址的 DNS 记录</p>
+<p>权威 DNS 服务器通常是在因特网上可公共访问的主机，如 Web 服务器和邮件服务器。这些主机的组织机构提供可供访问的将主机名映射为 IP 地址的 DNS 记录。</p>
 <h2 id="域名解析"><a href="#域名解析" class="headerlink" title="域名解析"></a>域名解析</h2><p>以查询 zh.wikipedia.org 为例：</p>
 <ul>
 <li>客户端发送查询报文”query zh.wikipedia.org”至 DNS 服务器，DNS 服务器首先检查自身缓存，如果存在记录则直接返回结果。</li>
@@ -249,7 +249,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="DNS-查询类型"><a href="#DNS-查询类型" class="headerlink" title="DNS 查询类型"></a>DNS 查询类型</h3><p>DNS 中的查询类型有两种方式：递归和迭代。作为 DNS 客户端设置使用的 DNS 服务器一般都是递归服务器，负责全权处理客户端的 DNS 查询请求，直到返回最终结果。而DNS 服务器之间一般采用迭代查询的方法。</p>
+<h3 id="DNS-查询类型"><a href="#DNS-查询类型" class="headerlink" title="DNS 查询类型"></a>DNS 查询类型</h3><p>DNS 中的查询类型有两种方式：递归和迭代。作为 DNS 客户端设置使用的 DNS 服务器一般都是递归服务器，负责全权处理客户端的 DNS 查询请求，直到返回最终结果。而 DNS 服务器之间一般采用迭代查询的方法。</p>
 <h4 id="递归查询"><a href="#递归查询" class="headerlink" title="递归查询"></a>递归查询</h4><p>如果 DNS 客户端所询问的 DNS 服务器不知道被查询的域名的IP地址，那么该 DNS 服务器就以 DNS 客户端的身份向其它的根域名服务器发起查询。</p>
 <blockquote>
 <p>递归即替代开始的 DNS 客户端继续查询。</p>
