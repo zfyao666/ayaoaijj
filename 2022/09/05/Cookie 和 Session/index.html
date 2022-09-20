@@ -280,7 +280,7 @@
 </li>
 <li><p>当服务器需要设置 Cookie 时，会通过 Secret 字符串生成一个特殊签名，然后和<code>true</code>一起发送给客户端。</p>
 <blockquote>
-<p>例如使用哈希值<code>Hash(&#39;ture&#39; + &#39;X*suy112&#39;)</code>生成特殊签名</p>
+<p>例如使用哈希值<code>Hash(&#39;true&#39; + &#39;X*suy112&#39;)</code>生成特殊签名</p>
 </blockquote>
 </li>
 <li><p>因为客户端篡改时没有 Secret 字符串，所以无法得到有效的签名，服务器借此可以判断 Cookie 是否别修改过。</p>
@@ -291,7 +291,7 @@
 <h3 id="实现机制"><a href="#实现机制" class="headerlink" title="实现机制"></a>实现机制</h3><p>当程序要为客户端的请求创建一个 Session 时，服务器首先检查客户端的请求中是否包含 Session ID：</p>
 <ul>
 <li>包含 Session ID：说明客户端之前已经创建过 Session，服务器只要把这个 Session 搜索（搜索不到就新建一个）出来使用就可以。</li>
-<li>不包含 Session ID：会为客户端创建一个 Session 并生成一个和 Session 相关的 Session ID 并发回给客户端。<blockquote>
+<li>不包含 Session ID：会为客户端创建一个 Session，并生成一个和 Session 相关的 Session ID 并发回给客户端。<blockquote>
 <p>Session ID 的创建需要保证不会重复，并且规律复杂。通常保存 Session ID 的方式为 Cookie，字段为 SESSIONID。</p>
 </blockquote>
 </li>
