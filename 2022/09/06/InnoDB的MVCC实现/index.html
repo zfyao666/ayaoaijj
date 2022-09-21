@@ -254,8 +254,12 @@
 </ul>
 <h2 id="InnoDB中的MVCC"><a href="#InnoDB中的MVCC" class="headerlink" title="InnoDB中的MVCC"></a>InnoDB中的MVCC</h2><p>MVCC（Multiversion Concurrency Control）通过数据行的多个版本管理来实现数据库的并发控制，主要思想为保存数据的历史版本，通过事务的ID来判断数据是否显示，读取数据时不需要加锁同时可以保证事务的隔离等级。InnoDB 主要通过 Undo Log 和 Read View 来实现 MVCC。</p>
 <h3 id="事务ID和隐藏列"><a href="#事务ID和隐藏列" class="headerlink" title="事务ID和隐藏列"></a>事务ID和隐藏列</h3><p>在数据库中每开启一个事务，该事务就会有一个事务版本号。事务版本号是<strong>自增长</strong>的，通过事务 ID 的大小，我们可以判断事务的时间顺序。</p>
-<p>InnoDB的行记录中存储了重要的隐藏字段，其中包括了行 ID、事务 ID 和回滚指针。行记录中存储的事务 ID 为最后一个对该数据进行修改更新的事务 ID。回滚指针就是指向这个记录的 Undo Log 信息。<br><img src="/2022/09/06/InnoDB%E7%9A%84MVCC%E5%AE%9E%E7%8E%B0/1646809203314-319d2183-5ca1-4a93-8d89-6af67d7a36d0.png" alt="image.png"></p>
-<h3 id="Undo-Log"><a href="#Undo-Log" class="headerlink" title="Undo Log"></a>Undo Log</h3><p>InnoDB 将行记录保存在了 Undo Log 中，我们可以通过回滚指针来找到它们，回滚指针将数据行的所有快照记录通过链表的数据结构类型串联起来。同样，每个快照都保存了当时修改该记录的事务 ID。<br><img src="/2022/09/06/InnoDB%E7%9A%84MVCC%E5%AE%9E%E7%8E%B0/1646810470838-33da9985-2d46-4c56-b038-68f988a62bac.png" alt="image.png" style="zoom:67%;"></p>
+<p>InnoDB的行记录中存储了重要的隐藏字段，其中包括了行 ID、事务 ID 和回滚指针。行记录中存储的事务 ID 为最后一个对该数据进行修改更新的事务 ID。回滚指针就是指向这个记录的 Undo Log 信息。</p>
+<img src="/2022/09/06/InnoDB%E7%9A%84MVCC%E5%AE%9E%E7%8E%B0/1646809203314-319d2183-5ca1-4a93-8d89-6af67d7a36d0.png" alt="image.png" style="zoom: 67%;">
+
+<h3 id="Undo-Log"><a href="#Undo-Log" class="headerlink" title="Undo Log"></a>Undo Log</h3><p>InnoDB 将行记录保存在了 Undo Log 中，我们可以通过回滚指针来找到它们，回滚指针将数据行的所有快照记录通过链表的数据结构类型串联起来。同样，每个快照都保存了当时修改该记录的事务 ID。</p>
+<img src="/2022/09/06/InnoDB%E7%9A%84MVCC%E5%AE%9E%E7%8E%B0/1646810470838-33da9985-2d46-4c56-b038-68f988a62bac.png" alt="image.png" style="zoom: 67%;">
+
 <h3 id="Read-View"><a href="#Read-View" class="headerlink" title="Read View"></a>Read View</h3><p>Read View中保存了当前事务开始时所有活跃（未提交）的事务列表。Read View包含了四个重要属性：</p>
 <ul>
 <li><strong>trx_ids：</strong>系统当前正在活跃的事务 ID 集合。</li>
@@ -263,7 +267,8 @@
 <li><strong>low_limit_id：</strong>活跃的事务中最小的事务 ID。</li>
 <li><strong>creator_trx_idL：</strong>创建这个 Read View 的事务 ID。</li>
 </ul>
-<p><img src="/2022/09/06/InnoDB%E7%9A%84MVCC%E5%AE%9E%E7%8E%B0/1646810049005-e20c4b31-6d4a-4cb6-aeac-6524f5afda67.png" alt="image.png"></p>
+<img src="/2022/09/06/InnoDB%E7%9A%84MVCC%E5%AE%9E%E7%8E%B0/1646810049005-e20c4b31-6d4a-4cb6-aeac-6524f5afda67.png" alt="image.png" style="zoom: 67%;">
+
 <p>如果当前事务creator_trx_id要读取某个行记录，需要和该行记录的事务ID（trx_id）比较，出现的所有情况如下：</p>
 <ol>
 <li><strong>trx_id &lt; low_limit_id：</strong>说明修改该行记录的事务在当前活跃事务创建之前就已经提交，所以该行记录对事务creator_trx_id是可见。</li>
@@ -278,9 +283,11 @@
 <li>最后返回符合规则的数据。</li>
 </ol>
 <p><strong>RC：</strong>事务中的一次<code>select</code>会获取一次  Read View。如果两次<code>select</code>的 Read View不同时，会发生不可重复读或者幻读的异常。</p>
-<img src="/2022/09/06/InnoDB%E7%9A%84MVCC%E5%AE%9E%E7%8E%B0/1646811699871-ddd8ff79-3c5f-4d29-acbb-6accb66896d2.png" alt="image.png" style="zoom:67%;">
+<img src="/2022/09/06/InnoDB%E7%9A%84MVCC%E5%AE%9E%E7%8E%B0/1646811699871-ddd8ff79-3c5f-4d29-acbb-6accb66896d2.png" alt="image.png" style="zoom: 50%;">
 
-<p><strong>RR：</strong>事务只在第一次<code>select</code>获取 Read View，之后的事务中所有<code>select</code>都会重复使用该 Read View。<br><img src="/2022/09/06/InnoDB%E7%9A%84MVCC%E5%AE%9E%E7%8E%B0/1646811703914-18752bd3-59dc-4d7e-96ca-4eeac1d2110d.png" alt="image.png" style="zoom:67%;"></p>
+<p><strong>RR：</strong>事务只在第一次<code>select</code>获取 Read View，之后的事务中所有<code>select</code>都会重复使用该 Read View。</p>
+<img src="/2022/09/06/InnoDB%E7%9A%84MVCC%E5%AE%9E%E7%8E%B0/1646811703914-18752bd3-59dc-4d7e-96ca-4eeac1d2110d.png" alt="image.png" style="zoom:67%;">
+
 <h2 id="MVCC解决幻读"><a href="#MVCC解决幻读" class="headerlink" title="MVCC解决幻读"></a>MVCC解决幻读</h2><p>InnoDB中的行锁有三种方式：</p>
 <ol>
 <li><p><strong>Record Lock：</strong>记录锁，针对单个行记录添加锁。</p>
