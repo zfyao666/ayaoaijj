@@ -229,21 +229,21 @@
         </header>
 
         <div class="post-content">
-            <h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><p>事务是满足ACID特性的一组操作，它们要么全部执行（<strong>COMMIT</strong>），要么全部不执行（<strong>ROLLBACK</strong>）。</p>
-<h3 id="ACID特性"><a href="#ACID特性" class="headerlink" title="ACID特性"></a>ACID特性</h3><p>四大特性中，一般认为原子性是基础，隔离性是手段，一致性是约束条件，而持久性是目的。</p>
+            <h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><p>事务是满足 ACID 特性的一组操作，它们要么全部执行（<strong>COMMIT</strong>），要么全部不执行（<strong>ROLLBACK</strong>）。</p>
+<h3 id="ACID-特性"><a href="#ACID-特性" class="headerlink" title="ACID 特性"></a>ACID 特性</h3><p>四大特性中，一般认为原子性是基础，隔离性是手段，一致性是约束条件，而持久性是目的。</p>
 <h4 id="原子性（Atomicity）"><a href="#原子性（Atomicity）" class="headerlink" title="原子性（Atomicity）"></a>原子性（Atomicity）</h4><p>原子性确保了事务不可分割，即事务必须被视为一个不可分割的最小工作单元，整个事务中的所有操作要么全部提交成功，要么全部失败回滚。</p>
 <h4 id="一致性（Consistency）"><a href="#一致性（Consistency）" class="headerlink" title="一致性（Consistency）"></a>一致性（Consistency）</h4><p>数据库总是从一个一致的状态转换到另外一个一致性状态。事务提交后或者事务发生回滚后，数据库的完整性约束不能被破坏。</p>
 <h4 id="隔离性（Isolation）"><a href="#隔离性（Isolation）" class="headerlink" title="隔离性（Isolation）"></a>隔离性（Isolation）</h4><p>每个事务之间是相对独立的，不会受到其他事务的执行影响。事务结束之前对于其他的事务都是不可见的。</p>
 <h4 id="持久性（Durability）"><a href="#持久性（Durability）" class="headerlink" title="持久性（Durability）"></a>持久性（Durability）</h4><p>一个事务提交之后对数据的修改是持久性的，即使在系统出现故障，修改的数据也不会丢失。</p>
 <h3 id="事务并发存在的异常"><a href="#事务并发存在的异常" class="headerlink" title="事务并发存在的异常"></a>事务并发存在的异常</h3><h4 id="脏读"><a href="#脏读" class="headerlink" title="脏读"></a>脏读</h4><p>一个事务读取到了其他事物还没有提交的数据。</p>
 <h4 id="不可重复读"><a href="#不可重复读" class="headerlink" title="不可重复读"></a>不可重复读</h4><p>对某一条数据进行读取，发现两次读取的结果不相同，说明有其他事务对这个数据同时进行了修改或删除。不可重复的重点在于 UPDATE 或者 DELETE。</p>
-<h4 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h4><p>查询某一个范围内的数据行增多或者减小，幻读的重点在于 INSERT。例如事务A根据条件查询到了 N 条数据，但此时事务B更改或者增加了 M 条符合事务A查询条件的数据，导致事务A查询的会有 N+M 条数据。</p>
+<h4 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h4><p>查询某一个范围内的数据行增多或者减小，幻读的重点在于 INSERT。例如事务 A 根据条件查询到了 N 条数据，但此时事务 B 更改或者增加了 M 条符合事务 A 查询条件的数据，导致事务 A 查询的会有 N+M 条数据。</p>
 <h4 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h4><p>脏读强调事务读取到了无效的数据，因为该数据可能未提交或者回滚；不可重复读强调的是同一事务两次读取的结果集内容不相同；幻读强调的事务按照同样的查询条件两次查询出来的结果集数量不同。</p>
-<h3 id="隔离级别"><a href="#隔离级别" class="headerlink" title="隔离级别"></a>隔离级别</h3><p>在并发的环境下，SQL-92标准定义了4中不同的隔离级别。</p>
+<h3 id="隔离级别"><a href="#隔离级别" class="headerlink" title="隔离级别"></a>隔离级别</h3><p>在并发的环境下，SQL-92 标准定义了 4 中不同的隔离级别。</p>
 <h4 id="读未提交（READ-UNCOMMITTED"><a href="#读未提交（READ-UNCOMMITTED" class="headerlink" title="读未提交（READ UNCOMMITTED)"></a>读未提交（READ UNCOMMITTED)</h4><p>读未提交允许读取到未提交的数据，该情况下查询不会使用锁。</p>
-<h4 id="读已提交（READ-COMMITTED"><a href="#读已提交（READ-COMMITTED" class="headerlink" title="读已提交（READ COMMITTED)"></a>读已提交（READ COMMITTED)</h4><p>RC只能读取到已经提交的数据，该情况可以避免脏读的产生。</p>
-<p>这种隔离级别也可以叫做不可重复读，因为两次相同查询，可能会得到不一样的结果。例如，T2读取一个数据，T1对该数据做了修改并提交，如果T2再次读取这个数据，那么读取的结果和第一次读取的结果不同。</p>
-<h4 id="可重复读（REPEATABLE-READ）"><a href="#可重复读（REPEATABLE-READ）" class="headerlink" title="可重复读（REPEATABLE READ）"></a>可重复读（REPEATABLE READ）</h4><p>RR保证一个事务在相同的查询条件下查询的两次结果集内容相同，为MySQL的默认隔离级别。</p>
+<h4 id="读已提交（READ-COMMITTED"><a href="#读已提交（READ-COMMITTED" class="headerlink" title="读已提交（READ COMMITTED)"></a>读已提交（READ COMMITTED)</h4><p>RC 只能读取到已经提交的数据，该情况可以避免脏读的产生。</p>
+<p>这种隔离级别也可以叫做不可重复读，因为两次相同查询，可能会得到不一样的结果。例如，T2 读取一个数据，T1 对该数据做了修改并提交，如果 T2 再次读取这个数据，那么读取的结果和第一次读取的结果不同。</p>
+<h4 id="可重复读（REPEATABLE-READ）"><a href="#可重复读（REPEATABLE-READ）" class="headerlink" title="可重复读（REPEATABLE READ）"></a>可重复读（REPEATABLE READ）</h4><p>RR 保证一个事务在相同的查询条件下查询的两次结果集内容相同，为 MySQL 的默认隔离级别。</p>
 <h4 id="可串行化（SERIALIZABLE）"><a href="#可串行化（SERIALIZABLE）" class="headerlink" title="可串行化（SERIALIZABLE）"></a>可串行化（SERIALIZABLE）</h4><p>可串行化强制将事务放在一个队列中按照顺序执行，是最高级别的隔离级别，同时牺牲了系统的并发性。</p>
 <h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>隔离级别越低，系统吞吐量和并发程度就越大，但同时意味着出现异常的增多。<br><img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%92%8C%E8%AE%BE%E8%AE%A1%E5%87%86%E5%88%99/1646277055346-5db82467-786f-47c6-96d9-c825ab3a84be.png" alt="image.png"></p>
 <h2 id="数据表中的键"><a href="#数据表中的键" class="headerlink" title="数据表中的键"></a>数据表中的键</h2><p>数据库中的键由一个或多个属性构成。</p>
@@ -251,22 +251,22 @@
 <li>超键：能唯一识别元组的<strong>属性集</strong>叫做超键；</li>
 <li>候选键：只含有一个属性的超键；</li>
 <li>主键：候选键中的任意一个可以作为候选键；</li>
-<li>外键：如果表1的某个属性集不为主键同时是表2的主键，那么该这个属性集就是外键；</li>
+<li>外键：如果表 1 的某个属性集不为主键同时是表 2 的主键，那么该这个属性集就是外键；</li>
 <li>主属性：包含在任一候选键中的属性；</li>
 <li>非主属性：不包含在任一候选键中的属性；</li>
 </ul>
-<h2 id="函数依赖"><a href="#函数依赖" class="headerlink" title="函数依赖"></a>函数依赖</h2><h3 id="部分函数依赖"><a href="#部分函数依赖" class="headerlink" title="部分函数依赖"></a>部分函数依赖</h3><p>设X、Y是关系 R 的两个属性集合，存在 X→Y，若 X’ 是 X 的真子集，存在 X’→Y，则称 Y 部分函数依赖于X。<br>例：<br>(球员编号, 比赛编号) → (姓名, 年龄, 比赛时间, 比赛场地，得分)；<br>(球员编号) → (姓名，年龄)；<br>(比赛编号) → (比赛时间, 比赛场地)；</p>
-<h3 id="完全函数依赖"><a href="#完全函数依赖" class="headerlink" title="完全函数依赖"></a>完全函数依赖</h3><p>设X、Y是关系 R 的两个属性集合，X’ 是 X 的真子集，存在 X→Y，但对每一个 X’ 都有 X’ !→Y，则称 Y 完全函数依赖于X。</p>
-<h3 id="传递函数依赖"><a href="#传递函数依赖" class="headerlink" title="传递函数依赖"></a>传递函数依赖</h3><p>设X、Y、Z是关系 R 中互不相同的属性集合，存在 X→Y（Y !→X），Y→Z，则称 Z 传递函数依赖于X。<br><img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%92%8C%E8%AE%BE%E8%AE%A1%E5%87%86%E5%88%99/1647188764824-5ba807a2-638f-45e6-9e6d-eeb5a003c2b7.png" alt="image.png"></p>
+<h2 id="函数依赖"><a href="#函数依赖" class="headerlink" title="函数依赖"></a>函数依赖</h2><h3 id="部分函数依赖"><a href="#部分函数依赖" class="headerlink" title="部分函数依赖"></a>部分函数依赖</h3><p>设 X、Y 是关系 R 的两个属性集合，存在 X→Y，若 X’ 是 X 的真子集，存在 X’→Y，则称 Y 部分函数依赖于 X。<br>例：<br>（球员编号，比赛编号） → （姓名，年龄，比赛时间，比赛场地，得分）；<br>（球员编号） → （姓名，年龄）；<br>（比赛编号） → （比赛时间，比赛场地）；</p>
+<h3 id="完全函数依赖"><a href="#完全函数依赖" class="headerlink" title="完全函数依赖"></a>完全函数依赖</h3><p>设 X、Y 是关系 R 的两个属性集合，X’ 是 X 的真子集，存在 X→Y，但对每一个 X’ 都有 X’ !→Y，则称 Y 完全函数依赖于 X。</p>
+<h3 id="传递函数依赖"><a href="#传递函数依赖" class="headerlink" title="传递函数依赖"></a>传递函数依赖</h3><p>设 X、Y、Z 是关系 R 中互不相同的属性集合，存在 X→Y（Y !→X），Y→Z，则称 Z 传递函数依赖于 X。<br><img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%92%8C%E8%AE%BE%E8%AE%A1%E5%87%86%E5%88%99/1647188764824-5ba807a2-638f-45e6-9e6d-eeb5a003c2b7.png" alt="image.png"></p>
 <h2 id="范式"><a href="#范式" class="headerlink" title="范式"></a>范式</h2><h3 id="第一范式"><a href="#第一范式" class="headerlink" title="第一范式"></a>第一范式</h3><p>在任何一个关系数据库中，第一范式（1NF）是对关系模式的基本要求，不满足第一范式（1NF）的数据库就不是关系数据库。</p>
 <p>第一范式（1NF）是指数据库表的每一列（任意属性）都符合原子性，都是不可分割的基本数据项。同一个列中不能有多个值，即数据表中的某个属性不能有多个值或者不能有重复的属性。简而言之，第一范式就是无重复的列。</p>
 <h3 id="第二范式"><a href="#第二范式" class="headerlink" title="第二范式"></a>第二范式</h3><p>第二范式（2NF）要求数据表里的非主属性都要和候选键有完全依赖关系。</p>
 <h3 id="第三范式"><a href="#第三范式" class="headerlink" title="第三范式"></a>第三范式</h3><p>第三范式（3NF）要求数据表满足第二范式的同时，对任何非主属性都不传递依赖于候选键。简而言之就是非主属性不依赖于其他非主属性。</p>
-<h2 id="反范式设计"><a href="#反范式设计" class="headerlink" title="反范式设计"></a>反范式设计</h2><p>越高阶的范式得到的数据表越多，数据冗余度越低。例如查询某个商品的前1000个评论，涉及到商品评论表和用户表。<br><img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%92%8C%E8%AE%BE%E8%AE%A1%E5%87%86%E5%88%99/1646216232661-88a66996-7fc5-4f51-a05d-e0a7ea90ecfe.png" alt="image.png" style="zoom:67%;"><br><img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%92%8C%E8%AE%BE%E8%AE%A1%E5%87%86%E5%88%99/1646216236399-7633e508-40f4-49ae-a7db-f0da8a261e19.png" alt="image.png" style="zoom: 67%;"></p>
+<h2 id="反范式设计"><a href="#反范式设计" class="headerlink" title="反范式设计"></a>反范式设计</h2><p>越高阶的范式得到的数据表越多，数据冗余度越低。例如查询某个商品的前 1000 个评论，涉及到商品评论表和用户表。<br><img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%92%8C%E8%AE%BE%E8%AE%A1%E5%87%86%E5%88%99/1646216232661-88a66996-7fc5-4f51-a05d-e0a7ea90ecfe.png" alt="image.png" style="zoom:67%;"><br><img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%92%8C%E8%AE%BE%E8%AE%A1%E5%87%86%E5%88%99/1646216236399-7633e508-40f4-49ae-a7db-f0da8a261e19.png" alt="image.png" style="zoom: 67%;"></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> p.comment_text, p.comment_time, u.user_name <span class="keyword">FROM</span> product_comment <span class="keyword">AS</span> p </span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> <span class="keyword">user</span> <span class="keyword">AS</span> u </span><br><span class="line"><span class="keyword">ON</span> p.user_id <span class="operator">=</span> u.user_id </span><br><span class="line"><span class="keyword">WHERE</span> p.product_id <span class="operator">=</span> <span class="number">10001</span> </span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> p.comment_id <span class="keyword">DESC</span> LIMIT <span class="number">1000</span>;</span><br></pre></td></tr></table></figure>
-<p>上述查询代码的运行时间为0.395，效率很低。因为显示评论需要显示用户的昵称，所以需要关联两张表进行查询。如果两张表数据量都超过了百万量级，查询效率就会变低。因为查询会在 product_comment 表和 user 表这两个表上进行聚集索引扫描，然后再嵌套循环。如果我们想要提升查询的效率，可以允许适当的数据冗余，在商品评论表中增加用户昵称字段。</p>
+<p>上述查询代码的运行时间为 0.395，效率很低。因为显示评论需要显示用户的昵称，所以需要关联两张表进行查询。如果两张表数据量都超过了百万量级，查询效率就会变低。因为查询会在 product_comment 表和 user 表这两个表上进行聚集索引扫描，然后再嵌套循环。如果我们想要提升查询的效率，可以允许适当的数据冗余，在商品评论表中增加用户昵称字段。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> comment_text, comment_time, user_name <span class="keyword">FROM</span> product_comment2 <span class="keyword">WHERE</span> product_id <span class="operator">=</span> <span class="number">10001</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> comment_id <span class="keyword">DESC</span> LIMIT <span class="number">1000</span>;</span><br></pre></td></tr></table></figure>
-<p>优化后之后只需要扫描一次聚集索引即可，运行的时间为0.0395。</p>
+<p>优化后之后只需要扫描一次聚集索引即可，运行的时间为 0.0395。</p>
 <ul>
 <li>在数据量小的情况下，反范式会让数据库的设计变复杂。频繁采用存储过程来支持数据更新、删除等额外操作，容易 增加系统的维护成本。例如用户每次更改昵称的时候，都需要执行存储过程来更新，如果昵称更改频繁，会非常消耗系统资源。</li>
 <li>当冗余信息有价值或者能大幅度提高查询效率的时候，我们就可以采取反范式的优化。反范式优化也常用在数据仓库的设计中，因为数据仓库通常存储历史数据，对增删改的实时性要求不强，对历史数据的分析需求强。这时适当允许数据的冗余度，更方便进行数据分析。</li>
