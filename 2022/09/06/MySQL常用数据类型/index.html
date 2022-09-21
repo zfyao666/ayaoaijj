@@ -229,22 +229,24 @@
         </header>
 
         <div class="post-content">
-            <h2 id="整型"><a href="#整型" class="headerlink" title="整型"></a>整型</h2><p><code>TINYINT</code>，<code>SMALLINT</code>，<code>MEDIUMINT</code>，<code>INT</code>，<code>BIGINT</code>分别使用了1，2，3，4，8字节的存储空间。</p>
+            <h2 id="整型"><a href="#整型" class="headerlink" title="整型"></a>整型</h2><p><code>TINYINT</code>，<code>SMALLINT</code>，<code>MEDIUMINT</code>，<code>INT</code>，<code>BIGINT</code>分别使用了 1，2，3，4，8 字节的存储空间。</p>
 <p><code>UNSIGNED</code>关键字表示不允许插入负数并将正数的取值范围扩大了两倍，但是有符号数和无符号类型的存储空间和性能依旧是一样的。</p>
-<p>MySQL可以指定整型类型的显示宽度，例如<code>INT(11)</code>。显示宽度和数据类型的取值范围是无关的，只是证明了MySQL最大可能显示的数字个数。数值的位数小于指定的宽度会由空格填充；如果插入了大于显示宽度的值，只要该值不超过该类型整数的取值范围，数值依然可以插入，而且能够显示出来。</p>
-<h2 id="浮点数"><a href="#浮点数" class="headerlink" title="浮点数"></a>浮点数</h2><p><code>FLOAT</code>和<code>DOUBLE</code>分别为单精度（4字节）和双精度（8字节）的浮点数。DECIMAL是精度可变的定点数，占用的字节由其精度M决定，例如<code>DECIMAL(11, 5)</code>表示总共10位，取5位存储小数部分，剩下的6位存储整数部分，一种占用了11+2&#x3D;13字节。</p>
-<p>CPU原生支持浮点运算，但不支持对<code>DECIMAL</code>的运算，因此浮点运算会更快。但是浮点数会引起精度问题，像货币这样对精度敏感的数据，在MySQL中一般使用<code>DECIMAL(8, 2)</code>来存储。</p>
+<p>MySQL 可以指定整型类型的显示宽度，例如<code>INT(11)</code>。显示宽度和数据类型的取值范围是无关的，只是证明了 MySQL 最大可能显示的数字个数。数值的位数小于指定的宽度会由空格填充；如果插入了大于显示宽度的值，只要该值不超过该类型整数的取值范围，数值依然可以插入，而且能够显示出来。</p>
+<h2 id="浮点数"><a href="#浮点数" class="headerlink" title="浮点数"></a>浮点数</h2><p><code>FLOAT</code>和<code>DOUBLE</code>分别为单精度（4 字节）和双精度（8 字节）的浮点数。<code>DECIMAL</code> 是精度可变的定点数，占用的字节由其精度 M 决定。</p>
+<p>浮点数和定点数都可以指定精度，例如<code>DECIMAL(11, 5)</code>表示总共 11 位，取 5 位存储小数部分，剩下的 6 位存储整数部分，一种占用了 11+2&#x3D;13 字节。</p>
+<p>CPU 原生支持浮点运算，但不支持对<code>DECIMAL</code>的运算，因此浮点运算会更快。但是浮点数会引起精度问题，像货币这样对精度敏感的数据，在 MySQL 中一般使用<code>DECIMAL(8, 2)</code>来存储。</p>
 <h3 id="定点数和浮点数区别"><a href="#定点数和浮点数区别" class="headerlink" title="定点数和浮点数区别"></a>定点数和浮点数区别</h3><ul>
 <li>在 MySQL 中，定点数以字符串形式存储，在对精度要求比较高的时候（如货币，科学数据等）使用<code>DECIMAL</code>的类型比较好。</li>
-<li>浮点数<code>FLOAT</code>、<code>DOUBLE</code>相对于定点数<code>DECIMAL</code>的优势是在一定的情况下，浮点数能表示更大的范围数据，但是浮点数容易产生误差。两个浮点数进行减法和比较运算时也容易出问题，所以在使用浮点型是需要注意，并尽量避免做浮点数比较。</li>
+<li>浮点数<code>FLOAT</code>、<code>DOUBLE</code>相对于定点数<code>DECIMAL</code>的优势是在一定的情况下，浮点数能表示更大的范围数据。</li>
+<li>浮点数的减法和比较运算容易产生误差，在使用浮点型需要注意尽量避免浮点数之间的比较。</li>
 </ul>
-<h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><p>MySQL中主要使用的字符串数据类型有<code>VARCHAR</code>和<code>CHAR</code>。</p>
-<p><code>CHAR</code>是定长串，接收长度固定的字符串。MySQL总是根据定义的字符串长度分配足够的空间，并且在存储和检索时回删除末尾的空格，而<code>VARCHAR</code>可以保留末尾的空格。MySQL处理<code>CHAR</code>的速度比<code>VARCHAR</code>更快。</p>
-<p><code>VARCHAR</code>是可以变长串，<code>VARCHAR</code>比<code>CHAR</code>更节省空间（因为只使用必要的空间）。但执行<code>UPDATE</code>后行记录可能会变长，当超出一个页所能容纳的大小时，就需要执行额外的操作，MyISAM会将行拆成不同的片段存储，InnoDB则需要分裂页来使行放进页内。</p>
-<p>当字符串列的长度比平均长度大很多时、列的更新很少时，使用<code>VARCHAR</code>类型更好；对于定长的字符串如MD5、经常变更或者非常短的字符串（因为<code>VARCHAR</code>需要额外的1个或2个字节记录字符串长度）则使用<code>CHAR</code>类型更好。</p>
-<h2 id="日期和时间"><a href="#日期和时间" class="headerlink" title="日期和时间"></a>日期和时间</h2><p>MySQL中有两种常用的日期类型：<code>DATETIME</code>和<code>TIMESTAMP</code>。</p>
-<p><code>DATETIME</code>格式为<code>YYYY-MM-DD-HH:MM:SS</code>，它把日期和时间封装到了相同的整数中，与时区无关，使用8个字节的存储空间。默认情况下，MySQL以一种可排序的、无歧义的格式显示，例如<code>2008-01-16 22:37:08</code>。</p>
-<p><code>TIMESTAMP</code>保存从1970年1月1日午夜（格林威治时间）以来的秒数，使用4个字节，只能表示从1970年到2038年。它可以自动检索当前时区并进行转换。默认情况下，如果插入时没有指定<code>TIMESTAMP</code>列的值，MySQL则设置这个列的值为当前时间。</p>
+<h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><p>MySQL 中主要使用的字符串数据类型有<code>VARCHAR</code>和<code>CHAR</code>。</p>
+<p><code>CHAR</code>是定长串，接收长度固定的字符串。MySQL 总是根据定义的字符串长度分配足够的空间，并且在存储和检索时回删除末尾的空格，而<code>VARCHAR</code>可以保留末尾的空格。MySQL 处理<code>CHAR</code>的速度比<code>VARCHAR</code>更快。</p>
+<p><code>VARCHAR</code>是可以变长串，<code>VARCHAR</code>比<code>CHAR</code>更节省空间（因为只使用必要的空间）。但执行<code>UPDATE</code>后行记录可能会变长，当超出一个页所能容纳的大小时，就需要执行额外的操作，MyISAM 会将行拆成不同的片段存储，InnoDB 则需要分裂页来使行放进页内。</p>
+<p>当字符串列的长度比平均长度大很多时、列的更新很少时，使用<code>VARCHAR</code>类型更好；对于定长的字符串如 MD5、经常变更或者非常短的字符串（因为<code>VARCHAR</code>需要额外的 1 个或 2 个字节记录字符串长度）则使用<code>CHAR</code>类型更好。</p>
+<h2 id="日期和时间"><a href="#日期和时间" class="headerlink" title="日期和时间"></a>日期和时间</h2><p>MySQL 中有两种常用的日期类型：<code>DATETIME</code>和<code>TIMESTAMP</code>。</p>
+<p><code>DATETIME</code>格式为<code>YYYY-MM-DD-HH:MM:SS</code>，它把日期和时间封装到了相同的整数中，与时区无关，使用 8 个字节的存储空间。默认情况下，MySQL 以一种可排序的、无歧义的格式显示，例如<code>2008-01-16 22:37:08</code>。</p>
+<p><code>TIMESTAMP</code>保存从 1970 年 1 月 1 日午夜（格林威治时间）以来的秒数，使用 4 个字节，只能表示从 1970 年到 2038 年。它可以自动检索当前时区并进行转换。默认情况下，如果插入时没有指定<code>TIMESTAMP</code>列的值，MySQL 则设置这个列的值为当前时间。</p>
 <h3 id="区别"><a href="#区别" class="headerlink" title="区别"></a>区别</h3><ul>
 <li>存储使用的字节数量不同，尽可能使用<code>TIMESTAMP</code>，因为它的空间效率高。</li>
 <li><code>TIMESTAMP</code>会进行时区的检索，如果储存时的时区和检索时的时区不一样，那么拿出来的数据也不一样。对于<code>DATETIME</code>来说，存什么拿到的就是什么。</li>
@@ -252,11 +254,11 @@
 </ul>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
 <li><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000023306375">MySql：int(10) 与 int unsigned 之前的区别</a></li>
-<li><a target="_blank" rel="noopener" href="http://hecenjie.cn/2019/01/28/MySQL%E5%B8%B8%E7%94%A8%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/">MySQL常用数据类型-水木今山</a></li>
+<li><a target="_blank" rel="noopener" href="http://hecenjie.cn/2019/01/28/MySQL%E5%B8%B8%E7%94%A8%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/">MySQL 常用数据类型-水木今山</a></li>
 <li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/672049b65691">MySQL 之数据类型</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.yiibai.com/mysql/decimal.html">MySQL decimal类型</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.yiibai.com/mysql/decimal.html">MySQL decimal 类型</a></li>
 <li><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000017393602">MySQL 中 datetime 和 timestamp 的区别与选择</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/xuliuzai/p/10901425.html">MySQL 时间类型 DATE、DATETIME和TIMESTAMP </a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/xuliuzai/p/10901425.html">MySQL 时间类型 DATE、DATETIME 和 TIMESTAMP </a></li>
 </ol>
 
         </div>

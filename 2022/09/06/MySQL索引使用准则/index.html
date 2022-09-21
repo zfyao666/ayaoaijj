@@ -232,10 +232,10 @@
             <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>索引在数据库中是一种提高查找效率的数据结构。</p>
 <h3 id="什么时候使用索引"><a href="#什么时候使用索引" class="headerlink" title="什么时候使用索引"></a>什么时候使用索引</h3><ul>
 <li>字段的数值有唯一性；</li>
-<li>字段频繁作为WHERE条件（包括UPDATA、DELETE）；</li>
-<li>字段经常用来GROUP BY或者ORDER BY；</li>
-<li>DISTINCT字段；</li>
-<li>多表连接时，连接的字段和WHERE条件字段；</li>
+<li>字段频繁作为 WHERE 条件（包括 UPDATA、DELETE）；</li>
+<li>字段经常用来 GROUP BY 或者 ORDER BY；</li>
+<li>DISTINCT 字段；</li>
+<li>多表连接时，连接的字段和 WHERE 条件字段；</li>
 </ul>
 <h3 id="什么时候不需要使用索引"><a href="#什么时候不需要使用索引" class="headerlink" title="什么时候不需要使用索引"></a>什么时候不需要使用索引</h3><ul>
 <li>该字段是非条件字段；</li>
@@ -245,13 +245,13 @@
 </ul>
 <h3 id="索引失效"><a href="#索引失效" class="headerlink" title="索引失效"></a>索引失效</h3><ul>
 <li>对索引使用了表达式计算或者函数；</li>
-<li>WHERE条件的OR中只有一个条件为索引；</li>
+<li>WHERE 条件的 OR 中只有一个条件为索引；</li>
 <li>模糊查询的开头为%；</li>
-<li>索引字段使用了NULL判断；</li>
+<li>索引字段使用了 NULL 判断；</li>
 <li>联合索引不符合最左原则；</li>
 </ul>
-<h3 id="使用EXPLAIN"><a href="#使用EXPLAIN" class="headerlink" title="使用EXPLAIN"></a>使用EXPLAIN</h3><p>EXPLAIN 可以帮助我们了解数据表的读取顺序、SELECT 子句的类型、数据表的访问类型、可使用的索引、实际使用的索引、使用的索引长度、上一个表的连接匹配条件、被优化器查询的行的数量以及额外的信息（比如是否使用了外部排序，是否使用了临时表等）等。<br><img src="/2022/09/06/MySQL%E7%B4%A2%E5%BC%95%E4%BD%BF%E7%94%A8%E5%87%86%E5%88%99/1646816644818-32c066c1-a558-46db-9544-d32ac7186be0.png" alt="image.png"><br>SQL 执行的顺序是根据 id 从大到小执行的，也就是 id 越大越先执行，当 id 相同时，从上到下执行。</p>
-<p>数据表的访问类型所对应的 type 列是我们比较关注的信息。type 可能有以下几种情况：<br><img src="/2022/09/06/MySQL%E7%B4%A2%E5%BC%95%E4%BD%BF%E7%94%A8%E5%87%86%E5%88%99/1646816654819-5262faf0-f096-4001-8db6-424a61eaa96d.png" alt="image.png" style="zoom:80%;"><br>在所有的type中，all是最坏的情况，采用了全表扫描的方式。index采用索引进行全表扫描，这种方式的好处在于不需要对数据进行排序，但是开销仍然很大。如果Extra栏为Using index，说明索引覆盖了查询的所有字段，因此不需要进行回表操作，减少开销并提升了速度。</p>
+<h3 id="使用-EXPLAIN"><a href="#使用-EXPLAIN" class="headerlink" title="使用 EXPLAIN"></a>使用 EXPLAIN</h3><p>EXPLAIN 可以帮助我们了解数据表的读取顺序、SELECT 子句的类型、数据表的访问类型、可使用的索引、实际使用的索引、使用的索引长度、上一个表的连接匹配条件、被优化器查询的行的数量以及额外的信息（比如是否使用了外部排序，是否使用了临时表等）等。<br>![image.png](MySQL 索引使用准则&#x2F;1646816644818-32c066c1-a558-46db-9544-d32ac7186be0.png)<br>SQL 执行的顺序是根据 id 从大到小执行的，也就是 id 越大越先执行，当 id 相同时，从上到下执行。</p>
+<p>数据表的访问类型所对应的 type 列是我们比较关注的信息。type 可能有以下几种情况：<br><img src="/2022/09/06/MySQL%E7%B4%A2%E5%BC%95%E4%BD%BF%E7%94%A8%E5%87%86%E5%88%99/1646816654819-5262faf0-f096-4001-8db6-424a61eaa96d.png" alt="image.png" style="zoom:80%;"><br>在所有的 type 中，all 是最坏的情况，采用了全表扫描的方式。index 采用索引进行全表扫描，这种方式的好处在于不需要对数据进行排序，但是开销仍然很大。如果 Extra 栏为 Using index，说明索引覆盖了查询的所有字段，因此不需要进行回表操作，减少开销并提升了速度。</p>
 <p>我们需要提高并发的事务处理能力以及创建合适的索引。<br>事务和索引的使用是数据库的两个重要核心，事务保证了在修改的过程中数据的安全性和正确性，索引提高数据的查找效率。</p>
 
         </div>
