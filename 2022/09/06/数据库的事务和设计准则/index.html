@@ -238,7 +238,11 @@
 <h3 id="事务并发存在的异常"><a href="#事务并发存在的异常" class="headerlink" title="事务并发存在的异常"></a>事务并发存在的异常</h3><h4 id="脏读"><a href="#脏读" class="headerlink" title="脏读"></a>脏读</h4><p>一个事务读取到了其他事物还没有提交的数据。</p>
 <h4 id="不可重复读"><a href="#不可重复读" class="headerlink" title="不可重复读"></a>不可重复读</h4><p>对某一条数据进行读取，发现两次读取的结果不相同，说明有其他事务对这个数据同时进行了修改或删除。不可重复的重点在于 UPDATE 或者 DELETE。</p>
 <h4 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h4><p>查询某一个范围内的数据行增多或者减小，幻读的重点在于 INSERT。例如事务 A 根据条件查询到了 N 条数据，但此时事务 B 更改或者增加了 M 条符合事务 A 查询条件的数据，导致事务 A 查询的会有 N+M 条数据。</p>
-<h4 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h4><p>脏读强调事务读取到了无效的数据，因为该数据可能未提交或者回滚；不可重复读强调的是同一事务两次读取的结果集内容不相同；幻读强调的事务按照同样的查询条件两次查询出来的结果集数量不同。</p>
+<h4 id="理解"><a href="#理解" class="headerlink" title="理解"></a>理解</h4><ul>
+<li>脏读强调事务读取到了无效的数据，因为该数据可能未提交或者回滚；</li>
+<li>不可重复读强调的是同一事务两次读取的结果集内容不相同；</li>
+<li>幻读强调的事务按照同样的查询条件两次查询出来的结果集数量不同。</li>
+</ul>
 <h3 id="隔离级别"><a href="#隔离级别" class="headerlink" title="隔离级别"></a>隔离级别</h3><p>在并发的环境下，SQL-92 标准定义了 4 中不同的隔离级别。</p>
 <h4 id="读未提交（READ-UNCOMMITTED"><a href="#读未提交（READ-UNCOMMITTED" class="headerlink" title="读未提交（READ UNCOMMITTED)"></a>读未提交（READ UNCOMMITTED)</h4><p>读未提交允许读取到未提交的数据，该情况下查询不会使用锁。</p>
 <h4 id="读已提交（READ-COMMITTED"><a href="#读已提交（READ-COMMITTED" class="headerlink" title="读已提交（READ COMMITTED)"></a>读已提交（READ COMMITTED)</h4><p>RC 只能读取到已经提交的数据，该情况可以避免脏读的产生。</p>
