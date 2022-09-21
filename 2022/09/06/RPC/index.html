@@ -266,11 +266,7 @@
 <li>实现服务寻址</li>
 <li>序列化和反序列化</li>
 </ul>
-<h3 id="网络通信"><a href="#网络通信" class="headerlink" title="网络通信"></a>网络通信</h3><p>RPC 通过网络通信实现客户端和服务器之间的数据交换，使用的协议主要为 TCP 和 HTTP。</p>
-<blockquote>
-<p>gRPC 基于 HTTP&#x2F;2.0 实现</p>
-</blockquote>
-<p>基于 TCP 的连接主要分为三种：</p>
+<h3 id="网络通信"><a href="#网络通信" class="headerlink" title="网络通信"></a>网络通信</h3><p>RPC 通过网络通信实现客户端和服务器之间的数据交换，使用的协议主要为 TCP 和 HTTP。<br>基于 TCP 的连接主要分为三种：</p>
 <ul>
 <li><strong>按需连接：</strong>需要调用是建立连接，调用结束后断开连接；</li>
 <li><strong>长连接：</strong>无论有无数据报的发送，客户端和服务器之间都保持连接（可以配合心跳检测机制判断连接是否存活。</li>
