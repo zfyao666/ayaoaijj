@@ -247,7 +247,10 @@
 <h4 id="读未提交（READ-UNCOMMITTED"><a href="#读未提交（READ-UNCOMMITTED" class="headerlink" title="读未提交（READ UNCOMMITTED)"></a>读未提交（READ UNCOMMITTED)</h4><p>读未提交允许读取到未提交的数据，该情况下查询不会使用锁。</p>
 <h4 id="读已提交（READ-COMMITTED"><a href="#读已提交（READ-COMMITTED" class="headerlink" title="读已提交（READ COMMITTED)"></a>读已提交（READ COMMITTED)</h4><p>RC 只能读取到已经提交的数据，该情况可以避免脏读的产生。</p>
 <p>这种隔离级别也可以叫做不可重复读，因为两次相同查询，可能会得到不一样的结果。例如，T2 读取一个数据，T1 对该数据做了修改并提交，如果 T2 再次读取这个数据，那么读取的结果和第一次读取的结果不同。</p>
-<h4 id="可重复读（REPEATABLE-READ）"><a href="#可重复读（REPEATABLE-READ）" class="headerlink" title="可重复读（REPEATABLE READ）"></a>可重复读（REPEATABLE READ）</h4><p>RR 保证一个事务在相同的查询条件下查询的两次结果集内容相同，为 MySQL 的默认隔离级别。</p>
+<h4 id="可重复读（REPEATABLE-READ）"><a href="#可重复读（REPEATABLE-READ）" class="headerlink" title="可重复读（REPEATABLE READ）"></a>可重复读（REPEATABLE READ）</h4><p>RR 保证一个事务在相同的查询条件下查询的两次结果集内容相同。</p>
+<blockquote>
+<p>RR 为 MySQL 的默认隔离级别。</p>
+</blockquote>
 <h4 id="可串行化（SERIALIZABLE）"><a href="#可串行化（SERIALIZABLE）" class="headerlink" title="可串行化（SERIALIZABLE）"></a>可串行化（SERIALIZABLE）</h4><p>可串行化强制将事务放在一个队列中按照顺序执行，是最高级别的隔离级别，同时牺牲了系统的并发性。</p>
 <h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>隔离级别越低，系统吞吐量和并发程度就越大，但同时意味着出现异常的增多。<br><img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%92%8C%E8%AE%BE%E8%AE%A1%E5%87%86%E5%88%99/1646277055346-5db82467-786f-47c6-96d9-c825ab3a84be.png" alt="image.png"></p>
 <h2 id="数据表中的键"><a href="#数据表中的键" class="headerlink" title="数据表中的键"></a>数据表中的键</h2><p>数据库中的键由一个或多个属性构成。</p>
