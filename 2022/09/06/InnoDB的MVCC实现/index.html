@@ -230,7 +230,7 @@
 
         <div class="post-content">
             <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在数据库的四种隔离级别和三种异常中，读已提交可以解决脏读的异常，可重复读可以解决不可重复的的异常，串行化可以解决幻读的问题，但是串行化的方式会将数据库的事务并发程度降到最低。MVCC 是一种利用乐观锁的想法，不采用锁机制来解决不可重复读和幻读问题。它在大多数情况下可以替代行级锁同时降低系统的开销。</p>
-<img src="/2022/09/06/InnoDB%E7%9A%84MVCC%E5%AE%9E%E7%8E%B0/1647232640212-2b535fcc-8dbb-4654-b48f-63b523f91d0a.png" alt="image.png" style="zoom: 50%;">
+<img src="/2022/09/06/InnoDB%E7%9A%84MVCC%E5%AE%9E%E7%8E%B0/1647232640212-2b535fcc-8dbb-4654-b48f-63b523f91d0a.png" alt="image.png" style="zoom: 33%;">
 
 <h2 id="快照读和当前读"><a href="#快照读和当前读" class="headerlink" title="快照读和当前读"></a>快照读和当前读</h2><h3 id="快照读"><a href="#快照读" class="headerlink" title="快照读"></a>快照读</h3><p>快照读读取的是记录的可见版本（可能是历史数据）。InnoDB 执行<code>select</code>时，默认使用快照读，也可以说未加锁的<code>SELECT</code>都属于快照读。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="operator">*</span> <span class="keyword">FROM</span> <span class="keyword">table</span> ...;</span><br></pre></td></tr></table></figure>
