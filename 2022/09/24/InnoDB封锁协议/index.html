@@ -13,7 +13,7 @@
 
 
 
-<title>InnoDB 的行锁和表锁 | Yao&#39;s Blog</title>
+<title>InnoDB 封锁协议 | Yao&#39;s Blog</title>
 
 
 
@@ -204,7 +204,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">InnoDB 的行锁和表锁</h1>
+            <h1 class="post-title">InnoDB 封锁协议</h1>
             
                 <div class="post-meta">
                     
@@ -213,7 +213,7 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">September 22, 2022&nbsp;&nbsp;11:25:51&nbsp;</a>
+                        Date: <a href="#">September 24, 2022&nbsp;&nbsp;21:00:39&nbsp;</a>
                         </span>
                     
                     
@@ -229,36 +229,50 @@
         </header>
 
         <div class="post-content">
-            <h2 id="MySQL-常用存储引擎的锁机制"><a href="#MySQL-常用存储引擎的锁机制" class="headerlink" title="MySQL 常用存储引擎的锁机制"></a>MySQL 常用存储引擎的锁机制</h2><ul>
-<li><p>MyISAM 和 MEMORY 采用表锁；</p>
-</li>
-<li><p>BDB 采用页面锁或表锁，默认为页锁；</p>
-</li>
-<li><p>InnoDB 支持行锁和表锁，默认为行锁；</p>
-</li>
-</ul>
-<h2 id="InnoDB-中的行锁和表锁"><a href="#InnoDB-中的行锁和表锁" class="headerlink" title="InnoDB 中的行锁和表锁"></a>InnoDB 中的行锁和表锁</h2><p>InnoDB 行锁是通过给索引上的索引项加锁来实现的，这一点 MySQL 与 Oracle 不同，后者是通过在数据块中对相应数据行加锁来实现的。InnoDB 这种行锁实现特点意味着：只有通过索引条件检索数据，InnoDB 才使用行锁，否则，InnoDB 将使用表锁。</p>
-<p>InnoDB 中的行锁有三种方式：</p>
-<ol>
-<li><p><strong>Record Lock：</strong>记录锁，针对单个行记录添加锁。</p>
-</li>
-<li><p><strong>Gap Lock：</strong>间隙锁，可以帮我们锁住一个范围（索引之间的空隙），但不包括记录本身。采用间隙锁的方式可以防止幻读情况的产生。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 其他事务不能在 t.c 中插入 15 */</span></span><br><span class="line"><span class="keyword">SELECT</span> c <span class="keyword">FROM</span> t <span class="keyword">WHERE</span> c <span class="keyword">BETWEEN</span> <span class="number">10</span> <span class="keyword">and</span> <span class="number">20</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>Next-Key Lock：</strong>帮我们锁住一个范围（左必右开），同时锁定记录本身，相当于间隙锁 + 记录锁。该锁主要用来解决幻读的问题。例如范围中包含 10, 11, 13, 20，那么就需要锁定一些区间：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(<span class="operator">-</span>∞, <span class="number">10</span>]</span><br><span class="line">(<span class="number">10</span>, <span class="number">11</span>]</span><br><span class="line">(<span class="number">11</span>, <span class="number">13</span>]</span><br><span class="line">(<span class="number">13</span>, <span class="number">20</span>]</span><br><span class="line">(<span class="number">20</span>, <span class="operator">+</span>∞)</span><br></pre></td></tr></table></figure></li>
-</ol>
-<p>InnoDB 行锁和表锁的使用主要包含一下几种情况：</p>
+            <h2 id="封锁协议"><a href="#封锁协议" class="headerlink" title="封锁协议"></a>封锁协议</h2><p>在运用 X 锁和 S 锁对数据对象加锁时，还需要约定一些规则 ，例如何时申请 X 锁或 S 锁、持锁时间、何时释放等。这些规则被称为<strong>封锁协议</strong>。对封锁方式规定不同的规则，就形成了各种不同的封锁协议。不同的封锁协议，在不同的程度上为并发操作的正确调度提供一定的保证。</p>
+<h3 id="一级封锁协议"><a href="#一级封锁协议" class="headerlink" title="一级封锁协议"></a>一级封锁协议</h3><p>事务在修改记录之前必须要添加 X 锁，直到事务结束才释放。事务的结束包括了事务提交和 ROLLBACK。一级封锁协议可以解决丢失修改。但是一级封锁协议在读取记录时不会加锁，所以会出现不可重复读和读取脏数据。</p>
+<blockquote>
+<p>丢失修改：不加锁修改后，该记录又被其他事务修改。</p>
+</blockquote>
 <ul>
-<li>在不通过索引条件查询时，InnoDB 使用的是表锁；</li>
-<li>行锁是对索引加锁。所以虽然是访问不同的行记录，但是如果使用相同的索引键，这时会出现锁冲突；</li>
-<li>MySQL 会通过判断不同执行计划的代价决定是否使用索引，如果全表扫描效率更高（例如比较小的表），就不会使用索引，这是讲使用表锁；</li>
+<li><p>读：不添加锁；</p>
+</li>
+<li><p>写：加 X 锁 -&gt; 修改记录 -&gt; 成功或失败 -&gt; 释放 X 锁；</p>
+</li>
 </ul>
-<h2 id="行锁和死锁"><a href="#行锁和死锁" class="headerlink" title="行锁和死锁"></a>行锁和死锁</h2><p>MylSAM 总是一次性获得所需的全部锁，要么全部满足，要么全部等待，所以不存在发生死锁。</p>
-<p>InnoDB 和 MylSAM 不同，它遵循两段式协议，锁是逐步获取的，所以有可能出现死锁的情况。前文提到过，InnoDB 的行锁是直接锁住索引，同时索引又分为主键索引和非主键索引两种。如果一条 sql 语句操作了主键索引，MySQL 就会锁定这条主键索引；如果一条语句操作了非主键索引，MySQL 会先锁定该非主键索引，再锁定相关的主键索引。 当两个事务同时进行时，一个锁锁住了主键索引，在等待其他相关索引；另一个锁锁定了非主键索引，在等待主键索引，这时就会发生死锁。InnoDB 一般都可以检测到死锁的出现，并使一个事务释放锁回退，另一个获取锁完成事务。</p>
+<h3 id="二级封锁协议"><a href="#二级封锁协议" class="headerlink" title="二级封锁协议"></a>二级封锁协议</h3><p>二级封锁协议在一级封锁协议的基础上，保证了事务读取记录之前添加 S 锁，读取结束后就释放 S 锁。</p>
+<p>因为事务读取之前添加了 S 锁，所以可以防止读取脏数据，但是由于事务读取结束就释放了 S 锁，所以不能保证可重复读。</p>
+<ul>
+<li>读：读取前添加 S 锁 -&gt; 读取记录 -&gt; 读取结束后释放 S 锁；</li>
+<li>写：同一级封锁协议；</li>
+</ul>
+<h3 id="三级封锁协议"><a href="#三级封锁协议" class="headerlink" title="三级封锁协议"></a>三级封锁协议</h3><p>和二级封锁协议类似，事务读取记录之前必须添加 S 锁，但是三级封锁协议在事务结束后才释放 S 锁，这进一步防止了不可重复读。</p>
+<ul>
+<li>读：读取前添加 S 锁 -&gt; 读取记录 -&gt; 事务完成 -&gt; 释放 S 锁；</li>
+<li>写：同一级封锁协议；</li>
+</ul>
+<p>RU：遵循一级封锁协议；</p>
+<p>RC：遵循二级封锁协议；</p>
+<p>RR：遵循二级封锁协议，使用 MVCC 机制实现可重复读；</p>
+<p>Serializable：遵循三级封锁协议；</p>
+<h2 id="一段锁协议"><a href="#一段锁协议" class="headerlink" title="一段锁协议"></a>一段锁协议</h2><p>遵循一段锁协议的事务开始时，一次性申请所有的锁，之后不再申请任何锁。如果其中的某个锁不可用，则整个申请就不成功，事务就不会执行。在事务的尾端，一次性释放所有的锁。</p>
+<blockquote>
+<p>一次性锁协议不会产生死锁的问题，但是事务的并发度很低。</p>
+</blockquote>
+<h2 id="两段锁协议"><a href="#两段锁协议" class="headerlink" title="两段锁协议"></a>两段锁协议</h2><p>MySQL 遵循的是两段锁协议，将整个事务分为加锁阶段和解锁阶段。</p>
+<ul>
+<li><p>加锁阶段：在该阶段可以进行加锁操作。任何读操作之前都需要申请获得 S 锁，任何写操作之前需要申请 X 锁。如果加锁不成功，则事务等待，直到加锁成功后继续执行。</p>
+</li>
+<li><p>解锁阶段：当事务释放第一个锁，就进入了解锁阶段。在该阶段事务可以操作数据和解锁，但是不能再加锁。</p>
+</li>
+</ul>
+<p>遵循两段锁协议的事务具有较高的并发度，因为不是在事务结尾解锁，可以保证事务的并发调度是串行化。但是两段锁协议的缺点是没有解决死锁的问题，因为在加锁阶段没有顺序要求，如果两个事务分别申请了 A、B 锁，接着又申请了对方的锁，此时进入死锁状态。</p>
+<img src="/2022/09/24/InnoDB%E5%B0%81%E9%94%81%E5%8D%8F%E8%AE%AE/image-20220926164917586-4182161.png" alt="image-20220926164917586" style="zoom:50%;">
+
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
-<li><a target="_blank" rel="noopener" href="http://www.hollischuang.com/archives/914">MySQL中的行级锁,表级锁,页级锁</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zhoujinyi/p/3435982.html">Innodb 锁机制：Next-Key Lock 浅谈</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43155301/article/details/99302107">数据库的一级、二级、三级封锁协议</a></li>
+<li><a target="_blank" rel="noopener" href="https://tech.meituan.com/2014/08/20/innodb-lock.html">InnoDB 中的事务隔离级别和锁的关系</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zszmhd/p/3365220.html">两阶段锁协议</a></li>
 </ol>
 
         </div>
@@ -279,10 +293,10 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2022/09/24/InnoDB%E5%B0%81%E9%94%81%E5%8D%8F%E8%AE%AE/">InnoDB 封锁协议</a>
+                <a class="prev" rel="prev" href="/2022/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%B0%81%E9%94%81%E5%8D%8F%E8%AE%AE/">数据库的锁协议</a>
             
             
-            <a class="next" rel="next" href="/2022/09/06/%E6%95%A3%E5%88%97%E8%A1%A8/">散列表</a>
+            <a class="next" rel="next" href="/2022/09/22/InnoDB%E7%9A%84%E8%A1%8C%E9%94%81%E5%92%8C%E8%A1%A8%E9%94%81/">InnoDB 的行锁和表锁</a>
             
         </section>
 

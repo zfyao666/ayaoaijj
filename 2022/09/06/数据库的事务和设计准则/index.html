@@ -252,7 +252,11 @@
 <p>RR 为 MySQL 的默认隔离级别。</p>
 </blockquote>
 <h4 id="可串行化（SERIALIZABLE）"><a href="#可串行化（SERIALIZABLE）" class="headerlink" title="可串行化（SERIALIZABLE）"></a>可串行化（SERIALIZABLE）</h4><p>可串行化强制将事务放在一个队列中按照顺序执行，是最高级别的隔离级别，同时牺牲了系统的并发性。</p>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>隔离级别越低，系统吞吐量和并发程度就越大，但同时意味着出现异常的增多。<br><img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%92%8C%E8%AE%BE%E8%AE%A1%E5%87%86%E5%88%99/1646277055346-5db82467-786f-47c6-96d9-c825ab3a84be.png" alt="image.png"></p>
+<h3 id="异常和隔离级别的对应关系"><a href="#异常和隔离级别的对应关系" class="headerlink" title="异常和隔离级别的对应关系"></a>异常和隔离级别的对应关系</h3><p>隔离级别越低，系统吞吐量和并发程度就越大，但同时意味着出现异常的增多。</p>
+<img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%92%8C%E8%AE%BE%E8%AE%A1%E5%87%86%E5%88%99/1646277055346-5db82467-786f-47c6-96d9-c825ab3a84be.png" alt="image.png" style="zoom: 67%;">
+
+<img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%92%8C%E8%AE%BE%E8%AE%A1%E5%87%86%E5%88%99/1647232640212-2b535fcc-8dbb-4654-b48f-63b523f91d0a.png" alt="image.png" style="zoom: 33%;">
+
 <h2 id="数据表中的键"><a href="#数据表中的键" class="headerlink" title="数据表中的键"></a>数据表中的键</h2><p>数据库中的键由一个或多个属性构成。</p>
 <ul>
 <li>超键：能唯一识别元组的<strong>属性集</strong>叫做超键；</li>
@@ -264,12 +268,18 @@
 </ul>
 <h2 id="函数依赖"><a href="#函数依赖" class="headerlink" title="函数依赖"></a>函数依赖</h2><h3 id="部分函数依赖"><a href="#部分函数依赖" class="headerlink" title="部分函数依赖"></a>部分函数依赖</h3><p>设 X、Y 是关系 R 的两个属性集合，存在 X→Y，若 X’ 是 X 的真子集，存在 X’→Y，则称 Y 部分函数依赖于 X。<br>例：<br>（球员编号，比赛编号） → （姓名，年龄，比赛时间，比赛场地，得分）；<br>（球员编号） → （姓名，年龄）；<br>（比赛编号） → （比赛时间，比赛场地）；</p>
 <h3 id="完全函数依赖"><a href="#完全函数依赖" class="headerlink" title="完全函数依赖"></a>完全函数依赖</h3><p>设 X、Y 是关系 R 的两个属性集合，X’ 是 X 的真子集，存在 X→Y，但对每一个 X’ 都有 X’ !→Y，则称 Y 完全函数依赖于 X。</p>
-<h3 id="传递函数依赖"><a href="#传递函数依赖" class="headerlink" title="传递函数依赖"></a>传递函数依赖</h3><p>设 X、Y、Z 是关系 R 中互不相同的属性集合，存在 X→Y（Y !→X），Y→Z，则称 Z 传递函数依赖于 X。<br><img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%92%8C%E8%AE%BE%E8%AE%A1%E5%87%86%E5%88%99/1647188764824-5ba807a2-638f-45e6-9e6d-eeb5a003c2b7.png" alt="image.png"></p>
+<h3 id="传递函数依赖"><a href="#传递函数依赖" class="headerlink" title="传递函数依赖"></a>传递函数依赖</h3><p>设 X、Y、Z 是关系 R 中互不相同的属性集合，存在 X→Y（Y !→X），Y→Z，则称 Z 传递函数依赖于 X。</p>
+<img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%92%8C%E8%AE%BE%E8%AE%A1%E5%87%86%E5%88%99/1647188764824-5ba807a2-638f-45e6-9e6d-eeb5a003c2b7.png" alt="image.png" style="zoom: 67%;">
+
 <h2 id="范式"><a href="#范式" class="headerlink" title="范式"></a>范式</h2><h3 id="第一范式"><a href="#第一范式" class="headerlink" title="第一范式"></a>第一范式</h3><p>在任何一个关系数据库中，第一范式（1NF）是对关系模式的基本要求，不满足第一范式（1NF）的数据库就不是关系数据库。</p>
 <p>第一范式（1NF）是指数据库表的每一列（任意属性）都符合原子性，都是不可分割的基本数据项。同一个列中不能有多个值，即数据表中的某个属性不能有多个值或者不能有重复的属性。简而言之，第一范式就是无重复的列。</p>
 <h3 id="第二范式"><a href="#第二范式" class="headerlink" title="第二范式"></a>第二范式</h3><p>第二范式（2NF）要求数据表里的非主属性都要和候选键有完全依赖关系。</p>
 <h3 id="第三范式"><a href="#第三范式" class="headerlink" title="第三范式"></a>第三范式</h3><p>第三范式（3NF）要求数据表满足第二范式的同时，对任何非主属性都不传递依赖于候选键。简而言之就是非主属性不依赖于其他非主属性。</p>
-<h2 id="反范式设计"><a href="#反范式设计" class="headerlink" title="反范式设计"></a>反范式设计</h2><p>越高阶的范式得到的数据表越多，数据冗余度越低。例如查询某个商品的前 1000 个评论，涉及到商品评论表和用户表。<br><img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%92%8C%E8%AE%BE%E8%AE%A1%E5%87%86%E5%88%99/1646216232661-88a66996-7fc5-4f51-a05d-e0a7ea90ecfe.png" alt="image.png" style="zoom:67%;"><br><img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%92%8C%E8%AE%BE%E8%AE%A1%E5%87%86%E5%88%99/1646216236399-7633e508-40f4-49ae-a7db-f0da8a261e19.png" alt="image.png" style="zoom: 67%;"></p>
+<h2 id="反范式设计"><a href="#反范式设计" class="headerlink" title="反范式设计"></a>反范式设计</h2><p>越高阶的范式得到的数据表越多，数据冗余度越低。例如查询某个商品的前 1000 个评论，涉及到商品评论表和用户表。</p>
+<img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%92%8C%E8%AE%BE%E8%AE%A1%E5%87%86%E5%88%99/1646216232661-88a66996-7fc5-4f51-a05d-e0a7ea90ecfe.png" alt="image.png" style="zoom: 50%;">
+
+<img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%92%8C%E8%AE%BE%E8%AE%A1%E5%87%86%E5%88%99/1646216236399-7633e508-40f4-49ae-a7db-f0da8a261e19.png" alt="image.png" style="zoom: 50%;">
+
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> p.comment_text, p.comment_time, u.user_name <span class="keyword">FROM</span> product_comment <span class="keyword">AS</span> p </span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> <span class="keyword">user</span> <span class="keyword">AS</span> u </span><br><span class="line"><span class="keyword">ON</span> p.user_id <span class="operator">=</span> u.user_id </span><br><span class="line"><span class="keyword">WHERE</span> p.product_id <span class="operator">=</span> <span class="number">10001</span> </span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> p.comment_id <span class="keyword">DESC</span> LIMIT <span class="number">1000</span>;</span><br></pre></td></tr></table></figure>
 <p>上述查询代码的运行时间为 0.395，效率很低。因为显示评论需要显示用户的昵称，所以需要关联两张表进行查询。如果两张表数据量都超过了百万量级，查询效率就会变低。因为查询会在 product_comment 表和 user 表这两个表上进行聚集索引扫描，然后再嵌套循环。如果我们想要提升查询的效率，可以允许适当的数据冗余，在商品评论表中增加用户昵称字段。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> comment_text, comment_time, user_name <span class="keyword">FROM</span> product_comment2 <span class="keyword">WHERE</span> product_id <span class="operator">=</span> <span class="number">10001</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> comment_id <span class="keyword">DESC</span> LIMIT <span class="number">1000</span>;</span><br></pre></td></tr></table></figure>
