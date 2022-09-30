@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Bruce Yao">
+
+
+
+
+
+<title>处理器调度 | Yao&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Yao&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Yao&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">处理器调度</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Bruce Yao&nbsp;</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">September 5, 2022&nbsp;&nbsp;16:48:55&nbsp;</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="CPU-调度"><a href="#CPU-调度" class="headerlink" title="CPU 调度"></a>CPU 调度</h2><p>CPU 调度是按照调度算法从一堆就绪的队列中选择一个进程，将 CPU 的使用权交给此进程。调度算法的主要目的控制、协调进程对于 CPU 的竞争。</p>
+<h2 id="调度算法的衡量指标"><a href="#调度算法的衡量指标" class="headerlink" title="调度算法的衡量指标"></a>调度算法的衡量指标</h2><ul>
+<li><p><strong>吞吐量：</strong>每个单位时间内完成的进程数目，越大越好；</p>
+</li>
+<li><p><strong>周转时间：</strong>每个进程从提出申请到运行完成所需要的时间，越短越好；</p>
+</li>
+<li><p><strong>响应时间：</strong>从提出请求到第一次响应的时间，越短越好；</p>
+</li>
+<li><p><strong>CPU 利用率、等待时间：</strong>CPU 做有效工作的时间比例、每个进程在就绪队列中的等待时间；</p>
+</li>
+</ul>
+<h2 id="进程调度算法"><a href="#进程调度算法" class="headerlink" title="进程调度算法"></a>进程调度算法</h2><p>不同的系统环境选择不同的进程调度算法。</p>
+<h3 id="批处理系统中的调度算法"><a href="#批处理系统中的调度算法" class="headerlink" title="批处理系统中的调度算法"></a>批处理系统中的调度算法</h3><p>批处理系统没有太多的用户操作，所以调度算法的目标在于：吞吐量、周转时间、CPU利用率。<br>包含四种算法：</p>
+<ul>
+<li>先来先服务（FCFS）</li>
+<li>短作业优先（SJF）</li>
+<li>最短剩余时间优先（SRTN）</li>
+<li>最高响应比优先（HRRN）</li>
+</ul>
+<h4 id="先来先服务"><a href="#先来先服务" class="headerlink" title="* 先来先服务"></a>* 先来先服务</h4><blockquote>
+<p>FCFS，First Come First Serve</p>
+</blockquote>
+<ul>
+<li>按照进程就绪的先后顺序使用CPU</li>
+<li>非抢占式</li>
+</ul>
+<p>FCFS 实现简单、公平，但是长进程后面的短进程需要等待很长的时间，不利于用户体验。</p>
+<h4 id="短作业优先"><a href="#短作业优先" class="headerlink" title="* 短作业优先"></a>* 短作业优先</h4><blockquote>
+<p>SJF，Shortest Job First</p>
+</blockquote>
+<ul>
+<li>具有最短完成时间的进程优先执行</li>
+<li>非抢占式</li>
+<li>目的在于先完成短的作业，改善短作业的周转时间</li>
+</ul>
+<p>短作业优先在所有进程可以同时运行时，可以得到最短的平均周转时间。但是不公平，如果不断有短任务到来，可能会导致长任务长时间得不到运行，从而产生了“饥饿”现象。</p>
+<h4 id="最短剩余时间优先"><a href="#最短剩余时间优先" class="headerlink" title="* 最短剩余时间优先"></a>* 最短剩余时间优先</h4><blockquote>
+<p>SRTN，Shortest Remaining Time Next</p>
+</blockquote>
+<p>SJF 的抢占式版本，即当一个新就绪进程的整个运行时间比当前进程的剩余运行时间短时，系统抢占当前运行的进程，选择新就绪的进程运行。</p>
+<h4 id="最高响应比优先"><a href="#最高响应比优先" class="headerlink" title="* 最高响应比优先"></a>* 最高响应比优先</h4><blockquote>
+<p>HRRN，Highest Response Ratio Next</p>
+</blockquote>
+<ul>
+<li>最高响应比优先是一个综合的算法。</li>
+<li>调度时，首先计算每个进程的响应比 R，之后总是选择 R 最高的进程进行。</li>
+<li>响应比 R &#x3D; 周转时间 &#x2F; 处理时间 &#x3D; （处理时间 + 等待时间）&#x2F; 处理时间 &#x3D; 1 + 等待时间 &#x2F; 处理时间。如果一个进程的等待时间很长，那么它的响应比也就越高，就能得到更加优先的执行。</li>
+</ul>
+<h3 id="交互式系统中的调度算法"><a href="#交互式系统中的调度算法" class="headerlink" title="交互式系统中的调度算法"></a>交互式系统中的调度算法</h3><p>交互式系统着重于进程的响应时间。包含三种调度算法：</p>
+<ul>
+<li>时间片轮转算法（RR）</li>
+<li>最高优先级调度算法（HPF）</li>
+<li>多级反馈队列（Multiple Feedback Queue）</li>
+</ul>
+<h4 id="时间片轮转算法"><a href="#时间片轮转算法" class="headerlink" title="* 时间片轮转算法"></a>* 时间片轮转算法</h4><blockquote>
+<p>RR，Round Robin</p>
+</blockquote>
+<ul>
+<li>周期性的切换进程，目的是为短任务改进平均响应时间。</li>
+<li>将所有的进程按照 FCFS 的原则排成一个队列。每次调度时，为队首的进程分配一个时间片。当时间片用完时，计时器发出中断，调度程序停止该进程的运行，并将它送到就绪队列的末尾，然后给队首的新进程分配一个时间片。</li>
+</ul>
+<p><img src="/images/1650598464782-47e0c041-fb9d-4fe4-87df-a330c616ef2d-20220905171403172.png" alt="image.png"><br>选择合适的时间片很重要：</p>
+<ul>
+<li>如果太长，会降级为 FCFS 算法，同时延长了短进程的响应时间。</li>
+<li>如果太短，会延长长进程的响应时间，同时增加 CPU 进程切换的开销。</li>
+</ul>
+<p>优缺点：</p>
+<ul>
+<li>公平，有利于交互式计算，响应的时间快。</li>
+<li>由于进程切换，轮转算法会花费较高的开销。</li>
+<li>当所有进程的运行时间相同时，进程的平均周转时间很长。</li>
+</ul>
+<h4 id="最高优先级调度算法"><a href="#最高优先级调度算法" class="headerlink" title="* 最高优先级调度算法"></a>* 最高优先级调度算法</h4><blockquote>
+<p>HPF，Highest Priority First</p>
+</blockquote>
+<ul>
+<li>选择优先级最高的算法运行。</li>
+<li>优先级可以是静态不变，也可以是动态调整。优先级可以用通过优先数来决定，同时就绪队列可以按照优先级组织。</li>
+<li>实现简单，但是不公平，会造成低优先级进程的饥饿现象。</li>
+<li>会出现优先级翻转问题。</li>
+</ul>
+<img src="/images/1650599036849-c7f93199-0273-4b6d-8c4c-ec6932a0fa96.png" alt="image.png" style="zoom: 50%;">
+
+<p>优先级翻转是当一个高优先级任务通过信号量机制访问共享资源时，该信号量已被一低优先级任务占有，造成高优先级任务被许多具有较低优先级任务阻塞，导致进程的实时性难以得到保证。</p>
+<p>例如：有优先级为 A、B 和 C 三个任务，优先级 A&gt;B&gt;C，任务 A，B 处于挂起状态，等待某一事件发生，任务 C 正在运行，此时任务 C 开始使用某一共享资源 S。在使用中，任务 A 等待事件到来，任务 A 转为就绪态，因为它比任务 C 优先级高，所以立即执行。当任务 A 要使用共享资源 S 时，由于其正在被任务 C 使用，因此任务 A 被挂起，任务 C 开始运行。如果此时任务 B 等待事件到来，则任务 B 转为就绪态。由于任务 B 优先级比任务 C 高，因此任务 B 开始运行，直到其运行完毕，任务 C 才开始运行。直到任务C 释放共享资源 S 后，任务 A 才得以执行。在这种情况下，优先级发生了翻转，任务 B 先于任务 A 运行。</p>
+<p>解决优先级翻转的方法有优先级上限和优先级继承：</p>
+<ul>
+<li><strong>优先级上限：</strong>当任务申请某资源时， 把该任务的优先级提升到可访问这个资源的所有任务中的最高优先级， 这个优先级称为该资源的优先级天花板。这种方法简单易行， 不必进行复杂的判断， 不管任务是否阻塞了高优先级任务的运行， 只要任务访问共享资源都会提升任务的优先级。</li>
+<li><strong>优先级继承：</strong>当任务 A 申请共享资源 S 时， 如果 S 正在被任务 C 使用，通过比较任务 C 与自身的优先级，如发现任务 C 的优先级小于自身的优先级， 则将任务 C 的优先级提升到自身的优先级， 任务C 释放资源 S 后，再恢复任务 C 的原优先级。这种方法只在占有资源的低优先级任务阻塞了高优先级任务时才动态的改变任务的优先级。如果过程较复杂， 则需要进行判断。</li>
+</ul>
+<h4 id="多级反馈队列"><a href="#多级反馈队列" class="headerlink" title="* 多级反馈队列"></a>* 多级反馈队列</h4><blockquote>
+<p>Multiple Feedback Queue</p>
+</blockquote>
+<p>设置多个就绪队列，每个队列的优先级和时间片也不同。第一级队列的时间片最小，优先级最高，随着队列的优先级降低，队列对应的时间片增大。当第一级队列为空时，从第二级别队列中调度，以此类推。当一个新进程就绪后，进入第一级队列，进程用完时间片后放弃 CPU，进入下一级别就绪队列。由于阻塞而放弃 CPU 的进程进入到相对应的等待队列，一旦等待的事情发生，该进程返回到原来的就绪队列中。</p>
+<p><img src="/images/1648801458503-b0caa661-5dc6-4883-8a88-6fa31a099fe3-20220905171541267.png" alt="image.png"></p>
+<h2 id="进程调度算法总结"><a href="#进程调度算法总结" class="headerlink" title="进程调度算法总结"></a>进程调度算法总结</h2><style>
+table th:nth-of-type(1){
+width: 50px;
+}
+table th:nth-of-type(2){
+width: 100px
+;
+}
+table th:nth-of-type(3){
+width: 100px;
+}
+table th:nth-of-type(4){
+width: 200px;
+}
+table th:nth-of-type(5){
+width: 100px;
+}
+table th:nth-of-type(6){
+width: 100px;
+}
+table th:nth-of-type(7){
+width: 80px;
+}
+</style>
+
+
+<table>
+<thead>
+<tr>
+<th>调度算法</th>
+<th>占用CPU方式</th>
+<th>吞吐量</th>
+<th>响应时间</th>
+<th>开销</th>
+<th>对进程的影响</th>
+<th>是否存在饥饿问题</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>FCFS</td>
+<td>非抢占式</td>
+<td>不强调</td>
+<td>可能很慢，特别适当进程的执行时间差别很大的时候；</td>
+<td>最小</td>
+<td>对短进程不利；对I&#x2F;O进程不利；</td>
+<td>无</td>
+</tr>
+<tr>
+<td>SJF</td>
+<td>非抢占式</td>
+<td>高</td>
+<td>为短进程提供最好的响应时间</td>
+<td>可能较大</td>
+<td>对长进程不利</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>SRTN</td>
+<td>抢占式</td>
+<td>高</td>
+<td>提供好的响应时间</td>
+<td>可能较大</td>
+<td>对长进程不利</td>
+<td>可能</td>
+</tr>
+<tr>
+<td>HRRN</td>
+<td>非抢占式</td>
+<td>高</td>
+<td>提供好的响应时间</td>
+<td>可能较大</td>
+<td>很好的平衡性</td>
+<td>无</td>
+</tr>
+<tr>
+<td>RR</td>
+<td>抢占式（时间片用完）</td>
+<td>如果时间片很小，吞吐量很低</td>
+<td>为短进程提供好的响应时间</td>
+<td>较大</td>
+<td>公平对待</td>
+<td>无</td>
+</tr>
+<tr>
+<td>FeedBack</td>
+<td>抢占式（时间片用完）</td>
+<td>不强调</td>
+<td>不强调</td>
+<td>可能较大</td>
+<td>对I&#x2F;O进程有利</td>
+<td>可能</td>
+</tr>
+</tbody></table>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://www.coursera.org/learn/os-pku/home/welcome">北京大学操作系统原理（Operating Systems）</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.cyc2018.xyz/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%9F%BA%E7%A1%80/%E8%AE%A1%E7%AE%97%E6%9C%BA%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%20-%20%E8%BF%9B%E7%A8%8B%E7%AE%A1%E7%90%86.html#%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B">计算机操作系统 - 进程管理</a></li>
+<li><a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E4%BC%98%E5%85%88%E7%BA%A7%E7%BF%BB%E8%BD%AC/4945202">优先级翻转-百度百科</a></li>
+<li><a target="_blank" rel="noopener" href="https://csc-knu.github.io/sys-prog/books/Andrew%20S.%20Tanenbaum%20-%20Modern%20Operating%20Systems.pdf">Modern operating systems</a></li>
+</ol>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/09/05/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6/">同步机制</a>
+            
+            
+            <a class="next" rel="next" href="/2022/09/05/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%E6%A8%A1%E5%9E%8B/">进程线程模型</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Bruce Yao | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

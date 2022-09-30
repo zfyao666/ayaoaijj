@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Bruce Yao">
+
+
+
+
+
+<title>散列表 | Yao&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Yao&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Yao&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">散列表</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Bruce Yao&nbsp;</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">September 6, 2022&nbsp;&nbsp;16:22:52&nbsp;</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>散列表类似于数组，可以把键映射成的散列值当作数组的索引值。通过这种操作，访问散列表就和访问数组一样快。散列表可以实现常数时间的查找和插入操作。使用散列的查找算法分为两步：第一步是用散列函数将被查找的键映射为数组的一个索引；第二步使处理碰撞冲突，碰撞冲突的解决方法主要为拉链法和线性探测法。</p>
+<h2 id="散列方法的三个条件"><a href="#散列方法的三个条件" class="headerlink" title="散列方法的三个条件"></a>散列方法的三个条件</h2><ul>
+<li>一致性——等价的键一定产生相等的散列值；</li>
+<li>高效性——计算简便；</li>
+<li>均匀性——均匀地散列所有的键；</li>
+</ul>
+<p>Java 令所有的数据类型都继承了一个能够返回 32 比特整数的<code>hashCode()</code>。每一种数据类型的 hashCode() 都必须和 equals() 方法一致。也就是说，如果<code>a.equals()</code>返回<code>true()</code>，那么<code>a.hashCode()</code>和<code>b.hashCode()</code>的返回值必然相同。但要注意，如果<code>a.hashCode()</code>和<code>b.hashCode()</code>的返回值相同，<code>a.equals()</code>不一定返回<code>true</code>。</p>
+<p>保证均匀性的最好办法就是保证键的每一位都在散列值的计算中起到了相同的作用；实现散列函数时最常见的错误就是忽略了键的高位。在 jdk 的<code>hashMap</code>中，为了保证均匀性将默认散列函数得到的散列值与其高16位进行了异或运算重新得到了新的散列值。</p>
+<p>为了将一个 32 位的整数散列值转换成数组的索引，我们在实现中还要将默认的<code>hashCode()</code>得到的散列值和除留余数法结合起来产生一个 0 到 M-1（M 代表数组的大小）的整数。这在<code>HashMap</code>中是通过这行代码实现的：<code>hash &amp; (table.length - 1)</code>。</p>
+<h2 id="散列函数"><a href="#散列函数" class="headerlink" title="散列函数"></a>散列函数</h2><p>散列函数将任意键转化为数组范围内的索引值（[0, M-1]内的整数），同时能够均匀分布所有的键。</p>
+<h3 id="正整数"><a href="#正整数" class="headerlink" title="正整数"></a>正整数</h3><p>将整数散列最常用的方法是除留余数法。选择大小为素数 M 的数组，对于任意正整数 k，计算 k%M 可以得到一个位于[0, M-1]之间的散列值。注意 M 最好是一个素数，否则无法利用键包含的所有信息。例如 M 为 10k，那么只能利用键的后 k 位。</p>
+<h3 id="浮点数"><a href="#浮点数" class="headerlink" title="浮点数"></a>浮点数</h3><p>将键表示为二进制数然后再使用除留余数法。</p>
+<h3 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">hash</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; s.length(); i++) </span><br><span class="line">    hash = (R * hash + s.charAt(i)) % M;</span><br></pre></td></tr></table></figure>
+<p>R 通常取 31；</p>
+<h3 id="将hashCode-的返回值转化为一个数组索引"><a href="#将hashCode-的返回值转化为一个数组索引" class="headerlink" title="将hashCode()的返回值转化为一个数组索引"></a>将hashCode()的返回值转化为一个数组索引</h3><p>Java 中的 hashCode() 实现了哈希函数，但是<strong>默认使用对象的内存地址值</strong>。在使用 hashCode() 时，应当结合除留余数法来使用。因为内存地址是 32 位整数，我们只需要 31 位的非负整数，因此应当屏蔽符号位之后再使用除留余数法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="type">int</span> <span class="title function_">hash</span><span class="params">(Key x)</span> &#123;</span><br><span class="line">	<span class="type">int</span> <span class="variable">hash</span> <span class="operator">=</span> (x.hashCode() &amp; <span class="number">0x7fffffff</span>) % M;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="自定义hashCode"><a href="#自定义hashCode" class="headerlink" title="自定义hashCode()"></a>自定义hashCode()</h3><p>使用 Java 的 HashMap 等自带的哈希表实现时，只需要去实现 Key 类型的 hashCode() 函数即可。Java 规定 hashCode() 能够将键均匀分布于所有的 32 位整数，Java 中的 String、Integer 等对象的 hashCode() 都能实现这一点。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Transaction</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String who;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Date when;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">double</span> amount;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Transaction</span><span class="params">(String who, Date when, <span class="type">double</span> amount)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.who = who;</span><br><span class="line">        <span class="built_in">this</span>.when = when;</span><br><span class="line">        <span class="built_in">this</span>.amount = amount;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">hashCode</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">hash</span> <span class="operator">=</span> <span class="number">17</span>;</span><br><span class="line">        <span class="type">int</span> <span class="variable">R</span> <span class="operator">=</span> <span class="number">31</span>;</span><br><span class="line">        hash = R * hash + who.hashCode();</span><br><span class="line">        hash = R * hash + when.hashCode();</span><br><span class="line">        hash = R * hash + ((Double) amount).hashCode();</span><br><span class="line">        <span class="keyword">return</span> hash;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="碰撞处理"><a href="#碰撞处理" class="headerlink" title="碰撞处理"></a>碰撞处理</h2><h3 id="基于拉链法的散列表"><a href="#基于拉链法的散列表" class="headerlink" title="基于拉链法的散列表"></a>基于拉链法的散列表</h3><p>拉链法是将大小为 M 的数组中的每个元素指向一条链表，链表中的每个节点都存储了散列值为该元素的索引的键值对。基于拉链法的查找分为两步：首先根据散列值找到对应的链表，然后沿着链表顺序查找相应的键。</p>
+<p>在实现基于拉链法的散列表时，要选择适当的数组大小 M，既不会因为空链表而浪费大量内存，也不会因为链表太长而在查找上浪费太多时间。</p>
+<p>在需要快速查找最大或者最小的键，或者是查找某个范围内的键，散列表都不是最合适的选择，因为这些操作的运行时间都是线性的。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SeparateChainingHashST</span>&lt;Key, Value&gt; &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> N;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> M;</span><br><span class="line">    <span class="keyword">private</span> SequentialSearchST&lt;Key, Value&gt;[] st;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">SeparateChainingHashST</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>(<span class="number">997</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">SeparateChainingHashST</span><span class="params">(<span class="type">int</span> M)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.M = M;</span><br><span class="line">        st = (SequentialSearchST&lt;Key, Value&gt;[]) <span class="keyword">new</span> <span class="title class_">SequentialSearchST</span>[M];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; M; i++) &#123;</span><br><span class="line">            st[i] = <span class="keyword">new</span> <span class="title class_">SequentialSearchST</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    hash(key) =&gt; 散列值（数组索引）=&gt; 数组找到对应的链表 =&gt; 链表.get(key) =&gt; return Value value</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> <span class="title function_">hash</span><span class="params">(Key key)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> (key.hashCode() &amp; <span class="number">0x7fffffff</span>) % M;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Value <span class="title function_">get</span><span class="params">(Key key)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> (Value) st[hash(key)].get(key);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">put</span><span class="params">(Key key, Value value)</span> &#123;</span><br><span class="line">        st[hash(key)].put(key, value);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="基于线性探测法的散列表"><a href="#基于线性探测法的散列表" class="headerlink" title="基于线性探测法的散列表"></a>基于线性探测法的散列表</h3><p>用大小为 M 的数组保存 N 个键值对，其中 M&gt;N，我们可以通过数组中的空位来解决碰撞冲突，基于这种策略开发的所有方法被称为开放地址散列表。线性探测法是开放地址散列表中最简单的方法。</p>
+<p>当碰撞发生时，线性探测法直接查找散列表中的下一个位置，带来 3 种结果：</p>
+<ul>
+<li>命中，该位置的键和被查找的键相同；</li>
+<li>未命中，键为空（该位置没有键）；</li>
+<li>继续查找，该位置的键和被查找的键不同；</li>
+</ul>
+<p>开放地址类的散列表的核心思想是将内存作为散列表的空元素，这些空元素可以作为查找结束的标志。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LinearProbingHashST</span>&lt;Key, Value&gt; &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> N;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> <span class="variable">M</span> <span class="operator">=</span> <span class="number">16</span>;</span><br><span class="line">    <span class="keyword">private</span> Key[] keys;</span><br><span class="line">    <span class="keyword">private</span> Value[] values;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">LinearProbingHashST</span><span class="params">()</span> &#123;</span><br><span class="line">        keys = (Key[]) <span class="keyword">new</span> <span class="title class_">Object</span>[M];</span><br><span class="line">        values = (Value[]) <span class="keyword">new</span> <span class="title class_">Object</span>[M];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> <span class="title function_">hash</span><span class="params">(Key key)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> (key.hashCode() &amp; <span class="number">0x7ffffff</span>) % M;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">put</span><span class="params">(Key key, Value value)</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Value <span class="title function_">get</span><span class="params">(Key key)</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">delete</span><span class="params">(Key key)</span></span><br><span class="line">        </span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">resize</span><span class="params">(<span class="type">int</span> M)</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h4><p>要查找一个键值，我们先计算它的散列值然后开始顺序查找，如果找到则命中，否则直接检查散列表中的下一个位置（索引值+1），直到找到该键值或者一个空元。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Value <span class="title function_">get</span><span class="params">(Key key)</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> hash(key); keys[i] != <span class="literal">null</span>; i = (i + <span class="number">1</span>) % M) &#123;</span><br><span class="line">        <span class="keyword">if</span> (keys[i].equals(key)) <span class="keyword">return</span> values[i];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h4><p>如果新键的散列值的位置是一个空元素，那么就将键保存在那里；否则发生冲突，键值相等时修改 value 值，键值不相等时继续顺序查找直到一个空元素用来保存它。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">put</span><span class="params">(Key key, Value value)</span> &#123;</span><br><span class="line">    <span class="type">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i = hash(key); keys[i] != <span class="literal">null</span>; i = (i + <span class="number">1</span>) % M) &#123;</span><br><span class="line">        <span class="keyword">if</span> (keys[i].equals(key)) &#123;</span><br><span class="line">            values[i] = value;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    keys[i] = key;</span><br><span class="line">    values[i] = value;</span><br><span class="line">    N++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h4><p>直接将要删除的键所在的位置设为 null 是不行的，因为这会使在此位置之后的元素无法被查找（簇连续）。因此，我们需要将簇中被删除键的右侧的所有键重新插入散列表。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">delete</span><span class="params">(Key key)</span> &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> hash(key);</span><br><span class="line">    <span class="keyword">while</span> (keys[i] != <span class="literal">null</span> &amp;&amp; !key.equals(keys[i])) i = (i + <span class="number">1</span>) % M;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (keys[i] == <span class="literal">null</span>) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    keys[i] = <span class="literal">null</span>;</span><br><span class="line">    values[i] = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">    i = (i + <span class="number">1</span>) % M;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> (keys[i] != <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="type">Key</span> <span class="variable">keytoRo</span> <span class="operator">=</span> keys[i];</span><br><span class="line">        <span class="type">Value</span> <span class="variable">valuetoRo</span> <span class="operator">=</span> values[i];</span><br><span class="line">        keys[i] = <span class="literal">null</span>;</span><br><span class="line">        values[i] = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">        N--;</span><br><span class="line"></span><br><span class="line">        put(keytoRo, valuetoRo);</span><br><span class="line"></span><br><span class="line">        i = (i + <span class="number">1</span>) % M;</span><br><span class="line">    &#125;</span><br><span class="line">    N--;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="散列表的性能指数"><a href="#散列表的性能指数" class="headerlink" title="散列表的性能指数"></a>散列表的性能指数</h3><p>N&#x2F;M 决定了散列表的性能，也被成为散列表的使用率。对于基于拉链法的散列表，N&#x2F;M 是每一条链表的长度，一般大于 1；对于线性探测法的散列表，N&#x2F;M 是表中已经被占用的空间的比例，不可能大于 1。</p>
+<p>对于线性探测法，通过动态调整数组来保证使用率在 1&#x2F;8～1&#x2F;2 之间。对于拉链法，可以根据查找时间于（1+N&#x2F;M）成正比选取合适的 M即可。</p>
+<h3 id="调整数组的大小"><a href="#调整数组的大小" class="headerlink" title="调整数组的大小"></a>调整数组的大小</h3><p>线性探测法的平均成本取决于元素在插入数组后聚集成的连续的条目的长度，也叫做键簇。长键簇会导致探测次数的增长。为了保证散列表的性能，需要动态调整散列表数组的大小，使散列表的使用率不超过 1&#x2F;2。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">resize</span><span class="params">(<span class="type">int</span> cap)</span> &#123;</span><br><span class="line">    LinearProbingHashST&lt;Key, Value&gt; t;</span><br><span class="line">    t = <span class="keyword">new</span> <span class="title class_">LinearProbingHashST</span>&lt;&gt;(cap);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; M; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (keys[i] != <span class="literal">null</span>) t.put(keys[i], values[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    keys = t.keys;</span><br><span class="line">    values = t.values;</span><br><span class="line">    M = t.M;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/09/22/%E6%95%B0%E6%8D%AE%E5%BA%93/InnoDB%E7%9A%84%E8%A1%8C%E9%94%81%E5%92%8C%E8%A1%A8%E9%94%81/">InnoDB 的行锁和表锁</a>
+            
+            
+            <a class="next" rel="next" href="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/B-tree/">B-树 & B+树</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Bruce Yao | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

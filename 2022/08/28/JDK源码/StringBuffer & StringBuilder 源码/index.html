@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Bruce Yao">
+
+
+
+
+
+<title>StringBuffer &amp; StringBuilder 源码 | Yao&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Yao&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Yao&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">StringBuffer &amp; StringBuilder 源码</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Bruce Yao&nbsp;</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">August 28, 2022&nbsp;&nbsp;0:58:07&nbsp;</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Java/">Java</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><code>StringBuilder</code>和<code>StringBuilder</code>都是字符串操作类。它们都继承了<code>AbstractStringBuilder</code>抽象类，并且都实现了<code>CharSequence</code>和<code>Serializable</code>接口。它们和<code>String</code>的区别在于它们的<code>value</code>数组没有被<code>final</code>修饰符修饰，所以是可变的。它们之间的区别是<code>StringBuffer</code>的方法是由<code>synchronized</code>关键字修饰，所以是线程安全的。</p>
+<img src="/images/1655956125753-587789ac-59ff-4add-9077-70bee6e86f80-20220828012946969.png" alt="image.png" style="zoom: 67%;">
+
+<h2 id="AbstractStringBuilder"><a href="#AbstractStringBuilder" class="headerlink" title="AbstractStringBuilder"></a>AbstractStringBuilder</h2><p><code>AbstractStringBuilder</code>是<code>StringBuilder</code>和<code>StringBuffer</code>共同继承的抽象类，它为子类提供了大部分的实现。</p>
+<h3 id="成员变量-amp-构造方法"><a href="#成员变量-amp-构造方法" class="headerlink" title="成员变量 &amp; 构造方法"></a>成员变量 &amp; 构造方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 维护一个字符数组</span></span><br><span class="line"><span class="type">char</span>[] value;</span><br><span class="line"><span class="comment">// 字符的个数</span></span><br><span class="line"><span class="type">int</span> count;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 构造方法</span></span><br><span class="line">AbstractStringBuilder() &#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 指定初始化容量</span></span><br><span class="line">AbstractStringBuilder(<span class="type">int</span> capacity) &#123;</span><br><span class="line">    value = <span class="keyword">new</span> <span class="title class_">char</span>[capacity];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="扩容"><a href="#扩容" class="headerlink" title="扩容"></a>扩容</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// minimumCapacity: 需要的最小容量</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">ensureCapacity</span><span class="params">(<span class="type">int</span> minimumCapacity)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (minimumCapacity &gt; <span class="number">0</span>)</span><br><span class="line">        ensureCapacityInternal(minimumCapacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">ensureCapacityInternal</span><span class="params">(<span class="type">int</span> minimumCapacity)</span> &#123;</span><br><span class="line">    <span class="comment">// 如果所需要的容量大于当前容量，则进行扩容，使用Arrays.copyOf()</span></span><br><span class="line">    <span class="keyword">if</span> (minimumCapacity - value.length &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        value = Arrays.copyOf(value,</span><br><span class="line">                              newCapacity(minimumCapacity));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 数组长度的最大值</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">MAX_ARRAY_SIZE</span> <span class="operator">=</span> Integer.MAX_VALUE - <span class="number">8</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="type">int</span> <span class="title function_">newCapacity</span><span class="params">(<span class="type">int</span> minCapacity)</span> &#123;</span><br><span class="line">    <span class="comment">// 新容量 = 2 * 旧容量 + 2</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">newCapacity</span> <span class="operator">=</span> (value.length &lt;&lt; <span class="number">1</span>) + <span class="number">2</span>;</span><br><span class="line">    <span class="comment">// 如果新容量仍不够大，将新容量设置为所需要容量</span></span><br><span class="line">    <span class="keyword">if</span> (newCapacity - minCapacity &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        newCapacity = minCapacity;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果新容量 &gt; MAX_ARRAY_SIZE or &lt; 0</span></span><br><span class="line">    <span class="keyword">return</span> (newCapacity &lt;= <span class="number">0</span> || MAX_ARRAY_SIZE - newCapacity &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="comment">// 进一步判断</span></span><br><span class="line">        ? hugeCapacity(minCapacity)</span><br><span class="line">        <span class="comment">// 否则，直接返回新容量</span></span><br><span class="line">        : newCapacity;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="type">int</span> <span class="title function_">hugeCapacity</span><span class="params">(<span class="type">int</span> minCapacity)</span> &#123;</span><br><span class="line">    <span class="comment">// 如果需要的容量大于整型最大值，抛出 OutOfMemoryError</span></span><br><span class="line">    <span class="keyword">if</span> (Integer.MAX_VALUE - minCapacity &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">OutOfMemoryError</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 所需容量 &gt; MAX_ARRAY_SIZE，返回所需要容量</span></span><br><span class="line">    <span class="comment">// 所需容量 &lt; MAX_ARRAY_SIZE，返回 MAX_ARRAY_SIZE</span></span><br><span class="line">    <span class="keyword">return</span> (minCapacity &gt; MAX_ARRAY_SIZE)</span><br><span class="line">        ? minCapacity : MAX_ARRAY_SIZE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在一些虚拟机中会为数组保留一些 <code>header words</code>，所以为了防止<code>OutOfMemoryError</code>将<code>MAX_ARRAY_SIZE</code>设置为整型的最大值减 8。总的来说，扩容机制的过程如下：</p>
+<ol>
+<li>新容量 &#x3D; 旧容量 * 2 + 2，如果新容量仍然不能满足，数组长度直接设置为所需容量。</li>
+<li>如果新容量小于<code>MAX_ARRAY_SIZE</code>，直接返回新容量。</li>
+<li>否则，当所需容量大于整型最大值时抛出异常。</li>
+<li>如果所需容量 &gt; <code>MAX_ARRAY_SIZE</code>，直接返回所需容量，否则返回<code>MAX_ARRAY_SIZE</code>。</li>
+</ol>
+<h3 id="append"><a href="#append" class="headerlink" title="append()"></a>append()</h3><p><code>append()</code>是整个类的核心方法，拥有多个重载方法，这里主要分析以<code>String</code>为参数的方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> AbstractStringBuilder <span class="title function_">append</span><span class="params">(String str)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (str == <span class="literal">null</span>)</span><br><span class="line">        <span class="keyword">return</span> appendNull();</span><br><span class="line">    <span class="type">int</span> <span class="variable">len</span> <span class="operator">=</span> str.length();</span><br><span class="line">    <span class="comment">// 扩容</span></span><br><span class="line">    ensureCapacityInternal(count + len);</span><br><span class="line">    <span class="comment">// 调用String.getChars()将str添加到value末尾，本质是调用System.arraycopy()</span></span><br><span class="line">    str.getChars(<span class="number">0</span>, len, value, count);</span><br><span class="line">    <span class="comment">// 更新字符长度</span></span><br><span class="line">    count += len;</span><br><span class="line">    <span class="comment">// 返回自身，实现链式调用</span></span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> AbstractStringBuilder <span class="title function_">appendNull</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">c</span> <span class="operator">=</span> count;</span><br><span class="line">    ensureCapacityInternal(c + <span class="number">4</span>);</span><br><span class="line">    <span class="keyword">final</span> <span class="type">char</span>[] value = <span class="built_in">this</span>.value;</span><br><span class="line">    <span class="comment">// 添加&#x27;n&#x27;, &#x27;u&#x27;, &#x27;l&#x27;, &#x27;l&#x27;四个字符到value数组中</span></span><br><span class="line">    value[c++] = <span class="string">&#x27;n&#x27;</span>;</span><br><span class="line">    value[c++] = <span class="string">&#x27;u&#x27;</span>;</span><br><span class="line">    value[c++] = <span class="string">&#x27;l&#x27;</span>;</span><br><span class="line">    value[c++] = <span class="string">&#x27;l&#x27;</span>;</span><br><span class="line">    count = c;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="StringBuilder"><a href="#StringBuilder" class="headerlink" title="StringBuilder"></a>StringBuilder</h2><h3 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 默认初始化容量16</span></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">StringBuilder</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>(<span class="number">16</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 指定初始化容量</span></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">StringBuilder</span><span class="params">(<span class="type">int</span> capacity)</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>(capacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 直接传入一个String</span></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">StringBuilder</span><span class="params">(String str)</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>(str.length() + <span class="number">16</span>);</span><br><span class="line">    append(str);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 传入一个字符序列</span></span><br><span class="line"><span class="keyword">public</span> <span class="title function_">StringBuilder</span><span class="params">(CharSequence seq)</span> &#123;</span><br><span class="line">    <span class="built_in">this</span>(seq.length() + <span class="number">16</span>);</span><br><span class="line">    append(seq);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="append-1"><a href="#append-1" class="headerlink" title="append()"></a>append()</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> StringBuilder <span class="title function_">append</span><span class="params">(String str)</span> &#123;</span><br><span class="line">    <span class="built_in">super</span>.append(str);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="StringBuffer"><a href="#StringBuffer" class="headerlink" title="StringBuffer"></a>StringBuffer</h2><p>方法实现基本和<code>StringBuilder</code>相同，但是被<code>synchronized</code>关键字修饰，保证了方法的线程安全。<br>以<code>append()</code>为例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 实现和StringBuilder相同，但是添加的synchronized关键字保证了线程安全</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> StringBuffer <span class="title function_">append</span><span class="params">(String str)</span> &#123;</span><br><span class="line">    toStringCache = <span class="literal">null</span>;</span><br><span class="line">    <span class="built_in">super</span>.append(str);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="toStringCache-amp-toString"><a href="#toStringCache-amp-toString" class="headerlink" title="toStringCache &amp; toString()"></a>toStringCache &amp; toString()</h3><p><code>StringBuffer</code>的任何写方法都会对<code>toStringCache</code>重设为<code>null</code>，该变量保存了最近一次<code>toString()</code>方法的缓存。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 最近一次toString()的缓存，任何写操作都会将该变量重设为null</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> <span class="type">char</span>[] toStringCache;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">synchronized</span> String <span class="title function_">toString</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 如果缓存为空，则填充缓存</span></span><br><span class="line">    <span class="keyword">if</span> (toStringCache == <span class="literal">null</span>) &#123;</span><br><span class="line">        toStringCache = Arrays.copyOfRange(value, <span class="number">0</span>, count);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 返回使用缓存new的String对象</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">String</span>(toStringCache, <span class="literal">true</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 该方法不是直接复制，而是将String中的value指向toStringCache</span></span><br><span class="line">String(<span class="type">char</span>[] value, <span class="type">boolean</span> share) &#123;</span><br><span class="line">    <span class="comment">// assert share : &quot;unshared not supported&quot;;</span></span><br><span class="line">    <span class="built_in">this</span>.value = value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li>可变性：<ul>
+<li><code>String</code>是不可变的；</li>
+<li><code>StringBuilder</code>和<code>StringBuilder</code>没有使用<code>final</code>和<code>private</code>关键字修饰底层的value数组。</li>
+</ul>
+</li>
+<li>线程安全性：<ul>
+<li><code>String</code>对象是不可变的，线程安全；</li>
+<li><code>StringBuffer</code>的写方法具有同步锁，线程安全；</li>
+<li><code>StringBuilder</code>的写法发没有同步锁，线程不安全；</li>
+</ul>
+</li>
+<li>性能：<ul>
+<li><code>String</code>类型改变时会生成一个新的<code>String</code>对象，并用指针指向它。</li>
+<li><code>StringBuffer</code>每次对本身进行操作。</li>
+<li>相同情况使用<code>StringBuilder</code>性能提高 10% ~ 15%，但是存在多线程不安全的风险。</li>
+</ul>
+</li>
+<li>使用：<ul>
+<li><code>String</code>适合操作少量数据。</li>
+<li><code>StringBuilder</code>适合单线程操作字符串缓冲区下操作大量数据。</li>
+<li><code>StringBuffer</code>适合多线程操作字符串缓冲区下操作大量数据。</li>
+</ul>
+</li>
+</ol>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/09/03/Java/Java%20%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B%E5%92%8C%E5%8C%85%E8%A3%85%E7%B1%BB/">Java 基本数据类型和包装类</a>
+            
+            
+            <a class="next" rel="next" href="/2022/08/28/JDK%E6%BA%90%E7%A0%81/String%20%E6%BA%90%E7%A0%81/">String 源码</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Bruce Yao | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

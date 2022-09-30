@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Bruce Yao">
+
+
+
+
+
+<title>Java 内存泄漏和内存溢出 | Yao&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Yao&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Yao&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Java 内存泄漏和内存溢出</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Bruce Yao&nbsp;</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">August 27, 2022&nbsp;&nbsp;15:45:32&nbsp;</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Java/">Java</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>内存泄漏：程序无法释放已申请的内存空间且 GC 也无法回收，导致内存始终被占用。多次内存泄漏后堆积的结果就是内存溢出。</p>
+<p>内存溢出：程序运行过程中，申请的内存大于系统能够提供的内存，导致程序无法申请到足够的内存。</p>
+<h2 id="内存泄漏"><a href="#内存泄漏" class="headerlink" title="内存泄漏"></a>内存泄漏</h2><h3 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h3><p>内存泄漏的根本原因是长生命周期的对象持有短生命周期对象的引用。由于长生命周期对象持有短生命周期对象的引用，短生命周期对象即使不再被需要也不能被 GC 回收。主要分为以下四类：</p>
+<h4 id="常用性内存泄漏"><a href="#常用性内存泄漏" class="headerlink" title="常用性内存泄漏"></a>常用性内存泄漏</h4><p>发生内存泄漏的代码会被多次执行使用，每次执行都会导致一块内存泄漏。</p>
+<h4 id="偶发性内存泄漏"><a href="#偶发性内存泄漏" class="headerlink" title="偶发性内存泄漏"></a>偶发性内存泄漏</h4><p>发生内存泄漏的代码只有在某些特定环境或者操作过程下才会发生。</p>
+<p>常发性和偶发性是相对的。在特定的环境中，偶发性会变成常发性，常发型也会变成偶发性。所以测试环境和测试方法对于检测内存泄漏至关重要。</p>
+<h4 id="一次性内存泄漏"><a href="#一次性内存泄漏" class="headerlink" title="一次性内存泄漏"></a>一次性内存泄漏</h4><p>发生内存泄漏的代码只会执行一次，由于算法的缺陷，导致有且仅有一块内存发生泄漏。</p>
+<blockquote>
+<p>比如 C++ 在类的构造函数中分配内存，在析构函数中却没有释放该内存，所以内存泄漏只会发生一次。</p>
+</blockquote>
+<h4 id="隐式内存泄漏"><a href="#隐式内存泄漏" class="headerlink" title="隐式内存泄漏"></a>隐式内存泄漏</h4><p>程序在运行过程中不停的分配内存，但是直到结束的时候才释放内存。严格的说这里并没有发生内存泄漏，因为最终程序释放了所有申请的内存。但是对于一个服务器程序，需要运行几天，几周甚至几个月，不及时释放内存也可能导致最终耗尽系统的所有内存。所以，我们称这类内存泄漏为隐式内存泄漏。</p>
+<h3 id="常见的内存泄漏"><a href="#常见的内存泄漏" class="headerlink" title="常见的内存泄漏"></a>常见的内存泄漏</h3><h4 id="静态集合类或数组引起的内存泄漏"><a href="#静态集合类或数组引起的内存泄漏" class="headerlink" title="静态集合类或数组引起的内存泄漏"></a>静态集合类或数组引起的内存泄漏</h4><p>HashMap、Vector 等集合类或数组的使用很容易出现内存泄漏。静态变量的生命周期和程序一致，当它们结束或修改时，它们引用的对象不能被释放而无法被 GC 回收。</p>
+<p>在下面这个例子中，循环申请 Object 对象，并将所申请的对象放入一个 Vector 中，如果仅仅使用 o&#x3D;null 释放引用本身，那么 Vector 仍然引用该对象，所以这个对象对 GC 来说是不可回收的。因此，如果对象加入到 Vector 后，还必须从 Vector 中删除，最简单的方法就是将 Vector 对象设置为 null。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Vector&lt;Object&gt; v = <span class="keyword">new</span> <span class="title class_">Vector</span>&lt;Object&gt;(<span class="number">100</span>);</span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">1</span>; i&lt;<span class="number">100</span>; i++) &#123;</span><br><span class="line">    <span class="type">Object</span> <span class="variable">o</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Object</span>();</span><br><span class="line">    v.add(o);</span><br><span class="line">    o = <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再比如在数组实现栈时，我们对 pop 的实现中，被弹出的元素的引用仍然存在与数组中，但是这个元素已经是永远不会被访问。这种情况（保存一个不需要的对象的引用）也被成为游离，GC 无法判断游离的情况。只需要将弹出的数组元素的值设为 null 即可，这样可以覆盖无用的引用并使系统可以在用例使用完被弹出的元素后回收内存。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Item <span class="title function_">pop</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 从栈顶删除元素</span></span><br><span class="line">    <span class="type">item</span> <span class="variable">item</span> <span class="operator">=</span> a[--N];</span><br><span class="line">    <span class="comment">// 避免对象游离</span></span><br><span class="line">    a[N] = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (N &gt; <span class="number">0</span> &amp;&amp; N == a.length / <span class="number">4</span>) resize(a.length / <span class="number">2</span>);</span><br><span class="line">    <span class="keyword">return</span> item;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="修改-HashSet-中对象的参数值，且参数是计算哈希值的字段"><a href="#修改-HashSet-中对象的参数值，且参数是计算哈希值的字段" class="headerlink" title="修改 HashSet 中对象的参数值，且参数是计算哈希值的字段"></a>修改 HashSet 中对象的参数值，且参数是计算哈希值的字段</h4><p>当一个对象被存储到 HashSet 集合中以后，修改了这个对象中那些参与计算哈希值的字段后，这个对象的哈希值与最初存储在集合中的就不同了，这种情况下，用 contains() 方法在集合中检索对象是找不到的，这将会导致无法从 HashSet 中删除当前对象，造成内存泄漏:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">    Set&lt;Person&gt; set = <span class="keyword">new</span> <span class="title class_">HashSet</span>&lt;Person&gt;();</span><br><span class="line">    <span class="type">Person</span> <span class="variable">p1</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Person</span>(<span class="string">&quot;张三&quot;</span>,<span class="string">&quot;1&quot;</span>,<span class="number">25</span>);</span><br><span class="line">    <span class="type">Person</span> <span class="variable">p2</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Person</span>(<span class="string">&quot;李四&quot;</span>,<span class="string">&quot;2&quot;</span>,<span class="number">26</span>);</span><br><span class="line">    <span class="type">Person</span> <span class="variable">p3</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Person</span>(<span class="string">&quot;王五&quot;</span>,<span class="string">&quot;3&quot;</span>,<span class="number">27</span>);</span><br><span class="line">    set.add(p1);</span><br><span class="line">    set.add(p2);</span><br><span class="line">    set.add(p3);</span><br><span class="line">    <span class="comment">// 总共有:3 个元素!</span></span><br><span class="line">    System.out.println(<span class="string">&quot;总共有:&quot;</span>+set.size()+<span class="string">&quot; 个元素!&quot;</span>);</span><br><span class="line">    <span class="comment">// 修改p3的年龄,此时p3元素对应的hashcode值发生改变</span></span><br><span class="line">    p3.setAge(<span class="number">2</span>); </span><br><span class="line">    <span class="comment">// 此时remove不掉，造成内存泄漏</span></span><br><span class="line">    set.remove(p3);</span><br><span class="line">    <span class="comment">// 重新添加，可以添加成功</span></span><br><span class="line">    set.add(p3);</span><br><span class="line">    <span class="comment">// set中的元素个数为4个</span></span><br><span class="line">    System.out.println(<span class="string">&quot;总共有:&quot;</span>+set.size()+<span class="string">&quot; 个元素!&quot;</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">for</span> (Person person : set)&#123;</span><br><span class="line">        System.out.println(person);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="内存泄漏的解决方案"><a href="#内存泄漏的解决方案" class="headerlink" title="内存泄漏的解决方案"></a>内存泄漏的解决方案</h3><ol>
+<li>尽早释放无用对象的引用。</li>
+<li>避免在循环中创建对象。</li>
+<li>使用字符串处理时避免使用 String，应使用 StringBuffer。</li>
+<li>尽量少使用静态变量，因为静态变量存放在永久代，基本不参与垃圾回收。</li>
+</ol>
+<h2 id="内存溢出"><a href="#内存溢出" class="headerlink" title="内存溢出"></a>内存溢出</h2><blockquote>
+<p>OOM：OutOfMemoryError</p>
+</blockquote>
+<h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><p>发生内存溢出的主要原因分为以下几点：</p>
+<ol>
+<li>内存中加载的数据量过于庞大，如一次从数据库取出过多数据。</li>
+<li>集合类中有对对象的引用，使用完后未清空，使得 JVM 不能回收（内存泄漏）。</li>
+<li>代码中存在死循环或循环产生过多重复的对象实体。</li>
+<li>启动参数内存值设定的过小。</li>
+</ol>
+<h3 id="常见情况"><a href="#常见情况" class="headerlink" title="常见情况"></a>常见情况</h3><h4 id="持久带溢出：java-lang-OutOfMemoryError-PermGen-space"><a href="#持久带溢出：java-lang-OutOfMemoryError-PermGen-space" class="headerlink" title="持久带溢出：java.lang.OutOfMemoryError: PermGen space"></a>持久带溢出：java.lang.OutOfMemoryError: PermGen space</h4><p>JVM 通过持久带实现了 Java 虚拟机规范中的方法区，而运行时常量池就是保存在方法区中的。因此发生这种溢出可能是运行时常量池溢出，或是由于程序中使用了大量的 jar 或 class，使得方法区中保存的class 对象没有被及时回收或者 class 信息占用的内存超过了配置的大小。</p>
+<h4 id="堆溢出：java-lang-OutOfMemoryError-Java-heap-space"><a href="#堆溢出：java-lang-OutOfMemoryError-Java-heap-space" class="headerlink" title="堆溢出：java.lang.OutOfMemoryError: Java heap space"></a>堆溢出：java.lang.OutOfMemoryError: Java heap space</h4><p>堆溢出发生的原因是创建的对象太多，在进行垃圾回收之前对象数量达到了最大堆的容量限制。</p>
+<p>解决堆溢出异常的方法一般是通过内存映像分析工具对 Dump 出来的堆转储快照进行分析。如果是内存泄漏，可进一步通过工具查看泄漏对象到 GC Roots 的引用链，定位出泄漏代码的位置，修改程序或算法；否则内存中的对象还必须存活，那就应该检查虚拟机的堆参数 -Xmx (最大堆大小)和 -Xms (初始堆大小)，与机器物理内存对比看是否可以调大。</p>
+<h4 id="虚拟机栈和本地方法栈溢出"><a href="#虚拟机栈和本地方法栈溢出" class="headerlink" title="虚拟机栈和本地方法栈溢出"></a>虚拟机栈和本地方法栈溢出</h4><p>如果线程请求的栈深度大于虚拟机所允许的最大深度，将抛 出 StackOverflowError。</p>
+<p>如果是虚拟机在扩展栈时无法申请到足够的空间，则抛出 OutOfMemoryError。</p>
+<h3 id="内存溢出的解决方案"><a href="#内存溢出的解决方案" class="headerlink" title="内存溢出的解决方案"></a>内存溢出的解决方案</h3><ul>
+<li><p>使用内存查看工具动态查看内存使用情况；</p>
+</li>
+<li><p>修改 JVM 启动参数，直接增加内存。(-Xms，-Xmx 参数一定不要忘记加)</p>
+</li>
+<li><p>检查错误日志，查看 OutOfMemory 错误前是否有其它异常或错误。</p>
+</li>
+<li><p>对代码进行走查和分析，找出可能发生内存溢出的位置。</p>
+</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000037685435">内存泄露与内存溢出的区别</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/xiaoxi/p/7354857.html">内存溢出与内存泄漏</a></li>
+</ol>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/08/28/JDK%E6%BA%90%E7%A0%81/ArrayList%20%E6%BA%90%E7%A0%81/">ArrayList 源码</a>
+            
+            
+            <a class="next" rel="next" href="/2022/08/27/Java/Java%20%E4%B8%AD%E7%9A%84%E6%B5%85%E6%8B%B7%E8%B4%9D%E5%92%8C%E6%B7%B1%E6%8B%B7%E8%B4%9D/">Java 中的浅拷贝和深拷贝</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Bruce Yao | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

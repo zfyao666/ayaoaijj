@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Bruce Yao">
+
+
+
+
+
+<title>Java 基本数据类型和包装类 | Yao&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Yao&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Yao&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">Java 基本数据类型和包装类</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Bruce Yao&nbsp;</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">September 3, 2022&nbsp;&nbsp;15:04:16&nbsp;</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/Java/">Java</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="基本数据类型"><a href="#基本数据类型" class="headerlink" title="基本数据类型"></a>基本数据类型</h2><p>Java 中有 8 种基本数据类型，主要为：</p>
+<ul>
+<li>6 种数字类型：<ul>
+<li>4 种整型：<code>byte</code>、<code>short</code>、<code>int</code>、<code>long</code></li>
+<li>2 种浮点型：<code>float</code>、<code>double</code></li>
+</ul>
+</li>
+<li>1 种字符类型：<code>char</code></li>
+<li>1 种布尔型：<code>boolean</code><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * byte: -128 ~ 127</span></span><br><span class="line"><span class="comment"> * short: -32768 ~ 32767</span></span><br><span class="line"><span class="comment"> * int: -2147483648 ~ 2147483647</span></span><br><span class="line"><span class="comment"> * long: -9223372036854775808 ~ 9223372036854775807</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * float: 1.4e-45 ~ 3.4028235e38</span></span><br><span class="line"><span class="comment"> * double: 4.9e-324 ~ 1.7976931348623157e308</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * char: 0 ~ 65535</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * boolean: ture or false</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+<style>
+table th:nth-of-type(1){
+width: 200px;
+}
+table th:nth-of-type(2){
+width: 200px
+;
+}
+table th:nth-of-type(3){
+width: 200px;
+}
+table th:nth-of-type(4){
+width: 100px;
+}
+</style>
+8 种基本数据类型的默认值和占用空间大小为：</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th><strong>基本类型</strong></th>
+<th><strong>位数</strong></th>
+<th><strong>字节</strong></th>
+<th><strong>默认值</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>byte</strong></td>
+<td>8</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td><strong>short</strong></td>
+<td>16</td>
+<td>2</td>
+<td>0</td>
+</tr>
+<tr>
+<td><strong>int</strong></td>
+<td>32</td>
+<td>4</td>
+<td>0</td>
+</tr>
+<tr>
+<td><strong>long</strong></td>
+<td>64</td>
+<td>8</td>
+<td>0L</td>
+</tr>
+<tr>
+<td><strong>char</strong></td>
+<td>16</td>
+<td>2</td>
+<td>‘u0000’</td>
+</tr>
+<tr>
+<td><strong>float</strong></td>
+<td>32</td>
+<td>4</td>
+<td>0f</td>
+</tr>
+<tr>
+<td><strong>double</strong></td>
+<td>64</td>
+<td>8</td>
+<td>0d</td>
+</tr>
+<tr>
+<td><strong>boolean</strong></td>
+<td>1</td>
+<td></td>
+<td>false</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>对于 boolean，官方文档未明确定义，它依赖于 JVM 厂商的具体实现。逻辑上理解是占用 1 位，但是实际中会考虑计算机高效存储因素。</p>
+</blockquote>
+<h2 id="包装类"><a href="#包装类" class="headerlink" title="包装类"></a>包装类</h2><p>8 种基本数据类型所对应的包装类分别为：<code>Byte</code>、<code>Short</code>、<code>Integer</code>、<code>Long</code>、<code>Float</code>、<code>Double</code>、<code>Character</code>、<code>Boolean</code>。</p>
+<h3 id="包装类的缓存机制"><a href="#包装类的缓存机制" class="headerlink" title="包装类的缓存机制"></a>包装类的缓存机制</h3><ul>
+<li>Java 中的包装类使用缓存机制提升性能，如果创建数的大小超过了缓存的对应范围就会创建新的对象。</li>
+<li>本质上，缓存机制是在性能和资源之间的权衡。</li>
+</ul>
+<h4 id="整型"><a href="#整型" class="headerlink" title="整型"></a>整型</h4><p><code>Byte</code>、<code>Short</code>、<code>Integer</code>、<code>Long</code>四种包装类默认创建 -128 ~ 127 的相应类型的缓存数据。<br>以<code>Integer</code>为例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Integer缓存源码</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Integer <span class="title function_">valueOf</span><span class="params">(<span class="type">int</span> i)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (i &gt;= IntegerCache.low &amp;&amp; i &lt;= IntegerCache.high)</span><br><span class="line">        <span class="keyword">return</span> IntegerCache.cache[i + (-IntegerCache.low)];</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Integer</span>(i);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">IntegerCache</span> &#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">low</span> <span class="operator">=</span> -<span class="number">128</span>;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> high;</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="comment">// high value may be configured by property</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">h</span> <span class="operator">=</span> <span class="number">127</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>所有整型包装类对象值的比较，全部使用<code>equals()</code>进行比较。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Integer</span> <span class="variable">i1</span> <span class="operator">=</span> <span class="number">143</span>;</span><br><span class="line"><span class="type">Integer</span> <span class="variable">i2</span> <span class="operator">=</span> <span class="number">143</span>;</span><br><span class="line"><span class="type">Integer</span> <span class="variable">i3</span> <span class="operator">=</span> <span class="number">12</span>;</span><br><span class="line"><span class="type">Integer</span> <span class="variable">i4</span> <span class="operator">=</span> <span class="number">12</span>;</span><br><span class="line"><span class="type">Integer</span> <span class="variable">i5</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Integer</span>(<span class="number">12</span>);</span><br><span class="line"></span><br><span class="line">System.out.println(i1 == i2); <span class="comment">// false</span></span><br><span class="line">System.out.println(i1.equals(i2)); <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line">System.out.println(i3 == i4); <span class="comment">// true</span></span><br><span class="line">System.out.println(i3 == i5); <span class="comment">// false</span></span><br><span class="line">System.out.println(i3.equals(i5)); <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+<p>在 -128 ~ 127 之间赋值的<code>Integer</code>对象是在<code>IntegerCache.cache</code>产生，会复用已有对象，这个区间内的<code>Integer</code>值可以直接使用<code>==</code>进行判断。但是这个区间之外的所有数据或者<code>Integer</code>对象，都会在堆上产生，并不会复用已有对象，这是一个大坑，推荐使用<code>equals()</code>进行判断。</p>
+<h4 id="字符型"><a href="#字符型" class="headerlink" title="字符型"></a>字符型</h4><p><code>Character</code>创建了 0 ~ 127 范围的缓存数据。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Character 缓存源码</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Character <span class="title function_">valueOf</span><span class="params">(<span class="type">char</span> c)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (c &lt;= <span class="number">127</span>) &#123; <span class="comment">// must cache</span></span><br><span class="line">      <span class="keyword">return</span> CharacterCache.cache[(<span class="type">int</span>)c];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Character</span>(c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">CharacterCache</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">CharacterCache</span><span class="params">()</span>&#123;&#125;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">final</span> Character cache[] = <span class="keyword">new</span> <span class="title class_">Character</span>[<span class="number">127</span> + <span class="number">1</span>];</span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; cache.length; i++)</span><br><span class="line">            cache[i] = <span class="keyword">new</span> <span class="title class_">Character</span>((<span class="type">char</span>)i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="布尔型"><a href="#布尔型" class="headerlink" title="布尔型"></a>布尔型</h4><p><code>Boolean</code>直接返回<code>True</code>或<code>False</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Boolean 缓存源码</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Boolean <span class="title function_">valueOf</span><span class="params">(<span class="type">boolean</span> b)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> (b ? TRUE : FALSE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="浮点型"><a href="#浮点型" class="headerlink" title="浮点型"></a>浮点型</h4><p>特别地，Java 中的<code>Float</code>、<code>Double</code>没有实现缓存机制。</p>
+<h3 id="和基本数据类型的区别"><a href="#和基本数据类型的区别" class="headerlink" title="和基本数据类型的区别"></a>和基本数据类型的区别</h3><ul>
+<li>包装类型可以用于泛型，基本类型不可以。</li>
+<li>相比对象类型，基本数据类型占用的空间非常小。</li>
+<li>不赋值的情况下，包装类型默认为 null，基本类型有默认值不为 null。</li>
+<li>基本数据类型的局部变量存放在 JVM 栈的局部变量表中，基本数据类型的成员变量（未被 static 修饰）存放在 JVM 的堆中，因为包装类型属于对象类型，几乎都存放在堆中。</li>
+</ul>
+<h2 id="装箱和拆箱"><a href="#装箱和拆箱" class="headerlink" title="装箱和拆箱"></a>装箱和拆箱</h2><p>自动拆箱和装箱从 Java1.5 开始引入，目的是为了让原始类型和对应的包装类对象之间可以自动的相互转换。</p>
+<h3 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h3><ul>
+<li>装箱：调用了包装类的 valueOf 方法；</li>
+<li>拆箱：调用了包装类的 xxxValue 方法（xxx 代表对应的基本数据类型）；</li>
+</ul>
+<p>编译器会自动调用两个方法实现原始数据类型和包装类对象之间的转换。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 装箱</span></span><br><span class="line"><span class="type">Integer</span> <span class="variable">i</span> <span class="operator">=</span> Integer.valueOf(<span class="number">10</span>);</span><br><span class="line"><span class="comment">// 拆箱</span></span><br><span class="line"><span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> i.intValue();</span><br></pre></td></tr></table></figure>
+<h3 id="触发时机"><a href="#触发时机" class="headerlink" title="触发时机"></a>触发时机</h3><h4 id="赋值"><a href="#赋值" class="headerlink" title="赋值"></a>赋值</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 赋值时触发拆箱或装箱</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//before autoboxing</span></span><br><span class="line"><span class="type">Integer</span> <span class="variable">iObject</span> <span class="operator">=</span> Integer.valueOf(<span class="number">3</span>);</span><br><span class="line"><span class="type">int</span> <span class="variable">iPrimitive</span> <span class="operator">=</span> iObject.intValue()</span><br><span class="line"></span><br><span class="line"><span class="comment">//after java5</span></span><br><span class="line"><span class="type">Integer</span> <span class="variable">iObject</span> <span class="operator">=</span> <span class="number">3</span>; <span class="comment">//autobxing - primitive to wrapper conversion</span></span><br><span class="line"><span class="type">int</span> <span class="variable">iPrimitive</span> <span class="operator">=</span> iObject; <span class="comment">//unboxing - object to primitive conversion</span></span><br></pre></td></tr></table></figure>
+<h4 id="方法调用"><a href="#方法调用" class="headerlink" title="方法调用"></a>方法调用</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 方法调用时触发拆箱和装箱</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> Integer <span class="title function_">show</span><span class="params">(Integer iParam)</span>&#123;</span><br><span class="line">   System.out.println(<span class="string">&quot;autoboxing example - method invocation i: &quot;</span> + iParam);</span><br><span class="line">   <span class="keyword">return</span> iParam;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//autoboxing and unboxing in method invocation</span></span><br><span class="line">show(<span class="number">3</span>); <span class="comment">//autoboxing</span></span><br><span class="line"><span class="type">int</span> <span class="variable">result</span> <span class="operator">=</span> show(<span class="number">3</span>); <span class="comment">//unboxing because return type of method is Integer</span></span><br></pre></td></tr></table></figure>
+<p>调用<code>show(3)</code>时，会将<code>int</code>自动装箱为<code>Integer</code>。使用<code>show</code>的返回值时，会自动将<code>Integer</code>拆箱为<code>int</code>。</p>
+<h3 id="使用注意"><a href="#使用注意" class="headerlink" title="使用注意"></a>使用注意</h3><h4 id="循环中的自动装箱和拆箱"><a href="#循环中的自动装箱和拆箱" class="headerlink" title="循环中的自动装箱和拆箱"></a>循环中的自动装箱和拆箱</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 循环中的自动装箱和拆箱</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="type">Integer</span> <span class="variable">sum</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; <span class="number">10000</span>; i++) &#123;</span><br><span class="line">    sum = sum + i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述的代码中，<code>Integer</code>和<code>int</code>数据相加时，会发生自动拆箱和装箱。首先要对<code>sum</code>进行自动拆箱，数据相加结束后再进行自动装箱转换为<code>Integer</code>。流程可以概括为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">result</span> <span class="operator">=</span> sum.intValue() + i;</span><br><span class="line"><span class="type">Integer</span> <span class="variable">sum</span> <span class="operator">=</span> Integer.valueOf(result);</span><br></pre></td></tr></table></figure>
+<p>在上面的循环中，会频繁创建很多无用的<code>Integer</code>对象，提高垃圾回收的工作量和导致程序性能下降。所以在日常的使用中<strong>需要注意避免不必要的自动拆箱和装箱</strong>。</p>
+<h4 id="包装类对象和基本数据类型的比较"><a href="#包装类对象和基本数据类型的比较" class="headerlink" title="包装类对象和基本数据类型的比较"></a>包装类对象和基本数据类型的比较</h4><p>当包装类进行算术运算或者与基本数据类型进行比较时，会自动拆箱或装箱。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 和基本数据类型的比较</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="variable">i1</span> <span class="operator">=</span> <span class="number">12</span>;</span><br><span class="line"><span class="type">Integer</span> <span class="variable">i2</span> <span class="operator">=</span> <span class="number">12</span>;</span><br><span class="line"><span class="type">Integer</span> <span class="variable">i3</span> <span class="operator">=</span> <span class="number">12</span>;</span><br><span class="line"><span class="type">Integer</span> <span class="variable">i4</span> <span class="operator">=</span> <span class="number">24</span>;</span><br><span class="line"></span><br><span class="line">System.out.println(i1 == i2); <span class="comment">// 和基本数据类比较，自动拆箱</span></span><br><span class="line">System.out.println(i2.equals(i1)); <span class="comment">// 和包装类比较，自动装箱</span></span><br><span class="line">System.out.println(i4 == (i2 + i3)); <span class="comment">// i2 + i3 算术运算自动拆箱，之后数值比较</span></span><br><span class="line">System.out.println(i4.equals(i2 + i3)); <span class="comment">// i2 + i3 算术运算自动拆箱，之后自动装箱</span></span><br></pre></td></tr></table></figure>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://javaguide.cn/java/basis/java-basic-questions-01.html#%E5%9F%BA%E6%9C%AC%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B">JavaGuide-基本数据类型和包装类</a></li>
+<li><a target="_blank" rel="noopener" href="https://droidyue.com/blog/2015/04/07/autoboxing-and-autounboxing-in-java/">Java 中的自动装箱和拆箱</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/dolphin0520/p/3780005.html">深入剖析 Java 中的装箱和拆箱</a></li>
+</ol>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/09/03/Java/Java%20%E9%9D%99%E6%80%81%E6%96%B9%E6%B3%95%E3%80%81%E9%87%8D%E5%86%99%E5%92%8C%E9%87%8D%E8%BD%BD/">Java 静态方法、重写和重载</a>
+            
+            
+            <a class="next" rel="next" href="/2022/08/28/JDK%E6%BA%90%E7%A0%81/StringBuffer%20&%20StringBuilder%20%E6%BA%90%E7%A0%81/">StringBuffer & StringBuilder 源码</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Bruce Yao | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

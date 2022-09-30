@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Bruce Yao">
+
+
+
+
+
+<title>数据库的锁 | Yao&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Yao&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Yao&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">数据库的锁</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Bruce Yao&nbsp;</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">September 6, 2022&nbsp;&nbsp;15:44:31&nbsp;</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="锁粒度角度"><a href="#锁粒度角度" class="headerlink" title="锁粒度角度"></a>锁粒度角度</h2><h3 id="行锁"><a href="#行锁" class="headerlink" title="行锁"></a>行锁</h3><p>每次操作锁住一条行记录，数据库在能够确定哪些行记录需要锁的情况下会使用行锁，如果不知道会影响哪些行记录的时候就会使用表锁。</p>
+<blockquote>
+<p>行锁的开销大，锁粒度小，加锁慢，发生锁冲突的概率较低，并发程度高。</p>
+</blockquote>
+<h3 id="页锁"><a href="#页锁" class="headerlink" title="页锁"></a>页锁</h3><p>操作时在页的粒度上进行锁定，由于一页上会有多个行，所以使用页锁会出现数据浪费。</p>
+<blockquote>
+<p>页锁的开销介于行锁和表锁，会出现死锁。并发程度一般。</p>
+</blockquote>
+<h3 id="表锁"><a href="#表锁" class="headerlink" title="表锁"></a>表锁</h3><p>每次操作锁住整张表。</p>
+<blockquote>
+<p>表锁的开销小，加锁快，发生锁冲突的概率最高，并发程度最低。</p>
+</blockquote>
+<p>不同的数据库引擎可以使用的锁类型不同，每个层级锁数量有限，因为锁会占用内存空间，锁空间大小有限。当锁数量超过该层级阈值，会进行锁升级，用更大粒度的锁替代多个小粒度的锁。随着锁空间的下降，并发程度也会下降。</p>
+<img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E9%94%81/1646379134791-b6922433-fabb-4d36-8ace-5e9796e07b06.png" alt="image.png" style="zoom: 50%;">
+
+<h2 id="管理角度"><a href="#管理角度" class="headerlink" title="管理角度"></a>管理角度</h2><h3 id="共享锁（读锁、S-锁）"><a href="#共享锁（读锁、S-锁）" class="headerlink" title="共享锁（读锁、S 锁）"></a>共享锁（读锁、S 锁）</h3><p>共享锁锁定的数据可以被其他用户读取，但是不能修改（只读模式）。若事务 T 对数据对象 A 加上 S 锁，则事务 T 只能读 A；其他事务只能再对 A 加 S 锁，而不能加 X 锁，直到 T 释放 A 上的 S 锁。这就保证了其他事务可以读 A，但在 T 释放 A 上的 S 锁之前不能对 A 做任何修改。</p>
+<h3 id="排他锁（写锁、X-锁）"><a href="#排他锁（写锁、X-锁）" class="headerlink" title="排他锁（写锁、X 锁）"></a>排他锁（写锁、X 锁）</h3><p>排他锁锁定的数据只允许加锁的事务使用，其他事务无法对该数据进行修改和查询。若事务 T 对数据对象 A 加上 X 锁，则只允许 T 读取和修改 A。其他任何事务都不能再对 A 加任何类型的锁，直到 T 释放 A 上的锁。这就保证了其他事务在 T 释放 A 上的锁之前不能再读取和修改 A。</p>
+<h3 id="意向锁"><a href="#意向锁" class="headerlink" title="意向锁"></a>意向锁</h3><p>当数据被加上锁后，数据库会在更高一层的空间里加上意向锁，告诉其他事务该数据页或者数据表上含有锁。当事务获取某些记录的共享锁或者排他锁时，数据标上会添加上意向共享锁或者是意向排他锁。</p>
+<h3 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h3><p>多个事务（进程）在执行过程中，因为竞争某个相同的资源而造成阻塞称为死锁。当多个事务对同一个数据获得读锁时，可能就会发生死锁。例如两个不同的客户端都获取了某数据的共享锁，这时所有的客户端都无法对该数据进行更新，因为共享锁会阻止其他事务对数据更新。如果一个客户端进行更新，就会出现死锁。死锁解决的需要一个事务进行回滚，让另外一个事务获取锁完成事务，然后将锁释放。</p>
+<h2 id="并发角度"><a href="#并发角度" class="headerlink" title="并发角度"></a>并发角度</h2><h3 id="乐观锁"><a href="#乐观锁" class="headerlink" title="乐观锁"></a>乐观锁</h3><p>乐观锁认为对同一数据的并发操作不会经常发生，属于小概率事件。所以不用每次都对数据上锁，也不采用数据库本身的锁机制，而是通过程序来实现。可以使用版本号、时间戳和 CAS 算法实现。</p>
+<h4 id="版本号机制"><a href="#版本号机制" class="headerlink" title="版本号机制"></a>版本号机制</h4><p>在数据表中设置一个版本字段，表示数据被修改的次数。每次数据被修改时，version 值会加一。当线程对数据进行更新或者删除时，会执行<code>UPDATE ... SET version=version+1 WHERE version=version</code>，在提交更新时只有 version 值和当前数据库中的 version 值相等才会更新，如果有事务对这条数据进行了其他修改则重试更新操作，直到更新成功。</p>
+<h4 id="时间戳机制"><a href="#时间戳机制" class="headerlink" title="时间戳机制"></a>时间戳机制</h4><p>时间戳和版本号机制一样，在提交更新时，将当前数据的时间戳和更新之前的时间戳进行比较，如果两者相同更新成功，否则版本冲突。</p>
+<h4 id="CAS-算法"><a href="#CAS-算法" class="headerlink" title="CAS 算法"></a>CAS 算法</h4><p>CAS 即 compare and swap（比较并交换），是一种有名的无锁算法，在不使用锁的情况下实现多线程之间的变量同步，也就是在没有线程被阻塞的情况下实现变量的同步，所以也叫非阻塞同步。CAS 算法涉及到三个操作数：</p>
+<ul>
+<li>要更新的变量 V</li>
+<li>预期的值 E</li>
+<li>新值 N</li>
+</ul>
+<p>仅当 V 值等于 E 值时，才会将 V 的值设置成 N，否则什么都不做。最后 CAS 返回当前 V 的值。CAS 算法需要你额外给出一个期望值，也就是你认为现在变量应该是什么样子，如果变量不是你想象的那样，就说明已经被别人修改过，就重新读取，再次尝试修改即可。</p>
+<p>因为 CAS 需要在操作值的时候检查下值有没有发生变化，如果没有发生变化则更新，但如果一个值原来是 A，变成了 B，又变成了 A，那么使用 CAS 进行检查时就会误以为它的值没有发生变化，这个问题称为 ABA 问题。ABA 问题的解决思路就是使用版本号。在变量前面追加上版本号，每次变量更新的时候把版本号加一，那么 A-B-A 就会变成 1A-2B-3A，以此来防止不恰当的写入。</p>
+<h3 id="悲观锁"><a href="#悲观锁" class="headerlink" title="悲观锁"></a>悲观锁</h3><p>悲观锁假设最坏的情况，担心每次拿的数据都会被其他的事务修改，所以每次都会在取数据的时候加锁。别的事务想要修改或者拿到数据就会被阻塞直到它拿到锁。</p>
+<p><strong>行锁</strong>、<strong>表锁</strong>、<strong>共享锁</strong>和<strong>排他锁</strong>都属于常用的悲观锁。</p>
+<h3 id="两个锁的适用场景"><a href="#两个锁的适用场景" class="headerlink" title="两个锁的适用场景"></a>两个锁的适用场景</h3><ol>
+<li>乐观锁适用于读操作多的场景，优点在于通过时间戳或者版本号来判断，节省了加锁的开销，不存在死锁的问题，系统的吞吐量也得到了提升。</li>
+<li>悲观锁适用于写操作多的场景，写操作具有排他性，悲观锁可以在数据库层面组织其他的事务对数据的操作，防止读-写、写-写的冲突发生。</li>
+</ol>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_39651041/article/details/79985715">数据库锁分类和总结</a></li>
+<li><a target="_blank" rel="noopener" href="https://cyc2018.github.io/CS-Notes/#/notes/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%B3%BB%E7%BB%9F%E5%8E%9F%E7%90%86">CS-NOTE 数据库</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.imooc.com/article/details/id/44217">面试必备之乐观锁与悲观锁</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/jianzh5/p/6671230.html">并发策略-CAS 算法</a></li>
+</ol>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL%E5%B8%B8%E7%94%A8%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B/">MySQL 常用数据类型</a>
+            
+            
+            <a class="next" rel="next" href="/2022/09/06/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%92%8C%E8%AE%BE%E8%AE%A1%E5%87%86%E5%88%99/">数据库的事务和设计准则</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Bruce Yao | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
