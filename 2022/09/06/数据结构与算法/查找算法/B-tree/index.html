@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Bruce Yao">
+
+
+
+
+
+<title>B-树 &amp; B+树 | Yao&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Yao&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Yao&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">B-树 &amp; B+树</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Bruce Yao&nbsp;</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">September 6, 2022&nbsp;&nbsp;16:22:47&nbsp;</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/">数据结构与算法</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>从算法的逻辑上来说，二叉树的查询 (log2_N) 和插入效率 (log2_N) 已经很高。但是在实际的应用当中，我们不能将索引全部加载到内存之中，只能逐一的加载每一个磁盘页。这里的磁盘页就对应索引树的结点，相比于内存的比较和读取来说，磁盘 I&#x2F;O 存取消耗的时间要高很多，所以判断一个数据结构是否适合于索引问题的关键就是计算产生的磁盘 I&#x2F;O 次数。</p>
+<h2 id="B-树"><a href="#B-树" class="headerlink" title="B-树"></a>B-树</h2><p>B-树是对 2-3 树的一种补充，是一种多路平衡查找树。一个 M 阶的 B 树（M 取决于磁盘页的大小）的特点：</p>
+<ul>
+<li>根结点的子节点数量在 [2, M]；</li>
+<li>每个中间结点包含了 k-1 个元素和 k 个子节点，其中 k∈ [M&#x2F;2, M]；</li>
+<li>每一个叶子节点包含了 k-1 个元素，其中 k∈ [M&#x2F;2, M]；</li>
+<li>所有的叶子节点都在同一层；</li>
+<li>每个节点中的元素从小到大排列，节点当中 k-1 个元素正好是 k 个孩子包含的元素的值域分划。</li>
+</ul>
+<p>对于大量的数据来说，采用 B-树的结构是非常合适的。因为 B-树的一个结点可以存放更多的值，所以 B-树会比二叉树更矮、更胖，到达叶子结点所需要的磁盘 I&#x2F;O 次数也更少。</p>
+<img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/B-tree/1646224293793-a24dc956-095d-4327-9aba-b77b95bbef9a.png" alt="image.png" style="zoom:67%;">
+
+<h3 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h3><p>下面 3 幅图描述了在一个 3 阶的 B-树中，如何查找到 5:</p>
+<center class="half">    
+  <img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/B-tree/1646224342656-e5a06569-dd69-466a-a5b2-7969a22d277f.png" width="400">
+  <center>第一次磁盘 I/O 并在内存中和 9 比较</center>
+  <img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/B-tree/1646224345052-4cfbc7a8-7658-4ce9-8f3c-e8289afb6d4b.png" width="400">
+  <center>第 2 次磁盘 I/O 并和 2、6 比较</center>
+  <img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/B-tree/1646224347593-76974805-ee11-4dc5-bd08-43ca700ec8c5.png" width="400"> 
+  <center>第 3 次磁盘 I/O 并和 3、5 比较</center>
+</center>
+
+<p>从比较的次数来看，B-树没有和二叉树有着太多的差异。但是因为 B-树中的一个结点可以存放多个元素，所以磁盘 I&#x2F;O 的次数可以少很多，同时内存中的比较耗时相对来说可以忽略，因此查找的性能会比二叉树好。</p>
+<h3 id="插入"><a href="#插入" class="headerlink" title="插入"></a>插入</h3><p>B-树的插入模式和 2-3 树相似，都是将结点转换为临时结点，然后不断向上递归直到根结点。<br>以向图中的 B-树插入 4 为例：首先自顶向下查找 4 的结点位置，发现 4 应该插入到 (3, 5) 结点中。3 阶 B-树的结点最多含有两个元素，所以向父结点插入 4 同时将剩下的 (3, 5) 结点拆分，创建一个临时 4 结点。然后再将 4 插入到根结点升级为两元素节点 (4, 9)。将剩下的 (2, 6) 结点拆分，节点 6 独立为根节点的第二个孩子。</p>
+<center class="half">    
+  <img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/B-tree/1646225130826-16f71035-6611-48e8-8156-87a5643d009e.png" width="400">    
+  <img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/B-tree/1646225137914-b5552978-8d92-4bfa-a403-de20a6568a1d.png" width="400"> 
+</center>
+
+<h3 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h3><p>以删除 11 结点为例，首先自顶向下查找元素 11 所在的位置。删除 11 结点后，结点 12 只有一个右子结点，所以找出 12，13，15 三个数中的中位数 13 取代 12，同时 12 结点左下移成为一个子节点（左旋操作）。</p>
+<center>
+  <img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/B-tree/1646230711561-2f3f3b27-755a-4a25-a8d3-d324253413a3.png" width="400px">
+  <center>找到 11 结点所在位置</center>
+  <img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/B-tree/1646230711561-2f3f3b27-755a-4a25-a8d3-d324253413a3.png" width="400px">
+  <center>找出 12、13 和 15 中的中位数</center>
+  <img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/B-tree/1646230730290-04636789-2dc9-4968-9c08-2cae23891be1.png" width="400px">
+  <center>左旋操作</center>
+</center>
+
+<h2 id="B-树-1"><a href="#B-树-1" class="headerlink" title="B+树"></a>B+树</h2><p>B+树是 B-树的一个变体，有着比 B-树更好的查询性能。一个 M 阶的 B+树（M 同样取决于磁盘页的大小）和 B-树之间的区别在于：</p>
+<ul>
+<li>有 k 个子树的中间结点包含了 k 个元素，而在 B-树中的元素该中间结点包含了 k-1 个元素；</li>
+<li>B+树中的中间结点仅用于索引，不保存数据，所有的数据都保存在了叶子结点中；</li>
+<li>所有的中间结点元素都同时存在于子节点，在子节点中是最大（或最小）元素；</li>
+<li>所有的叶子结点包含了全部元素的信息，及指向含这些元素记录的指针，且叶子结点本身按照元素的关键字大小升序链接构成一个有序链表；</li>
+</ul>
+<img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/B-tree/1646232203027-d60a9252-66df-4e60-8613-37b971ee2c10.png" alt="image.png" style="zoom:50%;">
+
+<p>根结点的最大元素等同于整个 B+树的最大元素；由于父结点的元素都出现子节点，因此所有的叶子结点包含了全部元素的信息，每一个叶子结点还带有指向下一个结点的指针，形成了一个有序的链表。</p>
+<p>在 B-树中，无论中间节点还是叶子节点都带有卫星数据（索引元素所指向的数据记录），而Ｂ+树中间节点没有卫星数据，只有索引，这就意味着同样大小的磁盘页可以容纳更多节点元素，在相同的数据量下，B+树更加“矮胖”，IO 操作更少。</p>
+<img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/B-tree/1646232306479-a586ced7-dd9a-4897-a084-9ba54d241869.png" alt="image.png" style="zoom: 50%;">
+
+<center>B-树中间结点和叶子结点都带有卫星数据</center>
+
+<img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/B-tree/1646232311318-49da66f0-1cec-4be6-9db4-35d35c78923f.png" alt="image.png" style="zoom: 50%;">
+
+<center>B+树只有叶子结点才带有卫星数据</center>
+
+<h2 id="查找-1"><a href="#查找-1" class="headerlink" title="查找"></a>查找</h2><p>以查找元素 3 为例，记录 B+树中的磁盘 I&#x2F;O 过程：</p>
+<img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/B-tree/1646233988394-364336f0-4700-4045-b3f1-a403025e892a.png" alt="image.png" style="zoom: 50%;">
+
+<img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/B-tree/1646233992260-eb81d779-dc47-4127-a7c1-f169ab97c387.png" alt="image.png" style="zoom: 50%;">
+
+<img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/B-tree/1646233997357-5298863b-dc03-4669-b9c6-08558103224f.png" alt="image.png" style="zoom: 50%;">
+
+<p>B+树的查询必须最终查找到叶子结点；在 B-树中只要找到目标元素即可，所以最终可能查询到中间结点或者是叶子结点。对比来看，B+树的查找性能是稳定的，而 B-树的查找性能不稳定（最好情况是查找根结点，最坏情况是查到叶子结点）。</p>
+<p>在相同的数据量的情况下，由于一个结点可以存放更多的数据，B+树的深度会比 B-树更低，所以查询所需要的磁盘 I&#x2F;O 更少。同样的磁盘页大小，B+树可以存储更多的元素。</p>
+<h2 id="范围查找"><a href="#范围查找" class="headerlink" title="范围查找"></a>范围查找</h2><p>由于 B+树的叶子节点构成了一条有序链表，因此 B+树的范围查找要比 B-树简单的多，而 B-树需要铜鼓中序遍历来完成范围的查找，效率会低很多。下面以查询范围为 3～11 的元素为例：</p>
+<img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/B-tree/1646234423982-c4d9616c-792a-4d39-a07c-b5ee9dceef2d.png" alt="image.png" style="zoom:50%;">
+
+<center>自顶向下，查找到范围的下限 3</center>
+
+<img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/B-tree/1646234428470-32c269e4-9e53-4e9c-b0b1-1d2f707cd923.png" alt="image.png" style="zoom:50%;">
+
+<center>通过链表指针，遍历到元素 6、8</center>
+
+<img src="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/B-tree/1646234434418-f035cdb9-0562-476e-8f2f-96acb0ee4774.png" alt="image.png" style="zoom: 50%;">
+
+<center>通过链表指针，遍历到元素 9、11，遍历结束</center>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>为了减少磁盘的 I&#x2F;O 次数，必须降低树的深度，将原本”瘦高”的树改造成为“矮胖”，使得相同的磁盘页可以容纳更多的结点元素，因此出现了 B-树。B+树是 B-树的变体，在 mysql 中采用的是 B+树，其相比 B-树的优势在于：</p>
+<ul>
+<li>单一结点存储的元素更多，查询所需要的磁盘 I&#x2F;O 更少；</li>
+<li>所有查询都会查找到叶子节点，查询性能更稳定；</li>
+<li>所有叶子节点形成了一个有序链表，便于范围查询；</li>
+</ul>
+<p>除了 B-tree，平时还会听到有 B*树的概念，同样 B*树是 B+树的一个变体，相比 B+树的不同之处如下：</p>
+<ul>
+<li>将结点的最低利用率从 1&#x2F;2 提高到 2&#x2F;3。</li>
+<li>在 B+树基础上，为非叶子结点也增加链表指针：B+树当一个结点满时，会分配一个新的结点，并将原结点中 1&#x2F;2 的数据复制到新结点，最后在父结点中增加新结点的指针；B*树当一个结点满时，如果它的下一个兄弟结点未满，那么将一部分数据移到兄弟结点中，而如果兄弟也满了，则在原结点与兄弟结点之间增加新结点，并各复制 1&#x2F;3 的数据到新结点，最后在父结点增加新结点的指针。</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://bbs.huaweicloud.com/blogs/133649">漫画：什么是 B+树？</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.sohu.com/a/154640931_478315">漫画：什么是 B-树？</a></li>
+</ol>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/%E6%95%A3%E5%88%97%E8%A1%A8/">散列表</a>
+            
+            
+            <a class="next" rel="next" href="/2022/09/06/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/%E6%9F%A5%E6%89%BE%E7%AE%97%E6%B3%95/%E5%B9%B3%E8%A1%A1%E6%9F%A5%E6%89%BE%E6%A0%91%E5%92%8C%E7%BA%A2%E9%BB%91%E6%A0%91/">平衡查找树 & 红黑树</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Bruce Yao | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
