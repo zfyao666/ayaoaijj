@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Bruce Yao">
+
+
+
+
+
+<title>MySQL 分库分表 | Yao&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Yao&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Yao&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">MySQL 分库分表</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Bruce Yao&nbsp;</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">October 12, 2022&nbsp;&nbsp;15:31:04&nbsp;</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="分库分表"><a href="#分库分表" class="headerlink" title="分库分表"></a>分库分表</h2><p>在使用关系型数据库中，随着用户数据的不断增大，单表的数据大小可能超过 1000w 或者 1000G 而出现索引膨胀，单机数据库因为存储容量、连接数和处理能力有限很难满足需求。虽然我们可以使用主从复制、读写分离、优化查询和索引等操作，但是性能可能仍然达不到要求，所以就需要考虑数据库的切分（Sharding），切分主要分为垂直切分和水平切分。</p>
+<h3 id="分表"><a href="#分表" class="headerlink" title="分表"></a>分表</h3><p>分表就是将一个表的数据分布在多个表中，查询时我们查询一个表就可以。单表数据量很大会影响数据库的执行性能，当数据到达几百万时通常就需要考虑分表。例如将表中的数据按照用户 ID 来分表，单个用户的数据就放在一个表中，操作时只操作这一张表就可以，并且可以控制每个表的数据记录在一个可以控制的范围内。</p>
+<h3 id="分库"><a href="#分库" class="headerlink" title="分库"></a>分库</h3><p>分库就是将一个数据库的数据拆分到多个库中，访问的时候只访问一个数据库即可。</p>
+<h3 id="切分后出现的问题"><a href="#切分后出现的问题" class="headerlink" title="切分后出现的问题"></a>切分后出现的问题</h3><ul>
+<li><p>事务一致性的问题</p>
+<p>可以使用分布式事务来解决，例如 XA 接口。</p>
+</li>
+<li><p>连接（join）问题</p>
+<p>可以将可以将原来的连接分解成多个单表查询，然后在用户程序中进行连接。</p>
+</li>
+<li><p>ID 唯一性问题</p>
+<p>可以使用全局唯一 ID（GUID）或者为每一个分片指定一个 ID 范围，也可以使用分布式 ID 生成器生成 ID。</p>
+</li>
+</ul>
+<h2 id="水平切分"><a href="#水平切分" class="headerlink" title="水平切分"></a>水平切分</h2><p>水平切分从横向的角度将一个表的数据分布到多个表中，但是每个表的结构都相同，所有表中的数据合起来就是全部数据。水平切分可以将数据均匀放更多的库里，然后用多个库来抗更高的并发，还有就是用多个库的存储容量来进行扩容。</p>
+<p><img src="/2022/10/12/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/MySQL%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/63c2909f-0c5f-496f-9fe5-ee9176b31aba-20221012175259790.jpg" alt="img"></p>
+<p>水平切分解决了单表数据量多大的问题，提升了系统稳定性和负载能力，并且应用端的改造小，无需拆分业务模块。但是水平切分的数据扩展难度和维护量较大。</p>
+<h3 id="范围切分"><a href="#范围切分" class="headerlink" title="范围切分"></a>范围切分</h3><p>按照一定的范围去切分。例如按照 ID 区间，将 userId 为 1~9999 的记录分到第一个库，10000~20000 的分到第二个库，以此类推。</p>
+<p>范围切分的优点在于：1、单表数据量可控；2、由于是顺序存储，天然适合水平扩展，后期如果想对整个分片集群扩容时，只需要添加节点即可，无需对其他分片的数据进行迁移。3、使用分片字段进行范围查找时，连续分片可快速定位分片进行快速查询，有效避免跨分片查询的问题。但是范围切分会出现冷热数据，热点数据会成为性能瓶颈。例如按时间字段分片，有些分片存储最近时间段内的数据，可能会被频繁的读写。</p>
+<h3 id="Hash-取模切分"><a href="#Hash-取模切分" class="headerlink" title="Hash 取模切分"></a>Hash 取模切分</h3><p>即采用 hash 取模 mod 来切分。例如将 Customer 表根据 cusno 字段切分到 4 个库中，余数为 0 的放到第一个库，余数为 1 的放到第二个库，以此类推。这样同一个用户的数据会分散到同一个库中，如果查询条件带有 cusno 字段，则可明确定位到相应库去查询。</p>
+<p>Hash 取模切分的优点是数据分片比较均匀，不会出现热点和并发访问的瓶颈。但是在后期分片集群扩容时，需要迁移旧的数据，也容易出现跨分片查询的复杂问题。</p>
+<h2 id="垂直切分"><a href="#垂直切分" class="headerlink" title="垂直切分"></a>垂直切分</h2><p>垂直拆分是从纵向的角度，把一个有很多字段的表拆分为多个表，或者是多个库。拆分后每个表的结构都不相同，但都包含了原表的部分字段。一般来说，会将访问频率较高的字段放到一个表中，然后将访问频率较低的字段放入另外的表中。访问频率高的字段越少，使用缓存时就可以缓存更多的行，数据库的性能就更好。垂直切分也可以分为垂直分库和垂直分表。</p>
+<img src="/2022/10/12/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/MySQL%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/e130e5b8-b19a-4f1e-b860-223040525cf6.jpg" alt="img">
+
+<p>垂直切分可以降低业务层面的耦合。在高并发场景下，垂直切分一定程度上还可以提升 I&#x2F;O、数据连接数等性能。但是垂直切分后，部分表可能无法关联，只能通过接口聚合解决，会提升开发的复杂度。垂直切分也没有解决单表数据量过大的情况。</p>
+<h3 id="垂直分库"><a href="#垂直分库" class="headerlink" title="垂直分库"></a>垂直分库</h3><p>垂直分库就是根据业务耦合性，将关联度低的不同表存储在不同的数据库。做法与大系统拆分为多个小系统类似，按业务分类进行独立划分。与”微服务治理”的做法相似，每个微服务使用单独的一个数据库。（例如 如用户 User 一个库，商品 Producet 一个库，订单 Order 一个库）。</p>
+<img src="/2022/10/12/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/MySQL%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/5cda2c0be710e44751.png" alt="垂直分库。png" style="zoom:67%;">
+
+<h3 id="垂直分表"><a href="#垂直分表" class="headerlink" title="垂直分表"></a>垂直分表</h3><p>垂直分表是针对列进行的。如果某个表的字段较多，可以把不常用的字段或者长度较长的字段拆分到一张新的扩展表中。在字段较多的情况下，通过“大表拆小表”，更有利于维护与开发，也能避免跨页问题（一致性、排序等问题）。MySQL 底层是通过数据页存储的，一条记录占用空间过大会导致跨页，造成额外的性能开销。另外数据库以行为单位将数据加载到内存中，这样表中字段长度较短且访问频率较高，内存能加载更多的数据，命中率更高，减少了磁盘 IO，从而提升了数据库性能。</p>
+<img src="/2022/10/12/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/MySQL%E5%88%86%E5%BA%93%E5%88%86%E8%A1%A8/5cda2d56bdc0383597.png" alt="垂直分表。png" style="zoom:67%;">
+
+<h2 id="支持分库分表的中间件"><a href="#支持分库分表的中间件" class="headerlink" title="支持分库分表的中间件"></a>支持分库分表的中间件</h2><p>常见的有：</p>
+<ul>
+<li>cobar</li>
+<li>sharding-jdbc</li>
+<li>mycat</li>
+</ul>
+<p>cobar：阿里 b2b 团队开发和开源的，属于 proxy 层方案。早些年还可以用，但是近几年未更新。不支持读写分离、存储过程、跨库 join 和分页等操作。</p>
+<p>sharding-jdbc：当当开源的，属于 client 层方案。SQL 语法支持比较多，没有太多限制，支持分库分表、读写分离、分布式 id 生成、柔性事务（最大努力送达型事务、TCC 事务）。</p>
+<p>mycat：基于 cobar 改造的，属于 proxy 层方案，支持的功能非常完善，而且目前非常火且不断流行。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://www.javalearn.cn/#/doc/MySQL/%E9%9D%A2%E8%AF%95%E9%A2%98?id=%e5%88%86%e5%ba%93%e5%88%86%e8%a1%a8">面试小抄-分库分表</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/butterfly100/p/9034281.html">数据库分库分表思路</a></li>
+<li><a target="_blank" rel="noopener" href="http://codingcms.cn/2019/05/14/MySQL_4/">MySQL 分库分表策略</a></li>
+<li><a target="_blank" rel="noopener" href="http://www.cyc2018.xyz/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL.html#%E4%BA%94%E3%80%81%E5%88%87%E5%88%86">CS-Note</a></li>
+</ol>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2022/10/12/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/MySQL%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/">MySQL 主从复制和读写分离</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Bruce Yao | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Bruce Yao">
+
+
+
+
+
+<title>MySQL 查询性能优化 | Yao&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Yao&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Yao&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">MySQL 查询性能优化</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Bruce Yao&nbsp;</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">October 10, 2022&nbsp;&nbsp;17:22:37&nbsp;</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="查询执行过程"><a href="#查询执行过程" class="headerlink" title="查询执行过程"></a>查询执行过程</h2><img src="/2022/10/10/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/MySQL%E6%9F%A5%E8%AF%A2%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/image-20221010172817999.png" alt="image-20221010172817999" style="zoom: 50%;">
+
+<p>如图所示，一条查询语句的执行过程大致如下：</p>
+<ol>
+<li>客户端和服务器连接后发送一条查询语句给服务器。</li>
+<li>服务器首先查询缓存，如果命中缓存就立刻返回存储在缓存中的结果，否则进入下一步。</li>
+<li>经过解析器对查询语句分析、预处理器预处理后，优化器会生成执行计划及索引选择。</li>
+<li>服务器根据生成的执行计划，调用存储引擎的 API 来执行查询。</li>
+<li>结果返回。</li>
+</ol>
+<p>MySQL 解析器将使用 MySQL 语法规则验证和解析查询。预处理器则根据一些 MySQL 规则进一步检查解析树是否合法，例如检查数据表和数据列是否存在，之后会验证权限。查询优化器的作用是根据存储引擎提供的统计信息找出一个最优的执行计划。</p>
+<h2 id="查询性能优化"><a href="#查询性能优化" class="headerlink" title="查询性能优化"></a>查询性能优化</h2><p>MySQL 中可以通过<code>Explain</code>语句的结果来分析和优化查询语句。查询性能的常用方式为优化数据访问和重构查询。</p>
+<h3 id="优化数据访问"><a href="#优化数据访问" class="headerlink" title="优化数据访问"></a>优化数据访问</h3><h4 id="减少请求的数据量"><a href="#减少请求的数据量" class="headerlink" title="减少请求的数据量"></a>减少请求的数据量</h4><ul>
+<li>只返回必要的列：最好不要使用<code>SELECT *</code>语句。</li>
+<li>只返回必要的行：使用<code>LIMIT</code>语句来限制返回的数据。</li>
+<li>缓存重复查询的数据：使用缓存可以避免在数据库中进行查询，特别在要查询的数据经常被重复查询时，缓存带来的查询性能提升将会是非常明显的。</li>
+</ul>
+<p>MySQL 中的缓存参数：</p>
+<ul>
+<li><p>query_cache_type：为 ON 时开启，为 OFF 关闭，为 DEMAND 时则只有查询语句中有 sql cache 时才使用缓存；</p>
+</li>
+<li><p>query_cache_size: 缓存的内存空间；</p>
+</li>
+<li><p>query_cache_min_res_unit: 分配内存块的最小单；</p>
+</li>
+<li><p>query_cache_limit：缓存可使用的内存最大值；</p>
+</li>
+</ul>
+<h4 id="减少服务器端扫描的行数"><a href="#减少服务器端扫描的行数" class="headerlink" title="减少服务器端扫描的行数"></a>减少服务器端扫描的行数</h4><p>最有效的方式是使用索引来覆盖查询。</p>
+<h3 id="重构查询"><a href="#重构查询" class="headerlink" title="重构查询"></a>重构查询</h3><h4 id="切分大查询"><a href="#切分大查询" class="headerlink" title="切分大查询"></a>切分大查询</h4><p>一个大查询如果一次性执行的话，可能一次锁住很多数据、占满整个事务日志、耗尽系统资源、阻塞很多小的但重要的查询。</p>
+<h4 id="分解大连接查询"><a href="#分解大连接查询" class="headerlink" title="分解大连接查询"></a>分解大连接查询</h4><p>将一个大连接查询分解成对每一个表进行一次单表查询，然后在应用程序中进行关联，这样做的好处有：</p>
+<ul>
+<li>让缓存更高效。对于连接查询，如果其中一个表发生变化，那么整个查询缓存就无法使用。而分解后的多个查询，即使其中一个表发生变化，对其它表的查询缓存依然可以使用。</li>
+<li>分解成多个单表查询，这些单表查询的缓存结果更可能被其它查询使用到，从而减少冗余记录的查询。</li>
+<li>查询分解后，执行单个查询可以减少锁竞争；</li>
+</ul>
+<h2 id="优化-Limit-分页"><a href="#优化-Limit-分页" class="headerlink" title="优化 Limit 分页"></a>优化 Limit 分页</h2><p>在使用 Limit 语句的时候，如果偏移量过大，例如<code>LIMIT 10000, 20</code>，那么 MySQL 就要查询 10200 条数据，然后丢弃前 10000 条数据而只返回最后的 20 条记录，这导致 MySQL 耗费大量随机 I&#x2F;O 在前 10000 条不被使用的数据上，代价非常高。要优化这个问题有两种技巧：延迟关联和书签。</p>
+<h3 id="延迟关联"><a href="#延迟关联" class="headerlink" title="延迟关联"></a>延迟关联</h3><p>延迟关联不查询所有的列，只需要根据一次关联操作返回所需要的列。例如下面的这条查询语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT * FROM tableName ORDER BY id LIMIT 500000,2;</span><br></pre></td></tr></table></figure>
+
+<p>没有使用覆盖索引的情况下，需要回表查询 500002 条记录且只返回最后 2 条。如果我们使用覆盖索引只查询 ID 列：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT id FROM tableName ORDER BY id LIMIT 500000,2;</span><br></pre></td></tr></table></figure>
+
+<p>因为索引已经覆盖了查询的需求，所以查询的时间会大大缩短。那如果要查询所有的列，则可以使用关联操作改写：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">-- 使用子查询</span><br><span class="line">SELECT * FROM tableName</span><br><span class="line">WHERE id &gt;= (SELECT id FROM tableName ORDER BY id LIMIT 500000 , 1)</span><br><span class="line">LIMIT 2;</span><br><span class="line"></span><br><span class="line">-- 使用 JOIN 分页的方式</span><br><span class="line">SELECT *</span><br><span class="line">FROM tableName AS t1</span><br><span class="line">JOIN (SELECT id FROM tableName ORDER BY id LIMIT 500000, 1) AS t2</span><br><span class="line">WHERE t1.id &gt; t2.id ORDER BY t1.id LIMIT 2;</span><br></pre></td></tr></table></figure>
+
+<p>可以发现，子查询中能使用覆盖索引，因此在索引结构中就能获取到需要访问的记录而无需回表，之后再根据关联列回表查询需要的所有列。</p>
+<h3 id="书签"><a href="#书签" class="headerlink" title="书签"></a>书签</h3><p><code>LIMIT</code>和<code>OFFSET</code>的问题，其实是<code>OFFSET</code>的问题，它会导致 MySQL 扫描大量不需要的行然后再抛弃掉。如果可以使用书签记录上次取数据的位置，那么下次就可以直接从该书签记录的位置开始扫描，这样就可以避免使用<code>OFFSET</code>。例如：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">endNum = (i + 1)*500;</span><br><span class="line">select id,content from test_table </span><br><span class="line">where id &gt; </span><br><span class="line">(select id from test_table order by id asc limit endNum,1)  </span><br><span class="line">limit 500</span><br></pre></td></tr></table></figure>
+
+<p>与原查询语句对比，原语句需要跨越大量数据块并取出，优化后基本通过直接根据索引字段定位再取出相应内容，效率自然提升。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="http://www.cyc2018.xyz/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL.html#%E4%BA%8C%E3%80%81%E6%9F%A5%E8%AF%A2%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96">CS-Note：查询性能优化</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_42306002/article/details/113138783">MySQL缓存重复数据_MySQL–缓存的使用注意</a></li>
+<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1579788">MySQL 查询缓存</a></li>
+<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1705974">关于 mysql limit offset 的一点优化</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/chen199199/article/details/50535034">mysql 优化 limit 分页</a></li>
+<li><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/149292812">mysql 使用 limit 分页优化方案</a></li>
+</ol>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/10/12/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/MySQL%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6/">MySQL 主从复制和读写分离</a>
+            
+            
+            <a class="next" rel="next" href="/2022/10/05/JDK%E6%BA%90%E7%A0%81/%E9%9B%86%E5%90%88/HashMap%20%E6%BA%90%E7%A0%81/">HashMap 源码</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Bruce Yao | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
