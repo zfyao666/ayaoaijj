@@ -270,10 +270,11 @@
 <li>不要把异常定义为静态变量，因为这样会导致异常栈信息错乱。每次手动抛出异常，我们都需要手动<code>new</code>一个异常对象抛出。</li>
 <li>建议抛出更加具体的异常：比如字符串转换为数字格式错误的时候应该抛出<code>NumberFormatException</code>而不是其父类 <code>IllegalArgumentException</code>。</li>
 </ul>
-<h2 id="Error"><a href="#Error" class="headerlink" title="Error"></a>Error</h2><p>Error 属于程序无法处理的错误，例如当 OOM、StackOverflowError等。这些错误发生时，JVM 会选择线程终止。错误是不可查的，所以不建议也不应该捕获它。</p>
+<h2 id="Error"><a href="#Error" class="headerlink" title="Error"></a>Error</h2><p>Error 属于程序无法处理的错误，例如<code>OutOfMemoryError</code>、<code>StackOverflowError</code>等。这些错误发生时，JVM 会选择线程终止。错误是不可查的，所以不建议也不应该捕获它。</p>
+<p>关于<code>OutOfMemoryError</code>和<code>StackOverflowError</code>，可以参考：<a target="_blank" rel="noopener" href="https://zfyao666.github.io/2022/08/27/Java/Java%20%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E5%92%8C%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA/">Java 内存泄漏和内存溢出</a>。</p>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
 <li><a target="_blank" rel="noopener" href="https://javaguide.cn/java/basis/java-basic-questions-03.html#%E5%BC%82%E5%B8%B8">Java-Guide 异常</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/hguisu/article/details/6155636">深入理解java异常处理机制</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/hguisu/article/details/6155636">深入理解 java 异常处理机制</a></li>
 </ol>
 
         </div>
