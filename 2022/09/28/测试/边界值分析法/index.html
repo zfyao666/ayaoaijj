@@ -13,7 +13,7 @@
 
 
 
-<title>数据库的锁协议 | Yao&#39;s Blog</title>
+<title>边界值分析法 | Yao&#39;s Blog</title>
 
 
 
@@ -204,7 +204,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">数据库的锁协议</h1>
+            <h1 class="post-title">边界值分析法</h1>
             
                 <div class="post-meta">
                     
@@ -213,14 +213,14 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">September 24, 2022&nbsp;&nbsp;21:00:39&nbsp;</a>
+                        Date: <a href="#">September 28, 2022&nbsp;&nbsp;13:07:40&nbsp;</a>
                         </span>
                     
                     
                         <span class="post-category">
                     Category:
                             
-                                <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+                                <a href="/categories/%E6%B5%8B%E8%AF%95/">测试</a>
                             
                         </span>
                     
@@ -229,54 +229,35 @@
         </header>
 
         <div class="post-content">
-            <h2 id="封锁协议"><a href="#封锁协议" class="headerlink" title="封锁协议"></a>封锁协议</h2><p>在运用 X 锁和 S 锁对数据对象加锁时，还需要约定一些规则 ，例如何时申请 X 锁或 S 锁、持锁时间、何时释放等。这些规则被称为<strong>封锁协议</strong>。对封锁方式规定不同的规则，就形成了各种不同的封锁协议。不同的封锁协议，在不同的程度上为并发操作的正确调度提供一定的保证。</p>
-<h3 id="一级封锁协议"><a href="#一级封锁协议" class="headerlink" title="一级封锁协议"></a>一级封锁协议</h3><p>事务在修改记录之前必须要添加 X 锁，直到事务结束（提交或者 ROLLBACK）才释放。一级封锁协议可以解决丢失修改。但是一级封锁协议在读取记录时不会加锁，所以会出现不可重复读和读取脏数据。</p>
-<blockquote>
-<p>丢失修改：不加锁修改后，该记录又被其他事务修改。</p>
-</blockquote>
+            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在一般的测试流程中，很多错误发生在输入或者输出范围的边界上。边界值分析法是一种常用的黑盒测试方法，是对等价类划分方法的补充。边界值通常指的是稍高于最高值嚯稍低于最低值的一些特定情况。</p>
+<h2 id="边界的类型"><a href="#边界的类型" class="headerlink" title="边界的类型"></a>边界的类型</h2><p>边界类型一般包括：数值、字符、数量和空间等。部分边界值类型测试用例设计取值如下：</p>
+<img src="/2022/09/28/%E6%B5%8B%E8%AF%95/%E8%BE%B9%E7%95%8C%E5%80%BC%E5%88%86%E6%9E%90%E6%B3%95/a16d11009afd42388fbf6c7c4cb84df3.png" alt="img" style="zoom:67%;">
+
+<h2 id="标准边界值分析"><a href="#标准边界值分析" class="headerlink" title="标准边界值分析"></a>标准边界值分析</h2><p>标准边界值分析一般使用 5 个值作为测试用例：</p>
 <ul>
-<li><p>读：不添加锁；</p>
-</li>
-<li><p>写：加 X 锁 -&gt; 修改记录 -&gt; 成功或失败 -&gt; 释放 X 锁；</p>
-</li>
+<li><strong>min：</strong>输入变量的最小值；</li>
+<li><strong>min+：</strong>稍大于最小值；</li>
+<li><strong>nom：</strong>域内任意值，一般为中间值；</li>
+<li><strong>max-：</strong>稍小于最大值；</li>
+<li><strong>max：</strong>最大值；</li>
 </ul>
-<h3 id="二级封锁协议"><a href="#二级封锁协议" class="headerlink" title="二级封锁协议"></a>二级封锁协议</h3><p>二级封锁协议在一级封锁协议的基础上，在事务读取记录之前添加 S 锁，在读取结束后释放 S 锁。因为事务读取之前添加了 S 锁，所以可以防止读取脏数据，但是由于事务读取结束就释放了 S 锁，所以不能保证可重复读。</p>
+<p>在多个变量的情况下，只使其中一个变量设为上述 5 个值，其他所有变量均取正常值来进行测试。对于一个 n 变量的程序，使用标准边界值分析需要设计 4n+1 个测试用例。</p>
+<p>如果测试边界没有明确给出，可以人工设置边界。例如在三角形问题中设置边长的下界为 1。上界在默认情况下可以使用最大可表示的数值（例如 <code>MAXINT</code>），或者根据实际需求确定一个数作为上界。</p>
+<img src="/2022/09/28/%E6%B5%8B%E8%AF%95/%E8%BE%B9%E7%95%8C%E5%80%BC%E5%88%86%E6%9E%90%E6%B3%95/ce9b3417d7754c749e4c1d86f3ccd9e0-20220928132441091.png" alt="img">
+
+<img src="/2022/09/28/%E6%B5%8B%E8%AF%95/%E8%BE%B9%E7%95%8C%E5%80%BC%E5%88%86%E6%9E%90%E6%B3%95/37ee9a22d58f497fab934a604df31669-4342623.png" alt="img" style="zoom:67%;">
+
+<h2 id="健壮性边界值分析"><a href="#健壮性边界值分析" class="headerlink" title="健壮性边界值分析"></a>健壮性边界值分析</h2><p>健壮性是指在异常情况下，软件还能正常运行的能力。健壮性测试是标准边界值分析的一种简单扩展。除了上述的 5 个常见边界值，还要考虑一下两个值：</p>
 <ul>
-<li>读：读取前添加 S 锁 -&gt; 读取记录 -&gt; 读取结束后释放 S 锁；</li>
-<li>写：同一级封锁协议；</li>
+<li><strong>max+：</strong>略超过最大值；</li>
+<li><strong>min-：</strong>略小于最小值；</li>
 </ul>
-<h3 id="三级封锁协议"><a href="#三级封锁协议" class="headerlink" title="三级封锁协议"></a>三级封锁协议</h3><p>和二级封锁协议类似，事务读取记录之前必须添加 S 锁，但是三级封锁协议在事务结束后才释放 S 锁，这进一步防止了不可重复读。</p>
-<ul>
-<li>读：读取前添加 S 锁 -&gt; 读取记录 -&gt; 事务完成 -&gt; 释放 S 锁；</li>
-<li>写：同一级封锁协议；</li>
-</ul>
-<h2 id="不同隔离级别对应的封锁协议"><a href="#不同隔离级别对应的封锁协议" class="headerlink" title="不同隔离级别对应的封锁协议"></a>不同隔离级别对应的封锁协议</h2><ul>
-<li><p>RU（读未提交）：遵循一级封锁协议；</p>
-</li>
-<li><p>RC（读已提交）：遵循二级封锁协议；</p>
-</li>
-<li><p>RR（可重复读）：遵循二级封锁协议，使用 MVCC 机制实现可重复读；</p>
-</li>
-<li><p>Serializable（串行化）：遵循三级封锁协议；</p>
-</li>
-</ul>
-<h2 id="一段锁协议"><a href="#一段锁协议" class="headerlink" title="一段锁协议"></a>一段锁协议</h2><p>一段锁协议要求事务开始时一次性申请所有的锁，之后不再申请任何锁。如果其中的某个锁不可用，则整个申请就不成功，事务就不会执行。在事务的尾端，一次性释放所有的锁。</p>
-<blockquote>
-<p>一次性锁协议不会产生死锁的问题，但是事务的并发度很低。</p>
-</blockquote>
-<h2 id="两段锁协议"><a href="#两段锁协议" class="headerlink" title="两段锁协议"></a>两段锁协议</h2><p>MySQL 遵循的是两段锁协议，将整个事务分为加锁阶段和解锁阶段。</p>
-<ul>
-<li>加锁阶段：该阶段的事务只能操作数据和加锁。任何读操作之前都需要申请获得 S 锁，任何写操作之前需要申请 X 锁。如果加锁不成功，则事务等待，直到加锁成功后继续执行。</li>
-<li>解锁阶段：当事务释放第一个锁，就进入了解锁阶段。在该阶段，事务只能操作数据和解锁，但是不能再加锁。</li>
-</ul>
-<p>因为两段锁协议保证事务可以在结尾之前解锁，所以事务可以具有较高的并发度，并且保证事务的并发调度是串行化。但是两段锁协议的缺点是没有解决死锁的问题，因为在加锁阶段没有顺序要求，如果两个事务分别申请了 A、B 锁，接着又申请了对方的锁，此时进入死锁状态。</p>
-<img src="/2022/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%B0%81%E9%94%81%E5%8D%8F%E8%AE%AE/image-20220926164917586-4182161.png" alt="image-20220926164917586" style="zoom:50%;">
+<p>健壮性测试的最大价值在于观察处理异常情况，它是检测软件系统容错性的重要手段。对于一个n变量的程序，健壮性边界值分析测试会产生 6n+1 个测试用例。边界值分析大部分的测试都可直接用于健壮性测试。健壮性测试最有意义的部分不是输入而是输出，观察边界之外的异常情况如何处理。</p>
+<p><img src="/2022/09/28/%E6%B5%8B%E8%AF%95/%E8%BE%B9%E7%95%8C%E5%80%BC%E5%88%86%E6%9E%90%E6%B3%95/a546e94526c24b6b9510d3deab55d22b-4342799.png" alt="img"></p>
+<img src="/2022/09/28/%E6%B5%8B%E8%AF%95/%E8%BE%B9%E7%95%8C%E5%80%BC%E5%88%86%E6%9E%90%E6%B3%95/f2818b68fcda47a6b381b117141a3a1e-4342804.png" alt="img" style="zoom:67%;">
 
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43155301/article/details/99302107">数据库的一级、二级、三级封锁协议</a></li>
-<li><a target="_blank" rel="noopener" href="https://tech.meituan.com/2014/08/20/innodb-lock.html">InnoDB 中的事务隔离级别和锁的关系</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zszmhd/p/3365220.html">两阶段锁协议</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/hulinku/article/details/79787692">MySQL隔离级别和封锁协议</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_35029061/article/details/125046278">边界值分析法用例设计</a></li>
 </ol>
 
         </div>
@@ -297,10 +278,10 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2022/09/28/%E6%B5%8B%E8%AF%95/%E5%BC%B1%E7%BD%91%E6%B5%8B%E8%AF%95/">弱网测试</a>
+                <a class="prev" rel="prev" href="/2022/09/28/%E6%B5%8B%E8%AF%95/%E8%BA%AB%E4%BB%BD%E8%AF%81ID%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E8%AE%BE%E8%AE%A1/">身份证ID测试用例设计</a>
             
             
-            <a class="next" rel="next" href="/2022/09/22/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/InnoDB%E7%9A%84%E8%A1%8C%E9%94%81%E5%92%8C%E8%A1%A8%E9%94%81/">InnoDB 的行锁和表锁</a>
+            <a class="next" rel="next" href="/2022/09/28/%E6%B5%8B%E8%AF%95/%E5%BC%B1%E7%BD%91%E6%B5%8B%E8%AF%95/">弱网测试</a>
             
         </section>
 

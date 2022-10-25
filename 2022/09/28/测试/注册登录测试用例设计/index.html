@@ -13,7 +13,7 @@
 
 
 
-<title>数据库的锁协议 | Yao&#39;s Blog</title>
+<title>注册登录测试用例设计 | Yao&#39;s Blog</title>
 
 
 
@@ -204,7 +204,7 @@
     
     <article class="post-wrap">
         <header class="post-header">
-            <h1 class="post-title">数据库的锁协议</h1>
+            <h1 class="post-title">注册登录测试用例设计</h1>
             
                 <div class="post-meta">
                     
@@ -213,14 +213,14 @@
 
                     
                         <span class="post-time">
-                        Date: <a href="#">September 24, 2022&nbsp;&nbsp;21:00:39&nbsp;</a>
+                        Date: <a href="#">September 28, 2022&nbsp;&nbsp;14:18:44&nbsp;</a>
                         </span>
                     
                     
                         <span class="post-category">
                     Category:
                             
-                                <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+                                <a href="/categories/%E6%B5%8B%E8%AF%95/">测试</a>
                             
                         </span>
                     
@@ -229,54 +229,61 @@
         </header>
 
         <div class="post-content">
-            <h2 id="封锁协议"><a href="#封锁协议" class="headerlink" title="封锁协议"></a>封锁协议</h2><p>在运用 X 锁和 S 锁对数据对象加锁时，还需要约定一些规则 ，例如何时申请 X 锁或 S 锁、持锁时间、何时释放等。这些规则被称为<strong>封锁协议</strong>。对封锁方式规定不同的规则，就形成了各种不同的封锁协议。不同的封锁协议，在不同的程度上为并发操作的正确调度提供一定的保证。</p>
-<h3 id="一级封锁协议"><a href="#一级封锁协议" class="headerlink" title="一级封锁协议"></a>一级封锁协议</h3><p>事务在修改记录之前必须要添加 X 锁，直到事务结束（提交或者 ROLLBACK）才释放。一级封锁协议可以解决丢失修改。但是一级封锁协议在读取记录时不会加锁，所以会出现不可重复读和读取脏数据。</p>
-<blockquote>
-<p>丢失修改：不加锁修改后，该记录又被其他事务修改。</p>
-</blockquote>
-<ul>
-<li><p>读：不添加锁；</p>
+            <p>主要为界面测试、功能测试、兼容性测试、安全性测试及性能测试。</p>
+<h2 id="界面测试"><a href="#界面测试" class="headerlink" title="界面测试"></a>界面测试</h2><p>主要测试布局是否合理，输入框和按钮是否对齐，界面风格是否统一，是否有错别字。</p>
+<h2 id="功能测试"><a href="#功能测试" class="headerlink" title="功能测试"></a>功能测试</h2><ol>
+<li><p>用户名和密码的长度。</p>
 </li>
-<li><p>写：加 X 锁 -&gt; 修改记录 -&gt; 成功或失败 -&gt; 释放 X 锁；</p>
+<li><p>用户名和密码的字符类型要求。</p>
 </li>
-</ul>
-<h3 id="二级封锁协议"><a href="#二级封锁协议" class="headerlink" title="二级封锁协议"></a>二级封锁协议</h3><p>二级封锁协议在一级封锁协议的基础上，在事务读取记录之前添加 S 锁，在读取结束后释放 S 锁。因为事务读取之前添加了 S 锁，所以可以防止读取脏数据，但是由于事务读取结束就释放了 S 锁，所以不能保证可重复读。</p>
-<ul>
-<li>读：读取前添加 S 锁 -&gt; 读取记录 -&gt; 读取结束后释放 S 锁；</li>
-<li>写：同一级封锁协议；</li>
-</ul>
-<h3 id="三级封锁协议"><a href="#三级封锁协议" class="headerlink" title="三级封锁协议"></a>三级封锁协议</h3><p>和二级封锁协议类似，事务读取记录之前必须添加 S 锁，但是三级封锁协议在事务结束后才释放 S 锁，这进一步防止了不可重复读。</p>
-<ul>
-<li>读：读取前添加 S 锁 -&gt; 读取记录 -&gt; 事务完成 -&gt; 释放 S 锁；</li>
-<li>写：同一级封锁协议；</li>
-</ul>
-<h2 id="不同隔离级别对应的封锁协议"><a href="#不同隔离级别对应的封锁协议" class="headerlink" title="不同隔离级别对应的封锁协议"></a>不同隔离级别对应的封锁协议</h2><ul>
-<li><p>RU（读未提交）：遵循一级封锁协议；</p>
+<li><p>用户名密码是否明文显示。</p>
 </li>
-<li><p>RC（读已提交）：遵循二级封锁协议；</p>
+<li><p>验证码为空能否可以正常进入。</p>
 </li>
-<li><p>RR（可重复读）：遵循二级封锁协议，使用 MVCC 机制实现可重复读；</p>
+<li><p>登录后是否会用明文传递参数。</p>
 </li>
-<li><p>Serializable（串行化）：遵循三级封锁协议；</p>
+<li><p>数据库中不存在的用户名，或存在的用户名，错误的密码来登录。</p>
 </li>
-</ul>
-<h2 id="一段锁协议"><a href="#一段锁协议" class="headerlink" title="一段锁协议"></a>一段锁协议</h2><p>一段锁协议要求事务开始时一次性申请所有的锁，之后不再申请任何锁。如果其中的某个锁不可用，则整个申请就不成功，事务就不会执行。在事务的尾端，一次性释放所有的锁。</p>
-<blockquote>
-<p>一次性锁协议不会产生死锁的问题，但是事务的并发度很低。</p>
-</blockquote>
-<h2 id="两段锁协议"><a href="#两段锁协议" class="headerlink" title="两段锁协议"></a>两段锁协议</h2><p>MySQL 遵循的是两段锁协议，将整个事务分为加锁阶段和解锁阶段。</p>
-<ul>
-<li>加锁阶段：该阶段的事务只能操作数据和加锁。任何读操作之前都需要申请获得 S 锁，任何写操作之前需要申请 X 锁。如果加锁不成功，则事务等待，直到加锁成功后继续执行。</li>
-<li>解锁阶段：当事务释放第一个锁，就进入了解锁阶段。在该阶段，事务只能操作数据和解锁，但是不能再加锁。</li>
-</ul>
-<p>因为两段锁协议保证事务可以在结尾之前解锁，所以事务可以具有较高的并发度，并且保证事务的并发调度是串行化。但是两段锁协议的缺点是没有解决死锁的问题，因为在加锁阶段没有顺序要求，如果两个事务分别申请了 A、B 锁，接着又申请了对方的锁，此时进入死锁状态。</p>
-<img src="/2022/09/24/%E6%95%B0%E6%8D%AE%E5%BA%93/%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E5%B0%81%E9%94%81%E5%8D%8F%E8%AE%AE/image-20220926164917586-4182161.png" alt="image-20220926164917586" style="zoom:50%;">
-
+<li><p>输入的正确的用户名或密码前后中间有空格。</p>
+</li>
+<li><p>登录失败后，不能记录密码的功能。</p>
+</li>
+<li><p>选中记住密码是否可以保存密码，重新打开是否保存着正确的密码。</p>
+</li>
+<li><p>选中记住密码后换一个账户，保存的密码是否正确地与账号对应。</p>
+</li>
+<li><p>登录失败后，已经输入的用户名和密码一般需要清空。</p>
+</li>
+<li><p>登录后保存里面的链接，关了浏览器直接复制链接看能不能访问。</p>
+</li>
+</ol>
+<h2 id="兼容性测试"><a href="#兼容性测试" class="headerlink" title="兼容性测试"></a>兼容性测试</h2><p>主要从以下几个角度验证页面显示及功能是否正常：</p>
+<ol>
+<li>不同浏览器。</li>
+<li>相同浏览器的不同版本。</li>
+<li>不同移动设备终端。</li>
+<li>不同分辨率。</li>
+</ol>
+<h2 id="安全性测试"><a href="#安全性测试" class="headerlink" title="安全性测试"></a>安全性测试</h2><ol>
+<li>用户密码后台存储是否加密。</li>
+<li>用户密码在网络传输过程中是否加密。</li>
+<li>密码是否具有有效期，密码有效期到期后，是否提示需要修改密码。</li>
+<li>不登录的情况下，在浏览器中直接输入登录后的 URL 地址，验证是否会重新定向到用户登录界<br> 面。</li>
+<li>密码输入框是否不支持复制和粘贴。</li>
+<li>密码输入框内输入的密码是否都可以在页面源码模式下被查看。</li>
+<li>用户名和密码的输入框中分别输入典型的“SQL 注入攻击”字符串，验证系统的返回页面。</li>
+<li>用户名和密码的输入框中分别输入典型的“XSS 跨站脚本攻击”字符串，验证系统行为是否被篡<br> 改。</li>
+<li>连续多次登录失败情况下，系统是否会阻止后续的尝试以应对暴力破解。</li>
+<li>同一用户在同一终端的多种浏览器上登录，验证登录功能的互斥性是否符合设计预期。</li>
+<li>同一用户先后在多台终端的浏览器上登录，验证登录是否具有互斥性。</li>
+</ol>
+<h2 id="性能测试"><a href="#性能测试" class="headerlink" title="性能测试"></a>性能测试</h2><ol>
+<li>打开登录页面，需要几秒，输入正确的用户名和密码成功跳转后，需要几秒。</li>
+<li>多用户并发登录是否达到设计要求。</li>
+<li>登录达到需求上线，系统稳定工作时间是否达到要求。</li>
+</ol>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43155301/article/details/99302107">数据库的一级、二级、三级封锁协议</a></li>
-<li><a target="_blank" rel="noopener" href="https://tech.meituan.com/2014/08/20/innodb-lock.html">InnoDB 中的事务隔离级别和锁的关系</a></li>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/zszmhd/p/3365220.html">两阶段锁协议</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/hulinku/article/details/79787692">MySQL隔离级别和封锁协议</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/a162acd81dbb">注册登录的测试用例</a></li>
 </ol>
 
         </div>
@@ -297,10 +304,10 @@
         </section>
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2022/09/28/%E6%B5%8B%E8%AF%95/%E5%BC%B1%E7%BD%91%E6%B5%8B%E8%AF%95/">弱网测试</a>
+                <a class="prev" rel="prev" href="/2022/10/03/JDK%E6%BA%90%E7%A0%81/%E9%9B%86%E5%90%88/%E9%9B%86%E5%90%88%E6%80%BB%E7%BB%93/">集合总结</a>
             
             
-            <a class="next" rel="next" href="/2022/09/22/%E6%95%B0%E6%8D%AE%E5%BA%93/MySQL/InnoDB%E7%9A%84%E8%A1%8C%E9%94%81%E5%92%8C%E8%A1%A8%E9%94%81/">InnoDB 的行锁和表锁</a>
+            <a class="next" rel="next" href="/2022/09/28/%E6%B5%8B%E8%AF%95/%E8%BA%AB%E4%BB%BD%E8%AF%81ID%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E8%AE%BE%E8%AE%A1/">身份证ID测试用例设计</a>
             
         </section>
 
