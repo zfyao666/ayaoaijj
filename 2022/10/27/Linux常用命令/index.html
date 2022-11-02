@@ -220,7 +220,7 @@
                         <span class="post-category">
                     Category:
                             
-                                <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a>
+                                <a href="/categories/Linux/">Linux</a>
                             
                         </span>
                     
@@ -229,36 +229,233 @@
         </header>
 
         <div class="post-content">
-            <h2 id="ls-命令"><a href="#ls-命令" class="headerlink" title="ls 命令"></a>ls 命令</h2><p>list的缩写，通过ls命令不仅可以查看linux文件夹包含的文件，而且可以查看文件权限(包括目录、文件夹、文件权限)查看目录信息等等</p>
-<p>1.查找文件<br>find &#x2F; -name filename.txt<br>根据名称查找&#x2F;目录下的filename.txt文件。</p>
-<p>2.查看一个程序是否运行<br>ps –ef|grep tomcat<br>查看所有有关tomcat的进程</p>
-<p>3.终止线程<br>kill -9 19979<br>终止线程号位19979的线程</p>
-<p>4.查看文件，包含隐藏文件<br>ls -al</p>
-<p>5.当前工作目录<br>pwd</p>
-<p>6.复制文件包括其子文件到自定目录<br>cp -r sourceFolder targetFolder</p>
-<p>7.创建目录<br>mkdir newfolder</p>
-<p>8.删除目录（此目录是空目录）<br>rmdir deleteEmptyFolder</p>
-<p>9.删除文件包括其子文件<br>rm -rf deleteFile</p>
-<p>10.移动文件<br>mv &#x2F;temp&#x2F;movefile &#x2F;targetFolder</p>
-<p>扩展重命名 mv oldNameFile newNameFile</p>
-<p>11.切换用户<br>su -username</p>
-<p>12.修改文件权限<br>chmod 777 file.java<br>&#x2F;&#x2F;file.java的权限-rwxrwxrwx，r表示读、w表示写、x表示可执行</p>
-<p>13.压缩文件<br>tar -czf test.tar.gz &#x2F;test1 &#x2F;test2</p>
-<p>14.列出压缩文件列表<br>tar -tzf test.tar.gz</p>
-<p>15.解压文件<br>tar -xvzf test.tar.gz</p>
-<p>16.查看文件头10行<br>head -n 10 example.txt</p>
-<p>17.查看文件尾10行<br>tail -n 10 example.txt</p>
-<p>18.查看日志文件<br>tail -f exmaple.log<br>&#x2F;&#x2F;这个命令会自动显示新增内容，屏幕只显示10行内容的（可设置）。</p>
-<p>19.启动Vi编辑器<br>vi<br>20.查看系统当前时间<br>date<br>命令会输出 周几 几月 几日 时间 和 时间显示格式 和年份<br>Sat Jan 20 04:39:49 CST 2018<br>date +”%Y-%m-%d”<br>显示如下：<br>[root@ming xxx]# date +”%Y-%m-%d” 2018-01-20<br>注： 这个我们如果不确定 就help 即可；</p>
-<p>2019&#x2F;04&#x2F;04 新增命令：<br>21： 解压zip 文件<br>unzip -oq</p>
-<p>2019&#x2F;05&#x2F;05新增命令：<br>22：查看线程个数（方便查看程序是否有误）<br>ps -Lf 端口号|wc -l</p>
-<p>2019&#x2F;09&#x2F;12 新增命令：<br>23： 压缩文件夹 为 tar.gz(比如tomcat)<br>tar -zcvf 文件名.tar.gz .&#x2F;<br>tar -zcvf apache-tomcat-8.0.xx.tar.gz .&#x2F;<br>24：查看CentOS磁盘大小<br>df -hl</p>
-<p>2019&#x2F;11&#x2F;13 新增命令：<br>CentOS 6.x 允许对外访问的网络端口：<br>#开启8000端口<br>&#x2F;sbin&#x2F;iptables -I INPUT -p tcp –dport 8000 -j ACCEPT<br>#保存配置<br>&#x2F;etc&#x2F;rc.d&#x2F;init.d&#x2F;iptables save<br>#重启服务<br>&#x2F;etc&#x2F;rc.d&#x2F;init.d&#x2F;iptables restart<br>#查看端口是否已经开放<br>&#x2F;etc&#x2F;init.d&#x2F;iptables status</p>
-<p>CentOS6.x升级到7.x之后，发现无法使用iptables控制Linuxs的端口，Centos 7.x使用firewalld代替了原来的iptables。下面记录如何使用firewalld开放CentOS7.x 对外访问的网络端口：</p>
-<p>CentOS 7.x 允许对外访问的网络端口：<br>#开启端口<br>firewall-cmd –zone&#x3D;public –add-port&#x3D;80&#x2F;tcp –permanent<br>–permanent #永久生效，没有此参数重启后失效<br>–zone #作用域<br>–add-port&#x3D;80&#x2F;tcp #添加端口，格式为：端口&#x2F;通讯协议</p>
-<p>#查询端口号80 是否开启：<br>firewall-cmd –query-port&#x3D;80&#x2F;tcp<br>#重启防火墙：<br>firewall-cmd –reload<br>#查询有哪些端口是开启的:<br>firewall-cmd –list-port<br>#停止firewall<br>systemctl stop firewalld.service<br>#禁止firewall开机启动<br>systemctl disable firewalld.service</p>
-<p>2020&#x2F;04&#x2F;29 新增命令<br>#下载ftp 服务器上的文件或者文件夹：<br>wget -P 指定文件保存位置 <a href="ftp://ip:端口/文件夹">ftp://ip:端口/文件夹</a> –ftp-user&#x3D;用户名 –ftp-password&#x3D;密码</p>
-<p>SCP命令(文件拷贝，基于ssh的登录)：<br>scp &#x2F;opt&#x2F;xxx.dmp root@ip:&#x2F;home&#x2F;oracle&#x2F;dmpdir&#x2F;<br>(本地计算机&#x2F;home下的一个名为xxx.dmp的文件拷贝到远程服务器ip上的&#x2F;home&#x2F;oracle&#x2F;dmpdir。而且远程服务器 的帐号名为root,会提示你输入密码。)<br>scp root@]ip:&#x2F;home&#x2F;xxx.dmp<br>(把文件从远程机器拷贝到本机当前目录。)</p>
+            <h2 id="ls"><a href="#ls" class="headerlink" title="ls"></a>ls</h2><p>list的缩写，可以查看linux文件夹包含的文件、文件权限、目录、文件夹等信息。</p>
+<ul>
+<li><p><code>ls -a</code>：列出目录所有文件，包含以.开始的隐藏文件。</p>
+</li>
+<li><p><code>ls -A</code>：列出除.及..的其它文件。</p>
+</li>
+<li><p><code>ls -l</code>：除了文件名之外，还将文件的权限、所有者、文件大小等信息详细列出来。</p>
+</li>
+</ul>
+<h2 id="pwd"><a href="#pwd" class="headerlink" title="pwd"></a>pwd</h2><ul>
+<li><code>pwd</code>：查看当前路径。</li>
+<li><code>pwd -P</code>：查看软链接的实际路径。</li>
+</ul>
+<h2 id="mkdir"><a href="#mkdir" class="headerlink" title="mkdir"></a>mkdir</h2><p>用于创建文件夹。</p>
+<ul>
+<li><code>mkdir newfolder</code>：在当前目录创建名字为newfolder的文件夹。</li>
+<li><code>mkdir -p /tmp/test/t1/t</code>：在tmp目录下创建路径为test&#x2F;t1&#x2F;t的目录，系统会自动建立那些不存在的目录。</li>
+</ul>
+<h2 id="rm"><a href="#rm" class="headerlink" title="rm"></a>rm</h2><p>删除一个目录中的一个或多个文件或目录。</p>
+<ul>
+<li><code>rm -i *.log</code>：删除任何.log文件，删除前逐一询问确认。</li>
+<li><code>rm -rf test</code>：递归删除test子目录及其子目录中所有档案，并且不用一一确认。</li>
+<li><code>rm -- -f</code>：删除以 -f 开头的文件。</li>
+</ul>
+<h2 id="rmdir"><a href="#rmdir" class="headerlink" title="rmdir"></a>rmdir</h2><p>用来删除空目录，删除时必须具有目标目录父目录的写权限。</p>
+<ul>
+<li><code>rmdir -p parent/child/child11</code>：递归删除空目录，如果子目录被删除后parent变成空目录，则顺便一并删除。</li>
+</ul>
+<h2 id="mv"><a href="#mv" class="headerlink" title="mv"></a>mv</h2><p>用来移动或修改文件名，参数为目录时移动文件，否则重命名文件。</p>
+<ul>
+<li><p><code>mv test.log test1.txt</code>：将文件test.log重命名为test1.txt。</p>
+</li>
+<li><p><code>mv llog1.txt log2.txt log3.txt /test3</code>：将文件log1.txt,log2.txt,log3.txt移动到根的test3目录中。</p>
+</li>
+<li><p><code>mv -i log1.txt log2.txt</code>：将文件file1改名为file2，如果file2已经存在，则询问是否覆。</p>
+</li>
+<li><p><code>mv * ../</code>：移动当前文件夹下的所有文件到上一级目录。</p>
+</li>
+</ul>
+<h2 id="cp"><a href="#cp" class="headerlink" title="cp"></a>cp</h2><p>将源文件复制至目标文件，或将多个源文件复制至目标目录。</p>
+<ul>
+<li><p><code>cp -i</code>：提示出现文件的覆盖。</p>
+</li>
+<li><p><code>cp -r</code>：复制目录及目录内所有项目。</p>
+</li>
+<li><p><code>cp -a</code>：复制的文件与原文件时间一样。</p>
+</li>
+<li><p><code>cp -ai a.txt test</code>：复制a.txt到test目录下，保持原文件时间，如果原文件存在提示是否覆盖。</p>
+</li>
+<li><p><code>cp -s a.txt link_a.txt</code>：为a.txt建议一个链接（快捷方式）。</p>
+</li>
+</ul>
+<h2 id="cat"><a href="#cat" class="headerlink" title="cat"></a>cat</h2><p>主要用来显示文件内容、创建新文件和合并文件。</p>
+<ul>
+<li><p><code>cat -b</code>：对非空输出行号。</p>
+</li>
+<li><p><code>cat -n</code>：输出所有行号。</p>
+</li>
+<li><p><code>cat test.log</code>：创建test.log文件。</p>
+</li>
+<li><p><code>cat -n log2012.log log2013.log</code>：把 log2012.log 的文件内容加上行号后添加到 log2013.log。</p>
+</li>
+<li><p><code>cat -b log2012.log log2013.log log.log</code>：把 log2012.log 和 log2013.log 的文件内容加上行号后添加到log.log。</p>
+</li>
+</ul>
+<h2 id="head"><a href="#head" class="headerlink" title="head"></a>head</h2><p>显示文件的开头几行，默认显示文件的前10行。</p>
+<ul>
+<li><p><code>head -n</code>：行数，最后n行使用负数。</p>
+</li>
+<li><p><code>head -c</code>：字节数。</p>
+</li>
+<li><p><code>head -n 10 1.log</code>：显示1.log文件中前20行。</p>
+</li>
+<li><p><code>head -c 20 log2014.log</code>：显示1.log文件前20个字节。</p>
+</li>
+<li><p><code>head -n -10 t.log</code>：显示t.log最后10行。</p>
+</li>
+</ul>
+<h2 id="tail"><a href="#tail" class="headerlink" title="tail"></a>tail</h2><p>用于显示指定文件末尾内容，不指定文件时，使用输入信息进行处理，常用查看日志文件。</p>
+<ul>
+<li><p><code>tail -f</code>：循环读取，常用于查看递增的日志文件。</p>
+</li>
+<li><p><code>tail -n</code>：行数。</p>
+</li>
+</ul>
+<p>例如循环读取递增的文本内容：</p>
+<ol>
+<li><p><code>ping 127.0.0.1 &gt; ping.log &amp;</code>：保存日志。</p>
+</li>
+<li><p><code>tail -f ping.log</code>：查看日志的最新内容。</p>
+</li>
+</ol>
+<h2 id="which"><a href="#which" class="headerlink" title="which"></a>which</h2><p>在PATH中搜索某个系统命令的位置，并返回第一个搜索结果。使用which命令可以看到某个系统命令是否存在，以及执行的到底是哪一个位置的命令。</p>
+<ul>
+<li><p><code>which ls</code>：查看ls命令是否存在，执行哪个。</p>
+</li>
+<li><p><code>which cd</code>：显示cd是内建命令。</p>
+</li>
+</ul>
+<h2 id="whereis"><a href="#whereis" class="headerlink" title="whereis"></a>whereis</h2><p>whereis命令只能用于程序名的搜索，whereis及locate都是基于系统内建的数据库进行搜索，因此效率很高，而find则是遍历硬盘查找文件。</p>
+<ul>
+<li><p><code>whereis python</code>：返回所有相关的文件。</p>
+</li>
+<li><p><code>whereis -b python</code>：搜索二进制可执行文件。</p>
+</li>
+<li><p><code>whereis -m python</code>：搜索说明帮助文件。</p>
+</li>
+<li><p><code>whereis -s python</code>：搜索源代码文件。</p>
+</li>
+<li><p><code>whereis -u python</code>：搜索默认路径下以上文件之外的其它文件。</p>
+</li>
+</ul>
+<h2 id="find"><a href="#find" class="headerlink" title="find"></a>find</h2><p>用于查找文件，可以配合使用正则表达式。</p>
+<ul>
+<li><p><code>find ./ -name &#39;*.log&#39;</code>：在当前目录查找 以.log结尾的文件。 </p>
+</li>
+<li><p><code>find / -name filename.txt</code>：查找&#x2F;目录下的filename.txt文件。</p>
+</li>
+</ul>
+<h2 id="chmod"><a href="#chmod" class="headerlink" title="chmod"></a>chmod</h2><p>用于修改linux系统文件或目录的访问权限，有两种用法：一种是包含字母和操作符表达式的文字设定法，另一种是包含数字的数字设定法。</p>
+<ul>
+<li><code>chmod a+x t.log</code>：增加文件t.log所有用户可执行权限。</li>
+<li><code>chmod 777 file.java</code>：修改文件权限。</li>
+</ul>
+<h2 id="tar"><a href="#tar" class="headerlink" title="tar"></a>tar</h2><p>用来压缩和解压文件。文件系统中，打包和压缩是不同的。打包是将一大堆文件或目录变成一个总的文件，压缩是将一个大的文件通过一些压缩算法变成一个小文件。</p>
+<p>tar本身只具有打包功能，而压缩及解压是调用其它的程序完成的。</p>
+<ul>
+<li><code>tar -c</code>：建立新的压缩文件。</li>
+<li><code>tar -f</code>：指定压缩文件。</li>
+<li><code>tar -x</code>：从压缩包中抽取文件。</li>
+<li><code>tar -z</code>：支持gzip压缩。</li>
+<li><code>tar -v</code>：显示操作过程。</li>
+<li><code>tar -xvzf test.tar.gz</code>：解压test.tar.gz文件。</li>
+<li><code>tar -zcvf test.tar.gz ./</code>：压缩当前文件夹为 test.tar.gz。</li>
+</ul>
+<h2 id="df"><a href="#df" class="headerlink" title="df"></a>df</h2><p>通过文件系统来快速获取空间大小的信息，当我们删除一个文件的时候，这个文件不是马上就在文件系统当中消失了，而是暂时消失了，当所有程序都不用时，才会根据OS的规则释放掉已经删除的文件， <code>df</code>记录的是通过文件系统获取到的文件的大小。</p>
+<p><code>df</code>和<code>du</code>不同的地方是计算大小时会加上还没有释放的已删除文件，更加精确。</p>
+<ul>
+<li><p><code>df -a</code>：全部文件系统列表。</p>
+</li>
+<li><p><code>df -h</code>：易读模式显示信息。</p>
+</li>
+<li><p><code>df -l</code>：显示本地磁盘使用情况。</p>
+</li>
+</ul>
+<h2 id="du"><a href="#du" class="headerlink" title="du"></a>du</h2><p>通过搜索文件然后计算每个文件的大小累加得到空间的大小信息。<code>du</code>能看到的文件只是一些当前存在的，没有被删除的，计算的大小就是当前存在的所有文件大小的累加和。</p>
+<ul>
+<li><p><code>du -s</code>：只显示总和的大小。</p>
+</li>
+<li><p><code>du logxxx.log</code>：显示指定文件的所占空间，如果文件为多个则分别显示。</p>
+</li>
+<li><p><code>du -a scf/</code>：显示文件夹内文件夹和文件的大小。</p>
+</li>
+<li><p><code>du -h scf/</code>：以易读方式显示文件夹内及子文件夹大小。</p>
+</li>
+<li><p><code>du -c test/ scf/</code>：显示几个文件或目录各自占用磁盘空间的大小，并统计它们的总和。</p>
+</li>
+</ul>
+<h2 id="ln"><a href="#ln" class="headerlink" title="ln"></a>ln</h2><p>为文件在其他位置建立一个同步的链接，同步指的是文件或者路径一处修改了所有的链接都会跟着做相同的修改。链接可以减少磁盘的占用，分为软链接和硬链接。</p>
+<p>软链接：</p>
+<ul>
+<li>以路径的形式存在，类似于windows中的快捷方式。</li>
+<li>可以跨文件系统，可以对目录创建，可以对不存在的文件名链接。</li>
+</ul>
+<p>硬链接：</p>
+<ul>
+<li>以文件副本的形式存在，但不占用实际空间。</li>
+<li>不可以给目录创建，不可以跨文件系统。</li>
+</ul>
+<p>用法：</p>
+<ul>
+<li><p><code>ln -b</code>：删除、覆盖以前建立的链接。</p>
+</li>
+<li><p><code>ln -sv source.log link.log</code>：给文件创建软链接，并显示操作信息。</p>
+</li>
+<li><p><code>ln -v source.log link1.log</code>：给文件创建硬链接，并显示操作信息。</p>
+</li>
+<li><p><code>ln -sv /opt/soft/test/test3 /opt/soft/test/test5</code>：给目录创建软链接。</p>
+</li>
+</ul>
+<h2 id="grep"><a href="#grep" class="headerlink" title="grep"></a>grep</h2><p>grep在一个或多个文件中搜索字符串或者正则表达式模版，模板后的所有字符串被看作文件名，搜索的结果被送到标准输出，不影响原文件内容。</p>
+<ul>
+<li><code>ps -ef | grep java</code>：查看java有关进程。</li>
+</ul>
+<h2 id="ps"><a href="#ps" class="headerlink" title="ps"></a>ps</h2><p>用来查看进程的状态。</p>
+<ul>
+<li><code>ps -ef</code>：显示当前所有进程及进程间关系。</li>
+<li><code>ps -ef | grep java</code>：查看java有关进程。</li>
+<li>&#96;ps -ef | head -5’：列出前五的进程。</li>
+</ul>
+<img src="/2022/10/27/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20221103001431513.png" alt="image-20221103001431513" style="zoom: 50%;">
+
+<p>其中的参数含义：</p>
+<ul>
+<li>UID：用户ID。</li>
+<li>PID：进程ID。</li>
+<li>PPID：父进程号。</li>
+<li>C：CPU的占用率。</li>
+<li>STIME：进程的启动时间。</li>
+<li>TTY：登入者的终端机位置。</li>
+<li>TIME：进程执行起到现在总的CPU占用时间。</li>
+<li>CMD：启动这个进程的命令。</li>
+</ul>
+<h2 id="top"><a href="#top" class="headerlink" title="top"></a>top</h2><p>显示当前系统正在执行的进程的相关信息，包括进程ID、内存占用率、CPU占用率等</p>
+<ul>
+<li><p><code>top -p pid</code>：显示指定pid的信息。</p>
+</li>
+<li><p><code>top -n</code>：前n行信息。</p>
+</li>
+</ul>
+<h2 id="kill"><a href="#kill" class="headerlink" title="kill"></a>kill</h2><ul>
+<li><code>kill -9 19979</code>：终止线程号位19979的线程。</li>
+</ul>
+<h2 id="free"><a href="#free" class="headerlink" title="free"></a>free</h2><p>显示系统内存使用情况，包括物理内存、交互区内存(swap)和内核缓冲区内存。</p>
+<ul>
+<li><p><code>free -t</code>：显示内存总和的使用信息。</p>
+</li>
+<li><p><code>free -s</code>：周期显示内存使用信息。</p>
+</li>
+<li><p><code>free -b/-k/-m/-g</code>：使用不同的单位显示内存使用情况。</p>
+</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/gaojun/p/3359355.html">Linux常用命令学习</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/wisgood/article/details/17316663">Linux du命令和df命令区别</a></li>
+<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1640751">Linux常用命令 - ps命令详解（重点）</a></li>
+</ol>
 
         </div>
 
