@@ -229,11 +229,11 @@
         </header>
 
         <div class="post-content">
-            <h2 id="ls"><a href="#ls" class="headerlink" title="ls"></a>ls</h2><p>list的缩写，可以查看linux文件夹包含的文件、文件权限、目录、文件夹等信息。</p>
+            <h2 id="ls"><a href="#ls" class="headerlink" title="ls"></a>ls</h2><p>list 的缩写，可以查看 linux 文件夹包含的文件、文件权限、目录、文件夹等信息。</p>
 <ul>
-<li><p><code>ls -a</code>：列出目录所有文件，包含以.开始的隐藏文件。</p>
+<li><p><code>ls -a</code>：列出目录所有文件，包含以。开始的隐藏文件。</p>
 </li>
-<li><p><code>ls -A</code>：列出除.及..的其它文件。</p>
+<li><p><code>ls -A</code>：列出除。及。. 的其它文件。</p>
 </li>
 <li><p><code>ls -l</code>：除了文件名之外，还将文件的权限、所有者、文件大小等信息详细列出来。</p>
 </li>
@@ -244,26 +244,26 @@
 </ul>
 <h2 id="mkdir"><a href="#mkdir" class="headerlink" title="mkdir"></a>mkdir</h2><p>用于创建文件夹。</p>
 <ul>
-<li><code>mkdir newfolder</code>：在当前目录创建名字为newfolder的文件夹。</li>
-<li><code>mkdir -p /tmp/test/t1/t</code>：在tmp目录下创建路径为test&#x2F;t1&#x2F;t的目录，系统会自动建立那些不存在的目录。</li>
+<li><code>mkdir newfolder</code>：在当前目录创建名字为 newfolder 的文件夹。</li>
+<li><code>mkdir -p /tmp/test/t1/t</code>：在 tmp 目录下创建路径为 test&#x2F;t1&#x2F;t 的目录，系统会自动建立那些不存在的目录。</li>
 </ul>
 <h2 id="rm"><a href="#rm" class="headerlink" title="rm"></a>rm</h2><p>删除一个目录中的一个或多个文件或目录。</p>
 <ul>
-<li><code>rm -i *.log</code>：删除任何.log文件，删除前逐一询问确认。</li>
-<li><code>rm -rf test</code>：递归删除test子目录及其子目录中所有档案，并且不用一一确认。</li>
+<li><code>rm -i *.log</code>：删除任何。log 文件，删除前逐一询问确认。</li>
+<li><code>rm -rf test</code>：递归删除 test 子目录及其子目录中所有档案，并且不用一一确认。</li>
 <li><code>rm -- -f</code>：删除以 -f 开头的文件。</li>
 </ul>
 <h2 id="rmdir"><a href="#rmdir" class="headerlink" title="rmdir"></a>rmdir</h2><p>用来删除空目录，删除时必须具有目标目录父目录的写权限。</p>
 <ul>
-<li><code>rmdir -p parent/child/child11</code>：递归删除空目录，如果子目录被删除后parent变成空目录，则顺便一并删除。</li>
+<li><code>rmdir -p parent/child/child11</code>：递归删除空目录，如果子目录被删除后 parent 变成空目录，则顺便一并删除。</li>
 </ul>
 <h2 id="mv"><a href="#mv" class="headerlink" title="mv"></a>mv</h2><p>用来移动或修改文件名，参数为目录时移动文件，否则重命名文件。</p>
 <ul>
-<li><p><code>mv test.log test1.txt</code>：将文件test.log重命名为test1.txt。</p>
+<li><p><code>mv test.log test1.txt</code>：将文件 test.log 重命名为 test1.txt。</p>
 </li>
-<li><p><code>mv llog1.txt log2.txt log3.txt /test3</code>：将文件log1.txt,log2.txt,log3.txt移动到根的test3目录中。</p>
+<li><p><code>mv llog1.txt log2.txt log3.txt /test3</code>：将文件 log1.txt,log2.txt,log3.txt 移动到根的 test3 目录中。</p>
 </li>
-<li><p><code>mv -i log1.txt log2.txt</code>：将文件file1改名为file2，如果file2已经存在，则询问是否覆。</p>
+<li><p><code>mv -i log1.txt log2.txt</code>：将文件 file1 改名为 file2，如果 file2 已经存在，则询问是否覆。</p>
 </li>
 <li><p><code>mv * ../</code>：移动当前文件夹下的所有文件到上一级目录。</p>
 </li>
@@ -276,9 +276,9 @@
 </li>
 <li><p><code>cp -a</code>：复制的文件与原文件时间一样。</p>
 </li>
-<li><p><code>cp -ai a.txt test</code>：复制a.txt到test目录下，保持原文件时间，如果原文件存在提示是否覆盖。</p>
+<li><p><code>cp -ai a.txt test</code>：复制 a.txt 到 test 目录下，保持原文件时间，如果原文件存在提示是否覆盖。</p>
 </li>
-<li><p><code>cp -s a.txt link_a.txt</code>：为a.txt建议一个链接（快捷方式）。</p>
+<li><p><code>cp -s a.txt link_a.txt</code>：为 a.txt 建议一个链接（快捷方式）。</p>
 </li>
 </ul>
 <h2 id="cat"><a href="#cat" class="headerlink" title="cat"></a>cat</h2><p>主要用来显示文件内容、创建新文件和合并文件。</p>
@@ -287,24 +287,24 @@
 </li>
 <li><p><code>cat -n</code>：输出所有行号。</p>
 </li>
-<li><p><code>cat test.log</code>：创建test.log文件。</p>
+<li><p><code>cat test.log</code>：创建 test.log 文件。</p>
 </li>
 <li><p><code>cat -n log2012.log log2013.log</code>：把 log2012.log 的文件内容加上行号后添加到 log2013.log。</p>
 </li>
-<li><p><code>cat -b log2012.log log2013.log log.log</code>：把 log2012.log 和 log2013.log 的文件内容加上行号后添加到log.log。</p>
+<li><p><code>cat -b log2012.log log2013.log log.log</code>：把 log2012.log 和 log2013.log 的文件内容加上行号后添加到 log.log。</p>
 </li>
 </ul>
-<h2 id="head"><a href="#head" class="headerlink" title="head"></a>head</h2><p>显示文件的开头几行，默认显示文件的前10行。</p>
+<h2 id="head"><a href="#head" class="headerlink" title="head"></a>head</h2><p>显示文件的开头几行，默认显示文件的前 10 行。</p>
 <ul>
-<li><p><code>head -n</code>：行数，最后n行使用负数。</p>
+<li><p><code>head -n</code>：行数，最后 n 行使用负数。</p>
 </li>
 <li><p><code>head -c</code>：字节数。</p>
 </li>
-<li><p><code>head -n 10 1.log</code>：显示1.log文件中前20行。</p>
+<li><p><code>head -n 10 1.log</code>：显示 1.log 文件中前 20 行。</p>
 </li>
-<li><p><code>head -c 20 log2014.log</code>：显示1.log文件前20个字节。</p>
+<li><p><code>head -c 20 log2014.log</code>：显示 1.log 文件前 20 个字节。</p>
 </li>
-<li><p><code>head -n -10 t.log</code>：显示t.log最后10行。</p>
+<li><p><code>head -n -10 t.log</code>：显示 t.log 最后 10 行。</p>
 </li>
 </ul>
 <h2 id="tail"><a href="#tail" class="headerlink" title="tail"></a>tail</h2><p>用于显示指定文件末尾内容，不指定文件时，使用输入信息进行处理，常用查看日志文件。</p>
@@ -321,14 +321,14 @@
 <li><p><code>tail -f ping.log</code>：查看日志的最新内容。</p>
 </li>
 </ol>
-<h2 id="which"><a href="#which" class="headerlink" title="which"></a>which</h2><p>在PATH中搜索某个系统命令的位置，并返回第一个搜索结果。使用which命令可以看到某个系统命令是否存在，以及执行的到底是哪一个位置的命令。</p>
+<h2 id="which"><a href="#which" class="headerlink" title="which"></a>which</h2><p>在 PATH 中搜索某个系统命令的位置，并返回第一个搜索结果。使用 which 命令可以看到某个系统命令是否存在，以及执行的到底是哪一个位置的命令。</p>
 <ul>
-<li><p><code>which ls</code>：查看ls命令是否存在，执行哪个。</p>
+<li><p><code>which ls</code>：查看 ls 命令是否存在，执行哪个。</p>
 </li>
-<li><p><code>which cd</code>：显示cd是内建命令。</p>
+<li><p><code>which cd</code>：显示 cd 是内建命令。</p>
 </li>
 </ul>
-<h2 id="whereis"><a href="#whereis" class="headerlink" title="whereis"></a>whereis</h2><p>whereis命令只能用于程序名的搜索，whereis及locate都是基于系统内建的数据库进行搜索，因此效率很高，而find则是遍历硬盘查找文件。</p>
+<h2 id="whereis"><a href="#whereis" class="headerlink" title="whereis"></a>whereis</h2><p>whereis 命令只能用于程序名的搜索，whereis 及 locate 都是基于系统内建的数据库进行搜索，因此效率很高，而 find 则是遍历硬盘查找文件。</p>
 <ul>
 <li><p><code>whereis python</code>：返回所有相关的文件。</p>
 </li>
@@ -343,28 +343,43 @@
 </ul>
 <h2 id="find"><a href="#find" class="headerlink" title="find"></a>find</h2><p>用于查找文件，可以配合使用正则表达式。</p>
 <ul>
-<li><p><code>find ./ -name &#39;*.log&#39;</code>：在当前目录查找 以.log结尾的文件。 </p>
+<li><p><code>find ./ -name &#39;*.log&#39;</code>：在当前目录查找 以。log 结尾的文件。 </p>
 </li>
-<li><p><code>find / -name filename.txt</code>：查找&#x2F;目录下的filename.txt文件。</p>
+<li><p><code>find / -name filename.txt</code>：查找&#x2F;目录下的 filename.txt 文件。</p>
 </li>
 </ul>
-<h2 id="chmod"><a href="#chmod" class="headerlink" title="chmod"></a>chmod</h2><p>用于修改linux系统文件或目录的访问权限，有两种用法：一种是包含字母和操作符表达式的文字设定法，另一种是包含数字的数字设定法。</p>
+<h2 id="chmod"><a href="#chmod" class="headerlink" title="chmod"></a>chmod</h2><p>用于修改 linux 系统文件或目录的访问权限。有两种用法：一种是包含字母和操作符表达式的文字设定法，另一种是包含数字的数字设定法。</p>
+<h3 id="字符使用格式"><a href="#字符使用格式" class="headerlink" title="字符使用格式"></a>字符使用格式</h3><blockquote>
+<p>chmod [可选项] &lt;mode&gt; file</p>
+</blockquote>
+<p>可选项为<code>-R</code>，表示以递归的方式对目前目录下的所有档案与子目录进行相同的权限变更。</p>
+<p>mode 是权限设定字串，格式为<code>[ugoa][+-=][rwxX]</code>。u 表示该档案的拥有者，g 表示同一群组，o 表示其他组，a 表示所有用户。+ 表示增加权限，- 表示取消权限，&#x3D; 表示唯一设定权限。r 表示可读取，w 表示可写入，x 表示可执行，X 表示只有当该档案是个子目录或者该档案已经被设定过为可执行。</p>
 <ul>
-<li><code>chmod a+x t.log</code>：增加文件t.log所有用户可执行权限。</li>
-<li><code>chmod 777 file.java</code>：修改文件权限。</li>
+<li><code>chmod ugo+r a.conf &amp;&amp; chmod a+r  a.conf</code>：设置所有用户可读取文件 a.conf。</li>
+<li><code>chmod u+rwx c.sh</code>：设置 c.sh 只有拥有者可以读写及执行。</li>
+<li><code>chmod a+r,ug+w,o-w a.conf b.xml</code>：设置文件 a.conf 与 b.xml 权限为拥有者与所属的群组可读写，其它组可读不可写。</li>
+<li><code>chmod -R a+rw *</code>：设置当前目录下的所有档案与子目录皆设为任何人可读写。</li>
+</ul>
+<h3 id="数字权限使用格式"><a href="#数字权限使用格式" class="headerlink" title="数字权限使用格式"></a>数字权限使用格式</h3><blockquote>
+<p>chmod &lt;abc&gt; file</p>
+</blockquote>
+<p>a、b、c 各为一个数字，分别代表 User、Group、及 Other 的权限。</p>
+<ul>
+<li><code>chmod 777 file</code>：设置所有人可以读写及执行。</li>
+<li><code>chmod 600 file</code>：设置拥有者可读写，其他人不可读写执行。</li>
 </ul>
 <h2 id="tar"><a href="#tar" class="headerlink" title="tar"></a>tar</h2><p>用来压缩和解压文件。文件系统中，打包和压缩是不同的。打包是将一大堆文件或目录变成一个总的文件，压缩是将一个大的文件通过一些压缩算法变成一个小文件。</p>
-<p>tar本身只具有打包功能，而压缩及解压是调用其它的程序完成的。</p>
+<p>tar 本身只具有打包功能，而压缩及解压是调用其它的程序完成的。</p>
 <ul>
 <li><code>tar -c</code>：建立新的压缩文件。</li>
 <li><code>tar -f</code>：指定压缩文件。</li>
 <li><code>tar -x</code>：从压缩包中抽取文件。</li>
-<li><code>tar -z</code>：支持gzip压缩。</li>
+<li><code>tar -z</code>：支持 gzip 压缩。</li>
 <li><code>tar -v</code>：显示操作过程。</li>
-<li><code>tar -xvzf test.tar.gz</code>：解压test.tar.gz文件。</li>
+<li><code>tar -xvzf test.tar.gz</code>：解压 test.tar.gz 文件。</li>
 <li><code>tar -zcvf test.tar.gz ./</code>：压缩当前文件夹为 test.tar.gz。</li>
 </ul>
-<h2 id="df"><a href="#df" class="headerlink" title="df"></a>df</h2><p>通过文件系统来快速获取空间大小的信息，当我们删除一个文件的时候，这个文件不是马上就在文件系统当中消失了，而是暂时消失了，当所有程序都不用时，才会根据OS的规则释放掉已经删除的文件， <code>df</code>记录的是通过文件系统获取到的文件的大小。</p>
+<h2 id="df"><a href="#df" class="headerlink" title="df"></a>df</h2><p>通过文件系统来快速获取空间大小的信息，当我们删除一个文件的时候，这个文件不是马上就在文件系统当中消失了，而是暂时消失了，当所有程序都不用时，才会根据 OS 的规则释放掉已经删除的文件， <code>df</code>记录的是通过文件系统获取到的文件的大小。</p>
 <p><code>df</code>和<code>du</code>不同的地方是计算大小时会加上还没有释放的已删除文件，更加精确。</p>
 <ul>
 <li><p><code>df -a</code>：全部文件系统列表。</p>
@@ -390,7 +405,7 @@
 <h2 id="ln"><a href="#ln" class="headerlink" title="ln"></a>ln</h2><p>为文件在其他位置建立一个同步的链接，同步指的是文件或者路径一处修改了所有的链接都会跟着做相同的修改。链接可以减少磁盘的占用，分为软链接和硬链接。</p>
 <p>软链接：</p>
 <ul>
-<li>以路径的形式存在，类似于windows中的快捷方式。</li>
+<li>以路径的形式存在，类似于 windows 中的快捷方式。</li>
 <li>可以跨文件系统，可以对目录创建，可以对不存在的文件名链接。</li>
 </ul>
 <p>硬链接：</p>
@@ -409,40 +424,40 @@
 <li><p><code>ln -sv /opt/soft/test/test3 /opt/soft/test/test5</code>：给目录创建软链接。</p>
 </li>
 </ul>
-<h2 id="grep"><a href="#grep" class="headerlink" title="grep"></a>grep</h2><p>grep在一个或多个文件中搜索字符串或者正则表达式模版，模板后的所有字符串被看作文件名，搜索的结果被送到标准输出，不影响原文件内容。</p>
+<h2 id="grep"><a href="#grep" class="headerlink" title="grep"></a>grep</h2><p>grep 在一个或多个文件中搜索字符串或者正则表达式模版，模板后的所有字符串被看作文件名，搜索的结果被送到标准输出，不影响原文件内容。</p>
 <ul>
-<li><code>ps -ef | grep java</code>：查看java有关进程。</li>
+<li><code>ps -ef | grep java</code>：查看 java 有关进程。</li>
 </ul>
 <h2 id="ps"><a href="#ps" class="headerlink" title="ps"></a>ps</h2><p>用来查看进程的状态。</p>
 <ul>
 <li><code>ps -ef</code>：显示当前所有进程及进程间关系。</li>
-<li><code>ps -ef | grep java</code>：查看java有关进程。</li>
+<li><code>ps -ef | grep java</code>：查看 java 有关进程。</li>
 <li>&#96;ps -ef | head -5’：列出前五的进程。</li>
 </ul>
 <img src="/2022/10/27/Linux/Linux%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20221103001431513.png" alt="image-20221103001431513" style="zoom: 50%;">
 
 <p>其中的参数含义：</p>
 <ul>
-<li>UID：用户ID。</li>
-<li>PID：进程ID。</li>
+<li>UID：用户 ID。</li>
+<li>PID：进程 ID。</li>
 <li>PPID：父进程号。</li>
-<li>C：CPU的占用率。</li>
+<li>C：CPU 的占用率。</li>
 <li>STIME：进程的启动时间。</li>
 <li>TTY：登入者的终端机位置。</li>
-<li>TIME：进程执行起到现在总的CPU占用时间。</li>
+<li>TIME：进程执行起到现在总的 CPU 占用时间。</li>
 <li>CMD：启动这个进程的命令。</li>
 </ul>
-<h2 id="top"><a href="#top" class="headerlink" title="top"></a>top</h2><p>显示当前系统正在执行的进程的相关信息，包括进程ID、内存占用率、CPU占用率等</p>
+<h2 id="top"><a href="#top" class="headerlink" title="top"></a>top</h2><p>显示当前系统正在执行的进程的相关信息，包括进程 ID、内存占用率、CPU 占用率等</p>
 <ul>
-<li><p><code>top -p pid</code>：显示指定pid的信息。</p>
+<li><p><code>top -p pid</code>：显示指定 pid 的信息。</p>
 </li>
-<li><p><code>top -n</code>：前n行信息。</p>
+<li><p><code>top -n</code>：前 n 行信息。</p>
 </li>
 </ul>
 <h2 id="kill"><a href="#kill" class="headerlink" title="kill"></a>kill</h2><ul>
-<li><code>kill -9 19979</code>：终止线程号位19979的线程。</li>
+<li><code>kill -9 19979</code>：终止线程号位 19979 的线程。</li>
 </ul>
-<h2 id="free"><a href="#free" class="headerlink" title="free"></a>free</h2><p>显示系统内存使用情况，包括物理内存、交互区内存(swap)和内核缓冲区内存。</p>
+<h2 id="free"><a href="#free" class="headerlink" title="free"></a>free</h2><p>显示系统内存使用情况，包括物理内存、交互区内存 (swap) 和内核缓冲区内存。</p>
 <ul>
 <li><p><code>free -t</code>：显示内存总和的使用信息。</p>
 </li>
@@ -452,9 +467,10 @@
 </li>
 </ul>
 <h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
-<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/gaojun/p/3359355.html">Linux常用命令学习</a></li>
-<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/wisgood/article/details/17316663">Linux du命令和df命令区别</a></li>
-<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1640751">Linux常用命令 - ps命令详解（重点）</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/gaojun/p/3359355.html">Linux 常用命令学习</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/wisgood/article/details/17316663">Linux du 命令和 df 命令区别</a></li>
+<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1640751">Linux 常用命令 - ps 命令详解（重点）</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_38429587/article/details/79110588">面试中常见的 20 个 Linux 命令</a></li>
 </ol>
 
         </div>
@@ -465,6 +481,10 @@
                 <span>Tag(s):</span>
                 <span class="tag">
                     
+                    
+                        <a href="/tags/Linux/"># Linux</a>
+                    
+                        
                 </span>
             </div>
             <div>
@@ -474,6 +494,8 @@
             </div>
         </section>
         <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/11/03/Linux/Linux%20%E6%9D%83%E9%99%90/">Linux 权限</a>
             
             
             <a class="next" rel="next" href="/2022/10/26/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E5%BA%94%E7%94%A8%E5%B1%82/GET%E5%92%8CPOST%E7%9A%84%E5%8C%BA%E5%88%AB/">GET 和 POST 的区别</a>
