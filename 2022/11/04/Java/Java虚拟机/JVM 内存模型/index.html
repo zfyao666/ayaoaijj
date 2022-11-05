@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Bruce Yao">
+
+
+
+
+
+<title>JVM 内存模型 | Yao&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Yao&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Yao&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">JVM 内存模型</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Bruce Yao&nbsp;</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">November 4, 2022&nbsp;&nbsp;14:14:53&nbsp;</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/JVM-%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/">JVM 内存模型</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h2 id="物理计算机的效率和一致性"><a href="#物理计算机的效率和一致性" class="headerlink" title="物理计算机的效率和一致性"></a>物理计算机的效率和一致性</h2><p>物理计算机和虚拟机有一定的相似性，所以虚拟机和物理机在处理并发问题的方案也有相似的地方。</p>
+<p>由于存储设备和处理器存在巨大的运算速度差距，所以物理机加入了读写速度尽可能接近处理器运算速度高速缓存。运算时将运算所需要的数据先复制到缓存中，当运算结束后再从缓存中同步到内存，如下图所示：</p>
+<img src="/2022/11/04/Java/Java%E8%99%9A%E6%8B%9F%E6%9C%BA/JVM%20%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/image-20221104143811642.png" alt="image-20221104143811642" style="zoom: 33%;">
+
+<h3 id="缓存一致性"><a href="#缓存一致性" class="headerlink" title="缓存一致性"></a>缓存一致性</h3><p>每个处理器都有自己的高速缓存，但是只共享同一个主内存，所以当多个处理器的运算任务都涉及同一块主内存区域时，将可能导致各自的缓存数据不一致。为了解决缓存一致性问题，需要各个处理器访问缓存时都遵循一些协议，在读写时要根据协议来进行操作。</p>
+<h3 id="乱序执行优化"><a href="#乱序执行优化" class="headerlink" title="乱序执行优化"></a>乱序执行优化</h3><p>物理计算机中，处理器可以针对输入打乱后再执行，执行结束后	再将结果重组，保证该结果与顺序执行的结果是一致的。乱序执行不能保证程序中各个语句计算的先后顺序与输入代码中的顺序一致，所以如果一个任务依赖另外一个任务的中间计算结果，那么其顺序性并不能靠代码的先后顺序来保证。和处理器的乱序执行优化类似，Java 虚拟机的即使编译器也有指令重排序优化。</p>
+<h2 id="Java-内存模型"><a href="#Java-内存模型" class="headerlink" title="Java 内存模型"></a>Java 内存模型</h2><p>不同计算机的硬件和不同操作系统的内存模型存在一定的差异，所以 JVM 试图规范定义一种内存模型来屏蔽掉各种硬件和操作系统的内存访问差异，让 Java 程序在各个平台下都能达到一致的内存访问效果。</p>
+<h3 id="主内存和工作内存"><a href="#主内存和工作内存" class="headerlink" title="主内存和工作内存"></a>主内存和工作内存</h3><p>主内存中存储了所有的变量，而工作内存是每条线程私有的，其中保存了主内存中线程需要的变量的副本。</p>
+<p>线程对于变量的所有操作都在工作内存中进行，线程之间无法直接访问对方工作内存中的变量，变量值的传递必须通过主内存。</p>
+<img src="/2022/11/04/Java/Java%E8%99%9A%E6%8B%9F%E6%9C%BA/JVM%20%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/image-20221104144307177.png" alt="image-20221104144307177" style="zoom:33%;">
+
+<p>一般来说，主内存主要对应于 Java 堆中的对象实例数据部分，而工作内存则对应于虚拟机栈中的部分区域。从更低层次上说，主内存就直接对应于物理硬件的内存，工作内存对应于寄存器和高速缓存，这是因为程序运行时主要访问读写的是工作内存，可以获得更好的运行速度。</p>
+<h3 id="内存间交互"><a href="#内存间交互" class="headerlink" title="内存间交互"></a>内存间交互</h3><p>关于主内存与工作内存之间具体的交互协议，即一个变量如何从主内存拷贝到工作内存、如何从工作内存同步回主内存之类的实现细节，Java 内存模型中定义了 8 种操作，其中前 4 种作用于主内存，后 4 种作用于工作内存，Java 虚拟机必须保证每一种操作都是原子的、不可再分的。</p>
+<ul>
+<li>lock（锁定）：把一个变量标识为一条线程独占的状态。</li>
+<li>unlock（解锁）：把一个处于锁定状态的变量释放出来，释放后的变量才可以被其他线程锁定。</li>
+<li>read（读取）：把一个变量的值从主内存传输到线程的工作内存中，以便随后的 load 动作使用。</li>
+<li>write（写入）：把 store 操作从工作内存中得到的变量的值放入主内存的变量中。</li>
+<li>load（载入）：把 read 操作从主内存中得到的变量值放入工作内存的变量副本中。</li>
+<li>use（使用）：把工作内存中一个变量的值传递给执行引擎，每当虚拟机遇到一个需要使用到变量的值的字节码指令时将会执行这个操作。</li>
+<li>assign（赋值）：把一个从执行引擎接收到的值赋给工作内存的变量，每当虚拟机遇到一个给变量赋值的字节码指令时执行这个操作。</li>
+<li>store（存储）：把工作内存中一个变量的值传送到主内存中，以便随后的 write 操作使用。</li>
+</ul>
+<p>在 Java 内存模型中，如果要把一个变量从主内存复制到工作内存，就必须顺序地执行 read 和 load 操作，如果要把变量从工作内存同步回主内存，就必须顺序地执行 store 和 write 操作。</p>
+<h2 id="运行时数据区域"><a href="#运行时数据区域" class="headerlink" title="运行时数据区域"></a>运行时数据区域</h2><p>Java 虚拟机在执行 Java 程序的过程中会把它所管理的内存划分为若干个不同的数据区域。其中方法区和堆为线程共享，程序计数器、虚拟机栈和本地方法栈是线程私有的。</p>
+<img src="/2022/11/04/Java/Java%E8%99%9A%E6%8B%9F%E6%9C%BA/JVM%20%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/image-20221104161711312.png" alt="image-20221104161711312" style="zoom:33%;">
+
+<h3 id="程序计数器"><a href="#程序计数器" class="headerlink" title="程序计数器"></a>程序计数器</h3><p>Java 虚拟机的多线程是通过线程轮流切换并分配处理器执行时间实现的。一个处理器在任何时刻只会执行一条线程中的指令，所以为了线程切换后可以回到正确的执行位置，每个线程就需要有一个独立的程序计数器记录当前线程执行的字节码的行号。</p>
+<p>如果线程正在执行的是一个 Java 方法，程序计数器记录的就是正在执行的虚拟机字节码指令的地址，如果正在执行的是 Native 方法，程序计数器值则为空。</p>
+<p>程序计数器是唯一一个在 Java 虚拟机规范中没有规定任何<code>OutOfMemoryError</code>情况的区域。</p>
+<h3 id="Java-虚拟机栈"><a href="#Java-虚拟机栈" class="headerlink" title="Java 虚拟机栈"></a>Java 虚拟机栈</h3><blockquote>
+<p>常说的栈内存（stack）就是虚拟机栈，或者说是虚拟机栈中局部变量表部分。</p>
+</blockquote>
+<p>虚拟机栈描述的是 Java 方法执行时的内存模型：每个方法在执行时都会创建一个栈帧，方法从调用直至执行完成的过程，就对应着栈帧在虚拟机栈中入栈到出栈的过程。</p>
+<p>栈帧中存储了局部变量表、操作数栈、动态链接、方法出口等信息：</p>
+<ul>
+<li>局部变量表：存放了编译期可知的各种基本数据类型、对象引用和 returnAddress 类型。局部变量表需要的内存空间在编译期间分配完成，进入一个方法时帧中的局部变量表大小是完全确定的，在方法运行期间也不会改变。</li>
+<li>动态链接：动态链接是在运行时将符号引用解析为直接引用的过程。</li>
+<li>操作数：参与运算的常量或者变量称为操作数。</li>
+</ul>
+<p>Java 虚拟机栈中可能抛出以下异常：</p>
+<ul>
+<li>当线程请求的栈深度超过最大值，会抛出<code>StackOverflowError</code>异常。</li>
+<li>栈进行动态扩展时如果无法申请到足够内存，会抛出<code>OutOfMemoryError</code>异常。</li>
+</ul>
+<h3 id="本地方法栈"><a href="#本地方法栈" class="headerlink" title="本地方法栈"></a>本地方法栈</h3><p>本地方法栈与虚拟机栈所发挥的作用是非常相似的，它们之间的区别不过是虚拟机栈为虚拟机执行 Java 方法服务，而本地方法栈则为虚拟机使用到的 Native 方法服务。与虚拟机栈一样，本地方法栈区域也会抛出<code>StackOverflowError</code>和<code>OutOfMemoryError</code>异常。</p>
+<h3 id="Java-堆"><a href="#Java-堆" class="headerlink" title="Java 堆"></a>Java 堆</h3><p>Java 堆在虚拟机启动时创建，并且被所有线程共享，是 Java 虚拟机管理的内存中最大的一块内存区域。它的唯一目的就是存放对象实例，几乎所有的对象实例都在这里分配内存。Java 虚拟机规范对 Java 堆的描述是：所有的对象实例以及数组都要在堆上分配。</p>
+<p>由于 Java 堆占据了大片的内存区域并且存放了很多对象实例，所以是垃圾收集器管理的主要区域。使用分代收集算法时，Java 堆可以细分为新生代和老年代：</p>
+<img src="/2022/11/04/Java/Java%E8%99%9A%E6%8B%9F%E6%9C%BA/JVM%20%E5%86%85%E5%AD%98%E6%A8%A1%E5%9E%8B/image-20221105144855123.png" alt="image-20221105144855123" style="zoom:50%;">
+
+<p>其中 Eden 区、两个 Survivor 区 S0 和 S1 都属于新生代，中间一层属于老年代。大部分情况，新创建的对象都会先在 Eden 区域分配，在一次新生代垃圾回收后，如果对象还存活，则会进入 S0 或者 S1，并且对象的年龄还会加 1，当它的年龄增加到一定程度，就会被晋升到老年代中。</p>
+<p>Java 堆可以处于物理上不连续的内存空间中，只要逻辑上是连续的即可。如果在堆中没有内存完成实例分配，并且堆也无法再扩展时，将会抛出<code>OutOfMemoryError</code>异常。</p>
+<h3 id="方法区"><a href="#方法区" class="headerlink" title="方法区"></a>方法区</h3><p>方法区是各个线程共享的内存区域，用于存储已被虚拟机加载的类信息、常量、静态变量、即时编译器编译后的代码等数据。方法区和堆一样不需要连续的内存，并且可以动态扩展，失败同样会抛出<code>OutOfMemoryError</code>异常。</p>
+<p>JDK1.8 之前使用永久代实现方法区，但是永久代的回收效率低且大小在每次 Full GC 之后都会改变，所以经常抛出<code>OutOfMemoryError</code>异常。JDK1.8 之后彻底废除永久代，转而使用元空间实现方法区。元空间位于本地内存，所以大小仅受本地内存的约束。之前永久代中的字符串常量池、静态变量被移动到堆中，类信息被移动到本地内存中的元空间。</p>
+<h4 id="为什么要用元空间替换永久代？"><a href="#为什么要用元空间替换永久代？" class="headerlink" title="为什么要用元空间替换永久代？"></a>为什么要用元空间替换永久代？</h4><p>整个永久代有一个 JVM 本身设置的固定大小上限，无法进行调整，而元空间使用的是直接内存，受本机可用内存的限制，可以加载的类更多。虽然元空间仍旧可能溢出，但是比原来出现的几率会更小。</p>
+<h2 id="控制参数"><a href="#控制参数" class="headerlink" title="控制参数"></a>控制参数</h2><p>可以通过如下参数来控制各区域的内存大小：</p>
+<ul>
+<li><p><code>-Xms</code>：设置堆的初始大小。</p>
+</li>
+<li><p><code>-Xmx</code>：设置堆的最大值。</p>
+</li>
+<li><p><code>-Xss</code>：设置单个线程的栈大小。</p>
+</li>
+<li><p><code>-XX:NewRatio</code>：老年代和新生代的比例。</p>
+</li>
+<li><p><code>-XX:NewSize</code>：新生代对象生成时占用内存的默认大小。</p>
+</li>
+<li><p><code>-XX:MaxNewSize</code>：新生代对象占用内存的最大值。</p>
+</li>
+</ul>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2022/11/03/Linux/Linux%20%E6%9D%83%E9%99%90/">Linux 权限</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Bruce Yao | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>

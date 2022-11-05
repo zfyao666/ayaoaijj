@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Bruce Yao">
+
+
+
+
+
+<title>集合总结 | Yao&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+
+
+
+    
+    
+        
+            <!-- MathJax配置，可通过单美元符号书写行内公式等 -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+    "HTML-CSS": {
+        preferredFont: "TeX",
+        availableFonts: ["STIX","TeX"],
+        linebreaks: { automatic:true },
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ],
+        processEscapes: true,
+        ignoreClass: "tex2jax_ignore|dno",
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } },
+        Macros: { href: "{}" }
+    },
+    messageStyle: "none"
+    });
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+        src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+
+
+        
+    
+
+
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                // document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Yao&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div>
+                    <a href="/">Yao&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="menu-toggle" onclick="mobileBtn()">&#9776; Menu</div>
+            </div>
+            <div class="menu" id="mobile-menu">
+                
+                    <a class="menu-item" href="/">Home</a>
+                
+                    <a class="menu-item" href="/archives">Archives</a>
+                
+                    <a class="menu-item" href="/summary">Summary</a>
+                
+                    <a class="menu-item" href="/category">Categories</a>
+                
+                    <a class="menu-item" href="/tag">Tags</a>
+                
+                    <a class="menu-item" href="/about">About</a>
+                
+            </div>
+        </div>
+    </nav>
+
+</header>
+<script>
+    var mobileBtn = function f() {
+        var toggleMenu = document.getElementsByClassName("menu-toggle")[0];
+        var mobileMenu = document.getElementById("mobile-menu");
+        if(toggleMenu.classList.contains("active")){
+           toggleMenu.classList.remove("active")
+            mobileMenu.classList.remove("active")
+        }else{
+            toggleMenu.classList.add("active")
+            mobileMenu.classList.add("active")
+        }
+    }
+</script>
+            <div class="main">
+                <div class="container">
+    
+    
+        <div class="post-toc">
+    <div class="tocbot-list">
+    </div>
+    <div class="tocbot-list-menu">
+        <a class="tocbot-toc-expand" onclick="expand_toc()">Expand all</a>
+        <a onclick="go_top()">Back to top</a>
+        <a onclick="go_bottom()">Go to bottom</a>
+    </div>
+</div>
+
+<script>
+    var tocbot_timer;
+    var DEPTH_MAX = 6; // 为 6 时展开所有
+    var tocbot_default_config = {
+        tocSelector: '.tocbot-list',
+        contentSelector: '.post-content',
+        headingSelector: 'h1, h2, h3, h4, h5',
+        orderedList: false,
+        scrollSmooth: true,
+        onClick: extend_click,
+    };
+
+    function extend_click() {
+        clearTimeout(tocbot_timer);
+        tocbot_timer = setTimeout(function() {
+            tocbot.refresh(obj_merge(tocbot_default_config, {
+                hasInnerContainers: true
+            }));
+        }, 420); // 这个值是由 tocbot 源码里定义的 scrollSmoothDuration 得来的
+    }
+
+    document.ready(function() {
+        tocbot.init(obj_merge(tocbot_default_config, {
+            collapseDepth: 1
+        }));
+    });
+
+    function expand_toc() {
+        var b = document.querySelector('.tocbot-toc-expand');
+        var expanded = b.getAttribute('data-expanded');
+        expanded ? b.removeAttribute('data-expanded') : b.setAttribute('data-expanded', true);
+        tocbot.refresh(obj_merge(tocbot_default_config, {
+            collapseDepth: expanded ? 1 : DEPTH_MAX
+        }));
+        b.innerText = expanded ? 'Expand all' : 'Collapse all';
+    }
+
+    function go_top() {
+        window.scrollTo(0, 0);
+    }
+
+    function go_bottom() {
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function obj_merge(target, source) {
+        for (var item in source) {
+            if (source.hasOwnProperty(item)) {
+                target[item] = source[item];
+            }
+        }
+        return target;
+    }
+</script>
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">集合总结</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/">Bruce Yao&nbsp;</a>
+                    
+
+                    
+                        <span class="post-time">
+                        Date: <a href="#">October 3, 2022&nbsp;&nbsp;21:26:37&nbsp;</a>
+                        </span>
+                    
+                    
+                        <span class="post-category">
+                    Category:
+                            
+                                <a href="/categories/JDK-%E6%BA%90%E7%A0%81/">JDK 源码</a>
+                            
+                        </span>
+                    
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>Java 集合类主要由两个接口<code>Collection</code>和<code>Map</code>派生出来的，<code>Collection</code>主要为集合，<code>Map</code>主要为键值对。Java 集合类的主要框架如下，绿色标注的是常用的实现类。</p>
+<img src="/2022/10/03/Java/JDK%E6%BA%90%E7%A0%81/%E9%9B%86%E5%90%88/%E9%9B%86%E5%90%88%E6%80%BB%E7%BB%93/image-20221004034925848.png" alt="image-20221004034925848" style="zoom: 33%;">
+
+<h2 id="Collection"><a href="#Collection" class="headerlink" title="Collection"></a>Collection</h2><img src="/2022/10/03/Java/JDK%E6%BA%90%E7%A0%81/%E9%9B%86%E5%90%88/%E9%9B%86%E5%90%88%E6%80%BB%E7%BB%93/image-20191208220948084.png" alt="img" style="zoom:50%;">
+
+<p><code>Collection</code>派生出了<code>Set</code>、<code>List</code>和<code>Queue</code>三个接口。集合类中的元素需要重写<code>equals()</code> 方法和 <code>hashCode()</code> 方法。</p>
+<h3 id="Collection-的设计模式"><a href="#Collection-的设计模式" class="headerlink" title="Collection 的设计模式"></a>Collection 的设计模式</h3><h4 id="迭代器模式"><a href="#迭代器模式" class="headerlink" title="迭代器模式"></a>迭代器模式</h4><img src="/2022/10/03/Java/JDK%E6%BA%90%E7%A0%81/%E9%9B%86%E5%90%88/%E9%9B%86%E5%90%88%E6%80%BB%E7%BB%93/image-20191208225301973.png" alt="img" style="zoom: 50%;">
+
+<p><code>Collection</code>继承了<code>Iterable</code>接口，其中的<code>iterator()</code>方法能够产生一个<code>Iterator</code>对象，通过这个对象就可以迭代遍历<code>Collection</code>中的元素。</p>
+<p>从 JDK 1.5 之后可以使用<code>foreach</code>方法来遍历实现了<code>Iterable</code>接口的聚合对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">list.add(<span class="string">&quot;a&quot;</span>);</span><br><span class="line">list.add(<span class="string">&quot;b&quot;</span>);</span><br><span class="line"><span class="keyword">for</span> (String item : list) &#123;</span><br><span class="line">    System.out.println(item);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h4><p>java.util.Arrays 的<code>asList()</code>方法可以把数组类型转换为<code>List</code>类型。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SafeVarargs</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; List&lt;T&gt; <span class="title function_">asList</span><span class="params">(T... a)</span></span><br></pre></td></tr></table></figure>
+
+<p>该方法的参数为泛型的变长参数，不能使用基本数据类型作为参数，所以只能使用对应的包装类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Integer[] arr = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>&#125;;</span><br><span class="line"><span class="type">List</span> <span class="variable">list</span> <span class="operator">=</span> Arrays.asList(arr);</span><br></pre></td></tr></table></figure>
+
+<p>或者使用一下的方式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">List</span> <span class="variable">list</span> <span class="operator">=</span> Arrays.asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="Set"><a href="#Set" class="headerlink" title="Set"></a>Set</h3><p><code>Set</code>中的元素存放是无序的、不重复的。它只能通过元素本身来访问。实现类主要是：</p>
+<ul>
+<li><p>HashSet：底层数据结构为哈希表。支持快速查找，查找效率为$O(1)$。但不支持有序性操作，也不包含元素的插入顺序信息。</p>
+</li>
+<li><p>TreeSet：底层数据结构为红黑树。支持有序性操作，但是查找效率低，为$O(logN)$。</p>
+</li>
+<li><p>LinkedHashSet：是<code>HashSet</code>的子类，基于<code>LinkedHashMap</code>实现。具有<code>HashSet</code>的查找效率，内部使用双向链表维护元素的插入顺序。</p>
+</li>
+</ul>
+<h4 id="HashSet、TreeSet-和-LinkedHashSet-的使用场景"><a href="#HashSet、TreeSet-和-LinkedHashSet-的使用场景" class="headerlink" title="HashSet、TreeSet 和 LinkedHashSet 的使用场景"></a>HashSet、TreeSet 和 LinkedHashSet 的使用场景</h4><p><code>HashSet</code> 用于不需要保证元素插入和取出顺序的场景，<code>LinkedHashSet</code> 用于保证元素的插入和取出顺序满足 FIFO 的场景，<code>TreeSet</code> 用于支持对元素自定义排序规则的场景。</p>
+<h3 id="List"><a href="#List" class="headerlink" title="List"></a>List</h3><p><code>List</code>中元素的存放是有序的，并且可以重复。它可以直接通过元素的索引来访问，实现类主要为：</p>
+<ul>
+<li><p>ArrayList：底层数据结构为<code>Object[]</code>数组，支持随机访问。</p>
+</li>
+<li><p>Vector：底层数据结构也是<code>Object[]</code>数组，相比<code>ArrayList</code>是线程安全的。</p>
+</li>
+<li><p>LinkedList：底层数据结构为双向链表（JDK1.6 之前为循环链表，JDK1.7 取消了循环）。只能顺序访问，不仅可以快速在链表中插入、删除元素，同时还可以用作栈、队列和双向队列。</p>
+</li>
+</ul>
+<h4 id="ArrayList-和-Vector-的区别"><a href="#ArrayList-和-Vector-的区别" class="headerlink" title="ArrayList 和 Vector 的区别"></a>ArrayList 和 Vector 的区别</h4><ul>
+<li><code>Vector</code>是线程安全的，<code>ArrayList</code>不是线程安全的。其中，<code>Vector</code>在关键性的方法前面都加了<code>synchronized</code>关键字，来保证线程的安全性。如果有多个线程会访问到集合，那最好是使用<code>Vector</code>，因为不需要我们自己再去考虑和编写线程安全的代码。</li>
+<li><code>ArrayList</code>在底层数组不够用时在原来的基础上扩展 0.5 倍，<code>Vector</code>是扩展 1 倍，所以<code>ArrayList</code>更有利于节约内存空间。</li>
+</ul>
+<h4 id="ArrayList-和-LinkedList-的区别"><a href="#ArrayList-和-LinkedList-的区别" class="headerlink" title="ArrayList 和 LinkedList 的区别"></a>ArrayList 和 LinkedList 的区别</h4><ul>
+<li>底层数据结构：<code>ArrayList</code>底层数据结构为数组，<code>LinkedList</code>底层数据结构为双向链表。</li>
+<li>快速随机访问：<code>LinkedList</code>不支持高效的随机元素访问，而<code>ArrayList</code>实现了 RandomAccess 接口，所以有随机访问功能。</li>
+<li>内存空间占用：<ul>
+<li><code>ArrayList</code>需要为在列表结尾需要预留一定的空间。</li>
+<li><code>LinkedList</code>中每一个元素的存储消耗都比<code>ArrayList</code>大。</li>
+</ul>
+</li>
+<li>插入、查找和删除元素的时间复杂度：<ul>
+<li><code>ArrayList</code> 插入和删除元素的时间复杂度受元素位置的影响，平均的时间复杂度为$O(n&#x2F;2)$。索引越靠近表头越大，越靠近结尾时间复杂度越小。时间复杂度最大为$O(n)$，最小为$O(1)$。</li>
+<li><code>LinkedList</code>在头尾插入、删除元素的时间复杂度为$O(1)$。插入和删除指定位置的元素的平均复杂度为$O(n&#x2F;4)$，插入位置越靠近中间时间复杂度越大，最大为$O(n&#x2F;2)$。</li>
+</ul>
+</li>
+</ul>
+<h3 id="Queue"><a href="#Queue" class="headerlink" title="Queue"></a>Queue</h3><p><code>Queue</code>是 Java5 之后新增的队列接口，其中的元素按特定的排队顺序来确定先后顺序，所以元素也是有序的、可重复。实现类主要为：</p>
+<ul>
+<li><p>PriorityQueue：优先队列，底层数据结构是使用<code>Object[]</code>数组实现的二叉堆。</p>
+</li>
+<li><p>ArrayQueue：底层数据结构是<code>Object[]</code>数组，通过双指针实现。</p>
+</li>
+</ul>
+<h4 id="ArrayQueue-和-LinkedList-的区别"><a href="#ArrayQueue-和-LinkedList-的区别" class="headerlink" title="ArrayQueue 和 LinkedList 的区别"></a>ArrayQueue 和 LinkedList 的区别</h4><ul>
+<li>底层数据结构：<code>ArrayDeque</code>是基于可变长的数组和双指针来实现，而<code>LinkedList</code>则通过链表来实现。</li>
+<li>是否支持空数据：<code>ArrayDeque</code>不支持存储<code>NULL</code>数据，但<code>LinkedList</code>支持。</li>
+<li>扩容消耗：<code>ArrayDeque</code> 插入时可能存在扩容过程，不过均摊后的插入操作依然为$O(1)$。虽然<code>LinkedList</code>不需要扩容，但是每次插入数据时均需要申请新的堆空间，均摊性能相比更慢。</li>
+</ul>
+<h2 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h2><img src="/2022/10/03/Java/JDK%E6%BA%90%E7%A0%81/%E9%9B%86%E5%90%88/%E9%9B%86%E5%90%88%E6%80%BB%E7%BB%93/image-20201101234335837.png" alt="img" style="zoom: 45%;">
+
+<p><code>Map</code>是一种存储 key-value 对的集合。其中，key 是无序且不可重复的，value 是无序但可重复的，并且相同的 key 最多映射一个 value。主要的实现类：</p>
+<ul>
+<li>HashMap：基于哈希表实现。</li>
+<li>TreeMap：基于红黑树实现。</li>
+<li>LinkedHashMap：使用双向链表来维护元素的顺序，顺序为插入顺序或者最近最少使用（LRU）顺序。</li>
+<li>Hashtable：和 HashMap 类似，但是是线程安全的。因为是遗留类，尽量不要使用。</li>
+</ul>
+<h4 id="HashMap-的底层数据结构"><a href="#HashMap-的底层数据结构" class="headerlink" title="HashMap 的底层数据结构"></a>HashMap 的底层数据结构</h4><p>在 JDK1.7 中，底层数据结构为“数组+链表”，数组是 HashMap 的主体，链表主要是用来解决哈希冲突。JDK1.8 之后的版本将“链表”进一步修改为“链表+红黑树”。链表和红黑树会在到达一定的条件时自动转换：</p>
+<ul>
+<li><p>链表的长度超过 8 且数组长度超过 64 时才会转换为红黑树；</p>
+</li>
+<li><p>数组的长度小于 64 时会先进行数组扩容，以减少搜索时间；</p>
+</li>
+</ul>
+<img src="/2022/10/03/Java/JDK%E6%BA%90%E7%A0%81/%E9%9B%86%E5%90%88/%E9%9B%86%E5%90%88%E6%80%BB%E7%BB%93/image-20210112185830788-20221005144039185.png" alt="Jdk1.8 HashMap结构" style="zoom: 67%;">
+
+<p>链表的搜索时间复杂度为$O(n)$，红黑树的搜索时间复杂度为$O(logn)$，所以当链表过长时会严重影响 HashMap 的效率，但是也不可以直接使用红黑树。红黑树的构造需要进行左旋，右旋，变色这些操作来保持平衡，而单链表不需要。如果一开始就用红黑树结构，元素太少，新增效率又比较慢，非常浪费性能。</p>
+<h4 id="HashMap-线程不安全的原因"><a href="#HashMap-线程不安全的原因" class="headerlink" title="HashMap 线程不安全的原因"></a>HashMap 线程不安全的原因</h4><img src="/2022/10/03/Java/JDK%E6%BA%90%E7%A0%81/%E9%9B%86%E5%90%88/%E9%9B%86%E5%90%88%E6%80%BB%E7%BB%93/HashMap为什么线程不安全.png" alt="img" style="zoom: 50%;">
+
+<ul>
+<li>多线程下扩容会出现死循环。JDK1.7 中使用头插法插入元素，会导致环形链表。而在 JDK1.8 中使用尾插法，在扩容时可以保持链表元素原本的顺序，所以不会出现环形链表。</li>
+<li>多个线程同时调用<code>put</code>方法时，如果计算出来的索引位置相同，那就会导致前一个 key 被后一个 key 覆盖的情况，从而发生元素丢失。</li>
+<li><code>put</code>和<code>get</code>同时被调用时，可能导致<code>get</code>得到<code>null</code>的结果。例如线程 1 执行<code>put</code>时，因为元素个数超出 threshold 而导致 rehash，线程 2 此时执行<code>get</code>，就有可能发生这个问题。</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><p><a target="_blank" rel="noopener" href="https://javaguide.cn/java/collection/java-collection-questions-01.html#map-%E6%8E%A5%E5%8F%A3">JavaGuide-集合</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.codenong.com/cs106428924/">Java ArrayList 和 LinkedList 性能比较</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="https://www.javalearn.cn/#/doc/Java%E9%9B%86%E5%90%88/%E9%9D%A2%E8%AF%95%E9%A2%98">面试小抄-集合</a></p>
+</li>
+<li><p><a target="_blank" rel="noopener" href="http://www.cyc2018.xyz/Java/Java%20%E5%AE%B9%E5%99%A8.html">CS-Note-容器</a></p>
+</li>
+</ol>
+
+        </div>
+
+        
+        <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">back</a>
+                <span>· </span>
+                <a href="/">home</a>
+            </div>
+        </section>
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2022/10/05/Java/JDK%E6%BA%90%E7%A0%81/%E9%9B%86%E5%90%88/HashMap%20%E6%BA%90%E7%A0%81/">HashMap 源码</a>
+            
+            
+            <a class="next" rel="next" href="/2022/09/28/%E6%B5%8B%E8%AF%95/%E6%B3%A8%E5%86%8C%E7%99%BB%E5%BD%95%E6%B5%8B%E8%AF%95%E7%94%A8%E4%BE%8B%E8%AE%BE%E8%AE%A1/">注册登录测试用例设计</a>
+            
+        </section>
+
+
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+        <span>© Bruce Yao | Powered by <a href="https://hexo.io" target="_blank">Hexo</a> & <a href="https://github.com/Siricee/hexo-theme-Chic" target="_blank">Chic</a></span>
+    </div>
+</footer>
+
+    </div>
+</body>
+
+</html>
